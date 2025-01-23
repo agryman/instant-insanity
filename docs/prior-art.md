@@ -155,6 +155,22 @@ The rest is trial and error working from the top down or down up.
 * shows how to solve a simplified version of the puzzle
 * not relevant
 
+## The Original Paper
+
+See https://www.puzzlemuseum.com/singma/singma-index.htm which attributes the solution
+> The graphical method of solution is due to Carteblanche (1947).
+
+Wikipedia has info on the pseudonym and suggests they published in Eureka Magazine.
+
+One of the coauthors is William T. Tutte who did significant work in Graph Theory.
+He became a Prof at University of Waterloo, in the same department as Ross Honsberger.
+
+The Eureka paper is available online at 
+https://onedrive.live.com/?authkey=%21AG4HZAmpHD0fSWs&cid=BF134020839BC69B&id=BF134020839BC69B%21210&parId=BF134020839BC69B%21147&o=OneUp
+as The Coloured Cubes Problem by F. de Carteblanche, pp 9-11
+
+The "b" in Carteblanche stands for Bill Tutte.
+
 ## Wikipedia
 
 TO DO
