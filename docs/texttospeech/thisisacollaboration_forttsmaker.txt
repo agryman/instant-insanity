@@ -1,1 +1,4 @@
-
+This is a collaboration between Arthur and Will. 
+Arthur initiated the project and figured out the math.
+Will produced  the animation.
+Both  wrote some Python code.
