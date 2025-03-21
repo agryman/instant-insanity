@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instant-insanity"
+version = "0.0.1"
+description = "A project for solving and animating the Instant Insanity puzzle."
+authors = [
+    { name = "Arthur Ryman", email = "arthur.ryman@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
+"Homepage" = "https://agryman.github.io/"
+"Documentation" = "https://agryman.github.io/"
+"Issue Tracker" = "https://agryman.github.io/"
+
+[tool.setuptools]
+package-dir = {"" = "src"}    # Specifies that the packages are located in the 'src' directory
+
+[tool.setuptools.packages.find]
+where = ["src"]              # Search for packages in the 'src' directory
