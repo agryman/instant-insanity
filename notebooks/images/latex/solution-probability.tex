@@ -1,4 +1,8 @@
 \documentclass[preview, border=2mm]{standalone}
+
+\renewcommand{\rmdefault}{\sfdefault}	% sets main text to sans-serif
+\usepackage{mathastext}				% makes math use the text font
+
 \usepackage{amsmath}
 
 \begin{document}
@@ -7,11 +11,10 @@
 
 {\fontsize{32pt}{40pt}\selectfont
     \begin{align*}
-    N &: \mathrm{the\ number\ of\ combinations} \\
-    S &: \mathrm{the\ number\ of\ solutions} \\
-    P &: \mathrm{the\ probability\ of\ a\ solution} \\
-    \\
-    P &= \frac{S}{N} = \frac{1}{41,472}
+    N &: \#\ of\ combinations \\
+    S &: \#\ of\ solutions \\
+    P &: probability\ of\ a\ solution \\
+    P &= \frac{S}{N} = \frac{1}{41{,}472}
     \end{align*}
 }
 

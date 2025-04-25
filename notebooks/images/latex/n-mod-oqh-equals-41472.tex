@@ -1,4 +1,8 @@
 \documentclass[preview, border=2mm]{standalone}
+
+\renewcommand{\rmdefault}{\sfdefault}	% sets main text to sans-serif
+\usepackage{mathastext}				% makes math use the text font
+
 \usepackage{amsmath}
 
 \begin{document}
@@ -7,12 +11,10 @@
 
 {\fontsize{32pt}{40pt}\selectfont
     \begin{align*}
-        \mathrm{number\ of\ combinations\ mod\ OQ} &= 82,944 \\
-        \\
-        \mathrm{size\ of\ H\ orbits} &= 2 \\
-        \\
-        \mathrm{number\ of\ combinations\ mod\ OQH} &= \frac{82,944}{2} \\
-            &= 41,472
+        \#\ of\ combinations\ mod\ OQ &= 82{,}944 \\
+        size\ of\ H\ orbits &= 2 \\
+        \#\ of\ combinations\ mod\ OQH &= \frac{82{,}944}{2} \\
+            &= 41{,}472
     \end{align*}
 }
 

@@ -1,4 +1,8 @@
 \documentclass[preview, border=2mm]{standalone}
+
+\renewcommand{\rmdefault}{\sfdefault}	% sets main text to sans-serif
+\usepackage{mathastext}				% makes math use the text font
+
 \usepackage{amsmath}
 
 \begin{document}
@@ -8,10 +12,10 @@
 {\fontsize{32pt}{40pt}\selectfont
 	\begin{align*}
 	N
-		&= \mathrm{number\ of\ cube\ orderings} \times \mathrm{number\ of\ cube\ orientations}^4 \\
+		&= (\#\ of\ cube\ orderings) \times (\#\ of\ cube\ orientations)^4 \\
 		&= 24 \times 24^4 \\
 		&= 24^5 \\
-		&= 7,962,624
+		&= 7{,}962{,}624
 	\end{align*}
 }
 
