@@ -1,18 +1,44 @@
 """This module contains code for drawing cubes."""
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, IntEnum, StrEnum
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-import matplotlib.animation as animation
-from IPython.display import HTML
-from matplotlib.figure import Figure
-from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+# min and max coordinates of standard cube
+CUBE_MIN: float = -1.0
+CUBE_MAX: float = 1.0
+
+# 3D coordinates of standard cube vertices
+FRT = np.array([CUBE_MAX, CUBE_MAX, CUBE_MAX])
+FRB = np.array([CUBE_MAX, CUBE_MAX, CUBE_MIN])
+FLT = np.array([CUBE_MAX, CUBE_MIN, CUBE_MAX])
+FLB = np.array([CUBE_MAX, CUBE_MIN, CUBE_MIN])
+BRT = np.array([CUBE_MIN, CUBE_MAX, CUBE_MAX])
+BRB = np.array([CUBE_MIN, CUBE_MAX, CUBE_MIN])
+BLT = np.array([CUBE_MIN, CUBE_MIN, CUBE_MAX])
+BLB = np.array([CUBE_MIN, CUBE_MIN, CUBE_MIN])
 
 
-class FaceNumber(Enum):
+# 3D vertices of standard cube faces
+FRONT = np.array([FRT, FLT, FLB, FRB, FRT])
+BACK = np.array([BRT, BLT, BLB, BRB, BRT])
+RIGHT = np.array([FRT, FRB, BRB, BRT, FRT])
+LEFT = np.array([FLT, FLB, BLB, BLT, FLT])
+TOP = np.array([FRT, FLT, BLT, BRT, FRT])
+BOTTOM = np.array([FRB, FLB, BLB, BRB, FRB])
+
+
+class FaceLabel(StrEnum):
+    """Labels used in Carteblanche 1947."""
+    FRONT = "x"
+    BACK = "x'"
+    RIGHT = "y"
+    LEFT = "y'"
+    TOP = "z"
+    BOTTOM = "z'"
+
+
+class FaceNumber(IntEnum):
     """Numbers that appear on the faces of a die."""
     FRONT = 1
     RIGHT = 2
@@ -21,7 +47,29 @@ class FaceNumber(Enum):
     LEFT = 5
     BACK = 6
 
-class FaceColour(Enum):
+    def opposite(self) -> 'FaceNumber':
+        """Return the opposite face number."""
+        return FaceNumber(7 - self.value)
+
+    def label(self) -> FaceLabel:
+        """Return the Carteblanche 1947 label for the face."""
+        match self:
+            case FaceNumber.FRONT:
+                return FaceLabel.FRONT
+            case FaceNumber.BACK:
+                return FaceLabel.BACK
+            case FaceNumber.RIGHT:
+                return FaceLabel.RIGHT
+            case FaceNumber.LEFT:
+                return FaceLabel.LEFT
+            case FaceNumber.TOP:
+                return FaceLabel.TOP
+            case FaceNumber.BOTTOM:
+                return FaceLabel.BOTTOM
+        raise ValueError(f"Unknown face: {self}")
+
+
+class FaceColour(StrEnum):
     """Colours that appear on a puzzle block face."""
     RED = 'red'
     GREEN = 'green'
@@ -42,60 +90,10 @@ class Face:
         pass
 
 
-class Block:
+class Cube:
     """ An Instant Insanity puzzle block. """
     pass
 
 class Puzzle:
     """ An Instant Insanity puzzle. """
     pass
-
-
-fig: Figure
-ax: Axes
-collection: Poly3DCollection
-
-fig, ax = plt.subplots()
-
-def setup() -> None:
-    """Set up the animation axes and data."""
-    global fig, ax, ln, xdata, ydata
-
-    fig, ax = plt.subplots()
-    xdata, ydata = [], []
-    ln, = ax.plot([], [], 'ro')
-
-def init() -> tuple[Line2D]:
-    """Initialize the axes for the animation."""
-    global ax, ln
-
-    ax.set_xlim(0, 2*np.pi)
-    ax.set_ylim(-1, 1)
-
-    return ln,
-
-def update(frame) -> tuple[Line2D]:
-    """Compute another frame of the animation."""
-    global xdata, ydata, ln
-
-    xdata.append(frame)
-    ydata.append(np.sin(frame))
-    ln.set_data(xdata, ydata)
-
-    return ln,
-
-def animate() -> FuncAnimation:
-    global fig
-    frames = np.linspace(0, 2*np.pi, 128)
-
-    return FuncAnimation(fig, func=update, frames=frames,
-                         init_func=init, blit=True, interval=50)
-
-def main():
-    setup()
-    animate()
-    plt.show()
-
-if __name__ == "__main__":
-    main()
-
