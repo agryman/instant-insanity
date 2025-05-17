@@ -1,5 +1,5 @@
 import pytest
-from instant_insanity.cubes import FaceNumber, FaceLabel
+from instant_insanity.cube import FaceNumber, FaceLabel, FACE_NUMBER_TO_LABEL
 
 
 @pytest.mark.parametrize(
@@ -27,5 +27,5 @@ def test_opposite_faces(face, expected_opposite):
         (FaceNumber.BACK, FaceLabel.BACK),
     ]
 )
-def test_face_labels(face, expected_label):
-    assert face.label() is expected_label
+def test_face_number_to_label(face, expected_label):
+    assert FACE_NUMBER_TO_LABEL[face] is expected_label

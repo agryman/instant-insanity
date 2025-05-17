@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Create figure with 1080p resolution (16:9)
+# Create a figure with 1080p resolution (16:9)
 fig = plt.figure(figsize=(19.2, 10.8), dpi=100)
 ax = plt.axes(xlim=(0, 2*np.pi), ylim=(-1.1, 1.1))
 line, = ax.plot([], [], lw=3)

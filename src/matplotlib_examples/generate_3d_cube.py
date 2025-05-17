@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from instant_insanity.cubes import TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK
+from instant_insanity.cube import TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK
 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
