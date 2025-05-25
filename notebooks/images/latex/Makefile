@@ -15,6 +15,10 @@ all: $(PNGFILES)
 %.png: %.pdf
 	gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pngalpha -g840x400 -r144 -dPDFFitPage -dAlignToPixels=0 -dGridFitTT=0 -sOutputFile=$@ $<
 
-# Clean up all temporary TeXShop generated files
-clean:
-	rm -f *.aux *.log *.synctex.gz
+# Clean up all generated files, except the PNG
+mostlyclean:
+	rm -f *.aux *.log *.synctex.gz *.pdf
+
+# Clean up all generated files, including the PNG
+clean: mostlyclean
+	rm -f *.png
