@@ -1,0 +1,12 @@
+\documentclass{standalone}
+\usepackage{tikz}
+
+\begin{document}
+\begin{tikzpicture}
+
+  \node [circle, fill=green!20, draw] (a) at (0, 0) {A}; % Define a node
+
+  \path (a) edge [bend left=45, very thick, draw=blue!50] (a); % Create a circular loop
+
+\end{tikzpicture}
+\end{document}

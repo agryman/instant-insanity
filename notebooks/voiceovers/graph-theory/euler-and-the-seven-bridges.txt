@@ -1,0 +1,30 @@
+Before delving further into graph theory, let's take a brief excursion into its history.
+It turns out that solving a recreational puzzle inspired the creation of graph theory.
+The famous mathematician Leonhard Euler laid the foundations for graph theory in 1736
+when he settled the popular Seven Bridges of Konigsberg problem.
+Wikipedia explains this problem in great detail.
+Here's a brief summary.
+
+A river ran through the city of Konigsberg and seven bridges crossed it, interconnecting its two banks and two large islands.
+The people of Konigsberg amused themselves by trying to find a walking path that crossed each of the seven bridges exactly once.
+They were allowed to start and end the tour anywhere, possibly on different land masses.
+We'll refer to the sought-after walking path as a tour.
+Sadly, despite their efforts no one could find a tour.
+Euler managed to prove that no tour existed!
+He demonstrated this by abstracting the layout of Konisberg into a graph 
+in which the nodes represented its four land masses and the edges
+represented the seven bridges connecting them.
+
+Here is how he reasoned.
+The number of edges that meet a node is called its degree.
+The Konigsberg bridge graph has three nodes of degree three and one node of degree five.
+Note that these degrees, three and five, are odd numbers.
+Euler observed that if a tour exists, then each time you enter a land mass you must also leave it, 
+except possibly for the case in which you start and end the tour on different land masses. 
+Translating this observation into the language of graph theory gives the requirement that each node, 
+except possibly the start and end of the tour, must have an even degree.
+Euler realized that this implies that if a tour exists then at most two nodes, 
+namely the start and end, can have odd degrees.
+However, all four nodes of the Konisberg graph have odd degrees.
+Therefore no tour exists.
+Problem solved!

@@ -1,0 +1,26 @@
+They are several variations on the basic concept of a graph.
+Here are some of the terms mathematicians use to describe them.
+
+An edge that connects a node to itself is called a loop.
+Edges that connect the same nodes are called parallel edges.
+
+A graph that does not contain any loops or parallel edges is called a simple graph.
+Our first example of a graph has not loops or parallel edges and is therefore a simple graph.
+
+Graphs often arise in situations where nodes and edges have properties.
+A graph in which each node and edge is labelled with some data is called a labelled graph.
+
+Let's label the nodes and edges of our example graph.
+Label the nodes as A through E.
+Label the edges as 1 through 4.
+Now we have a labelled graph.
+
+A graph that contains loops or parallel edges is called a multigraph.
+Let's add a parallel edge from A to B and a loop at C.
+Now we have a labelled multigraph.
+
+A graph in which each edge is assigned a direction is called a directed graph.
+Finally, let's assign a direction to each edge in our example graph.
+Now we have a directed, labelled multigraph.
+
+Directed, labelled multigraphs will be used in the solution of Instant Insanity.
