@@ -1,0 +1,38 @@
+Suppose we are given any arrangement of the cubes.
+Consider the smaller multigraph that consists of all four colour nodes
+but just those four edges, one for each cube, that correspond to the top-bottom faces
+of the arrangement.
+This smaller multigraph is called a subgraph of the full multigraph.
+Now draw arrows on the edges that point from the top face to the bottom face.
+We now have a directed multigraph.
+
+Now suppose that the arrangement is in fact a solution.
+Each colour appears exactly once on the top and once on the bottom.
+Therefore, each colour node of the subgraph must have exactly one edge going out
+and one edge coming in.
+The edge going out corresponds to the top face,
+and the edge coming in corresponds to the bottom face.
+This means that the subgraph has the special property that there are exactly two edges at each node,
+one going in and one coming out.
+Subgraphs with this property are called two-factors.
+
+We can express the solution procedure in terms of two-factors.
+First find a two-factor that has one edge from each cube.
+This two-factor will be used to arrange the top-bottom faces.
+Remove this two-factor from the opposite-face multigraph.
+
+Next, find a second two-factor that has one edge from each cube
+in the reduced opposite-face multigraph.
+This two-factor will be used to arrange the front-back faces.
+
+Problem solved!
+
+Since there are three edges per cube, there are at most only three to the power four equals
+81 possible top-bottom two-factors.
+After selecting a top-bottom two-factor, there are only two edges per cube remaining.
+The maximum number of front-back two-factors is two to the power four equals 16.
+Therefore, the graph-based solution search space is 81 times 16 equals 1,296,
+which is much smaller than the brute-force 41,472.
+
+Furthermore, the opposite-face multigraph is small enough that a human can
+find two-factors by inspection. Generating all 1,296 candidates is unnecessary.

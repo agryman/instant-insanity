@@ -1,0 +1,21 @@
+Carteblanche was an expert in graph theory as early as 1940.
+Writing under their real names, the Trinity Four published a graph-theoretic solution
+to the Dissection of Rectangles into Squares, a problem which was itself inspired by
+puzzle number 40, Lady Isabel's Casket in Henry Ernest Dudeney's 1908 book The Canterbury Puzzles.
+
+Carteblanche had the elegant idea that the way to crack Instant Insanity was to
+focus on opposite-face pairs.
+Observe that when you fix the top face of a cube,
+then you also fix its bottom face,
+but you can still rotate the cube by quarter turns about its vertical axis
+without disrupting the top and bottom faces.
+
+This observation lets you solve the puzzle in two stages.
+First, you solve the top-bottom faces using arbitrary rotations.
+Then, you solve front-back faces using only quarter turns about the vertical axis.
+
+Breaking down the problem into these two stages greatly reduces the search space.
+Carteblanche also realized that you could succinctly represent the opposite-face information
+using a labelled multigraph.
+Solving the top-bottom and front-back faces corresponded to finding two special subsets of the
+opposite-face graph.
