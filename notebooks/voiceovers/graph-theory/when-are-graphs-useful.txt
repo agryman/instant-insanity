@@ -14,12 +14,12 @@ In a sense, this type of map contains too much information.
 All you are really interested in is how the Tube stations are connected.
 
 Recall that in a graph, the precise positions of the nodes and edges are not important.
-The only thing that counts is which node are connected by which which edges.
+The only thing that counts is which nodes are connected by which which edges.
 Transport for London has used this fact to make life simpler for travellers
 by publishing an iconic functional map of the Tube system
 in which all lines are oriented at multiples of forty-five degrees 
 and distances are not drawn to scale.
-The result is a map that is easier to understand and use.
+The result is a map that is much easier to understand and use.
 
 Discarding geographic accuracy in order to achieve a clearer layout
 is an excellent example of the potential benefit of abstraction.

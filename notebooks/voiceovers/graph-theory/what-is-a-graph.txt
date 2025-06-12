@@ -1,14 +1,25 @@
 In high school, we learn to draw graphs of functions on the familiar x-y coordinate plane.
-But in the branch of mathematics known as graph theory, 
-the word graph has a different meaning.
-A graph is simply a collection of points, some of which are connected by lines.
+For example, here's the graph of a parabola.
 
-Mathematicians may use different words for these objects, depending on the context.
+Mathematicians also use the term graph for another object.
+The second meaning of graph is simply any collection of points, some of which are connected by lines.
+Here's a simple example of a graph that consists of five points connected by four lines.
+
+Not only do mathematicians sometimes give different meanings to same term,
+they sometimes use different terms to mean the same thing.
+This is the case in graph theory.
 A point may be called a dot, vertex, or node.
 A line may be called a link, edge, or arc.
-Here, we’ll use the terms node and edge since they’re often used in software packages.
+Here, we’ll use the terms node and edge since they’re fairly standard and are used in 
+some popular software packages.
 
-The diagram shows an example of a graph that contains five nodes connected by four edges.
 Drawing a diagram of a graph helps us understand its structure,
 but the exact placement of nodes and the way edges are drawn doesn’t matter.
 All that matters is which nodes are connected by which edges.
+The example shows just one of the many ways of drawing the graph as a diagram.
+
+Some diagrams are clearer than others.
+For example, a diagram is clearer if we minimize the number of times
+edges cross each other.
+The following diagram contains an edge crossover but represents that same graph
+as the previous diagram.

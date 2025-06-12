@@ -20,8 +20,19 @@ A graph that contains loops or parallel edges is called a multigraph.
 Let's add loop 5 at node B and a parallel edge 6 connecting nodes D and E.
 Now we have a labelled multigraph.
 
-Finally, a graph in which each edge is assigned a direction is called a directed graph.
+A graph in which each edge is assigned a direction is called a directed graph.
 Let's give each edge in our example graph a direction.
 Now we have a directed, labelled multigraph.
 
 Directed, labelled multigraphs will be used in the solution of Instant Insanity.
+
+Finally, the degree of a node is the number of edges that meet it
+where we count a loop as two edges.
+For example, node B has degree 4 and all the other nodes have degree 2.
+If the graph is directed then the in-degree of a node is the number of
+edges that enter it and its out-degree is the number of edges that
+leave it. In this case, the degree of the node is called its
+total degree and is equal to the sum of its in-degree and out-degree.
+For example, node D has out-degree 2 and in-degree 0.
+The following table shows the degrees of the nodes in our example
+directed graph.
