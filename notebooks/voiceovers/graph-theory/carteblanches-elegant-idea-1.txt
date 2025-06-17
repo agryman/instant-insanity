@@ -1,12 +1,15 @@
-Bill Tutte, Leonard Brooks, Arthur Stone, and Cedric Smith met in 1935 as undergraduates at 
-Trinity College, Cambridge University. 
-They formed a collaboration known as the Trinity Four based on their 
-shared interest in mathematical puzzles.
+Carteblanche had the elegant idea that the key to cracking Instant Insanity was to
+focus on the opposite-face pairs of each cube.
 
-The Trinity Four published many papers together, 
-mostly in the Cambridge Mathematical Society journal Eureka, writing under the pseudonym Blanche Descarte.
+Observe that when you choose which face of a cube to be the top
+then that determines which face is the bottom.
 
-Blanche Descarte later acquired a husband known variously as Filet de Carte Blanche or F. de Carteblanche,
-the author of the 1947 Coloured Cubes paper which is our main object of interest here.
-Filet is the French word for net which is short for network, providing further evidence that
-graph theory was very much on their minds.
+However you can still rotate the cube by quarter turns about its vertical axis
+without changing the top and bottom faces.
+This lets you choose which of the remainding four faces to be the front.
+Of course, once you choose the front face then that determines the back face.
+
+In general, once you have chosen the position of one face then you have
+automatically chosen the position of its opposite face.
+You still have the freedom to rotate the cube about the axis through the
+chosen faces without changing their positions.

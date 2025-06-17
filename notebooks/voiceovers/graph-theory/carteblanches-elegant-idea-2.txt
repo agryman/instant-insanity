@@ -1,11 +1,14 @@
-What led Carteblanche to use graph theory in The Coloured Cubes Problem?
+Now consider an arrangement of the four cubes in which the top-bottom faces are solved, 
+but the front-back faces might not be.
+You can freely turn each cube about its vertical axis to try different front-back arrangements without ruining the top-bottom solution.
 
-The Trinity Four were skilled users of graph theory as early as 1940
-as is evident from their paper on The Dissection of Rectangles into Squares published under their real names.
+This observation suggests that you should try to solve the puzzle in two stages.
+First, you try to solve the top-bottom faces by rotating the cubes without any restrictions.
+Then, you try to solve the front-back faces but retricting yourself to quarter turns about the vertical axis so that
+you don't ruin the top-bottom solution.
 
-This problem was inspired by puzzle #40, Lady Isabel's Casket in Dudeney's 1908 book The Cantebury Puzzles.
-This puzzle describes a square casket inlaid with squares, all of different
-dimensions, and one gold rectangle with given dimensions.
-The puzzle challenges you to find the dimensions of the casket and all the squares.
+It may be that there are no front-back solutions that work with a given top-bottom solution.
+In this case you must look for another top-bottom solution and then try to solve the front-back again.
+This process is called back-tracking.
 
-Problems of this type became known as Squaring the Square.
+It turns out that breaking down the solution strategy into these two stages greatly speeds up the search for a solution.

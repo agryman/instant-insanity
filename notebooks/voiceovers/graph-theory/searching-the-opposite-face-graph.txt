@@ -1,3 +1,6 @@
+Solving the top-bottom and front-back faces corresponds to finding two special subsets of the
+opposite-face graph.
+
 Suppose we are given any arrangement of the cubes.
 Consider the smaller multigraph that consists of all four colour nodes
 but just those four edges, one for each cube, that correspond to the top-bottom faces
