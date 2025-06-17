@@ -1,0 +1,7 @@
+A river ran through the city of Konigsberg and seven bridges crossed it,
+interconnecting its two banks and two large islands.
+The people of Konigsberg amused themselves by trying to find
+a walking path that crossed each of the seven bridges exactly once.
+They were allowed to start and end the path anywhere, possibly on different landmasses.
+We'll refer to the sought-after walking path as a tour.
+Sadly, despite their efforts, no one could find a tour.

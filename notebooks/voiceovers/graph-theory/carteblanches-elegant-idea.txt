@@ -5,19 +5,19 @@ puzzle number 40, Lady Isabel's Casket in Henry Ernest Dudeney's 1908 book The C
 
 Carteblanche had the elegant idea that the way to crack Instant Insanity was to
 focus on opposite-face pairs.
-Observe that when you fix the top face of a cube,
-then you also fix its bottom face,
-but you can still rotate the cube by quarter turns about its vertical axis
-without disrupting the top and bottom faces.
+Observe that when you fix the choice for the top face of a cube,
+then you also fix its bottom face.
+However you can still rotate the cube by quarter turns about its vertical axis
+without changing the top and bottom faces.
 
-This observation lets you solve the puzzle in two stages.
-First, you solve the top-bottom faces by rotating the cubes without any restrictions.
-Then, you solve the front-back faces retricting yourself to only quarter turns about the vertical axis so that
-you don't spoil the top-bottom solution.
-Breaking down the problem into these two stages greatly reduced the search space.
+This observation suggests that you should try to solve the puzzle in two stages.
+First, you solve the top-bottom faces by freely rotating the cubes.
+Then, you solve the front-back faces retricting yourself to quarter turns about the vertical axis so that
+you don't invalidate the top-bottom solution.
+Breaking down the problem into these two stages greatly reduces the search space.
 
 Carteblanche also realized that you could succinctly represent the opposite-face information
 using a fairly small labelled multigraph which we'll call the opposite-face graph.
 It had four nodes, one for edge colour, and twelve edges, three for each cube.
-Solving the top-bottom and front-back faces corresponded to finding two special subsets of the
+Solving the top-bottom and front-back faces corresponds to finding two special subsets of the
 opposite-face graph.

@@ -1,0 +1,7 @@
+In high school, we learn to draw graphs of functions on the familiar x-y coordinate plane.
+For example, here's the graph of a parabola.
+
+Mathematicians also use the term graph for another kind of object.
+The second meaning of graph is simply any collection of points
+connected by lines.
+We'll be talking about graphs in this sense of the word here.

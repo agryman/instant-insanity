@@ -1,0 +1,10 @@
+Euler managed to prove that no tour existed!
+He demonstrated this by abstracting the layout of Konisberg into a graph 
+in which the nodes represented its four landmasses and the edges
+represented the seven bridges connecting them.
+
+Start by simplifying the geographic map into
+a diagram that shows the four landmasses,
+the river separating them,
+and the seven bridges connecting them.
+

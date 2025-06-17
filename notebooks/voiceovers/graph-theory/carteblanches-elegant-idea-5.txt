@@ -1,0 +1,6 @@
+Here's a figure from the 1940 paper that shows an example
+of converting a dissection into a network.
+
+Recall that the year is 1940 and The Trinity Four are already masters
+at applying graph theory to the solution of puzzles,
+in this case also a very interesting mathematical problem.
