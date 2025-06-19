@@ -1,29 +1,13 @@
-Here is a table that summarizes the face colours for Instant Insanity
-using the notation given in Carteblanche's paper.
+Let's compare the payoff matrix for Rock-Paper-Scissors to the colour table for Instant Insanity.
+Both tabulate all the relevant information about the game or puzzle at hand.
+However, using a table isn't necessarily the most effective to present this kind of information.
+Tables are great for summarizing quantitative data but here we are trying to understand relationships.
+In situations like this we may be able to gain deeper insight by visualizing the key relationships in a graph.
 
-We have numbered the cubes from 1 to 4.
-Of course, there is nothing special about this particular numbering.
-There are 4 factorial, namely 24, ways to number the cubes and we have arbitrarily picked one of them.
+For Rock-Paper-Scissors we needed to understand when one choice beats another.
+We were able to clearly exhibit this relation as a directed, labelled graph.
+Can we do something similar for Instant Insanity?
 
-We have also labelled each face as 
-x for front,
-x prime for back,
-y for right,
-y prime for left,
-z for top, and
-z prime for back.
-
-A face labelled with primed letter is opposite the face labelled with that unprimed letter.
-
-The letters correspond to the usual x-y-z axes of three-dimensional space oriented using the so-called right-hand rule.
-If you grab the z-axis with your right hand pointing your thumb in the position z direction then
-your finger point in the direction of a rotation that sends the x-axis towards the y-axis.
-
-There are also 24 ways to label the faces of a cube.
-This comes about by first labelling any one of the six faces of the cube as x and 
-then labelling any its four adjacent faces as y.
-These two labels completely determine the remaining four labels.
-
-There is nothing special about this particular way of labelling the faces other than the fact 
-that the front and top faces are already solved.
-However, the back and bottom are not so we still have some work to do.
+The answer is Yes.
+Carteblanche found an excellent way to do represent the essence of Instant Insanity as a labelled multigraph.
+We'll construct that next.

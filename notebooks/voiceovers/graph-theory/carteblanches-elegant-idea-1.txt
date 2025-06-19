@@ -1,15 +1,15 @@
-Carteblanche had the elegant idea that the key to cracking Instant Insanity was to
-focus on the opposite-face pairs of each cube.
+Carteblanche realized that the key to cracking the puzzle was to
+focus on the opposite-face pairs that make up each cube.
 
-Observe that when you choose which face of a cube to be the top
-then that determines which face is the bottom.
+Observe that when you rotate some face of a cube into the top position
+then that determines which face is in the bottom position.
 
 However you can still rotate the cube by quarter turns about its vertical axis
 without changing the top and bottom faces.
-This lets you choose which of the remainding four faces to be the front.
+This limited freedom lets you choose which of the remaining four faces will occupy the front position.
 Of course, once you choose the front face then that determines the back face.
 
-In general, once you have chosen the position of one face then you have
-automatically chosen the position of its opposite face.
-You still have the freedom to rotate the cube about the axis through the
-chosen faces without changing their positions.
+In general, once you have positioned any one face then, as a side effect,
+you have also positioned its opposite face.
+You still have the freedom to rotate the cube about the axis through those
+faces without changing their positions.

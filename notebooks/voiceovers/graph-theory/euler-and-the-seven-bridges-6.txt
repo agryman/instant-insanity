@@ -2,13 +2,14 @@ Here is how Euler reasoned.
 He realized that as you take any path, you both enter and exit each landmass,
 except possibly for the start and end of the path which are allowed to be different.
 If you cross each bridge exactly once, then the number of bridges that meet each landmass
-must therefore be an even number, except possibly for the start abd end if they are on different landmases.
+must therefore be an even number, except possibly for the start and end if they are on different landmases.
 
 We can translate this observation into the language of graph theory as follows.
 If a tour exists, then at most two nodes of the bridge graph can have odd degrees.
 
-But the Konigsberg bridge graph has three nodes of degree three and one node of degree five,
-all of which are odd numbers.
-Therefore, no tour of the Konigsberg bridges exists.
+But all four of the nodes in the Konigsberg bridge graph have odd degrees, namely
+three nodes have degree three and one node has degree five.
+So the Konisberg bridge graph has more than two nodes of odd degree which 
+implies that no tour exists.
 
 Problem solved!
