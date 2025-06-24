@@ -1,6 +1,4 @@
-Before delving further into graph theory, let's take a brief excursion into its history.
-It turns out that solving a recreational puzzle inspired the creation of graph theory.
 The famous mathematician Leonhard Euler laid the foundations for graph theory in 1736
-when he settled the popular Seven Bridges of Konigsberg problem.
-Wikipedia explains this problem in great detail.
+when he settled the popular recreational puzzle known as the Seven Bridges of Konigsberg.
+Wikipedia explains this problem in detail.
 Here's a brief summary.

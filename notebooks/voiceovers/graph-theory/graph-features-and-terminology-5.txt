@@ -1,5 +1,6 @@
-Finally, the degree of a node is the number of edges that meet it
-where we count a loop as meeting the node twice.
+One of the most important properties of a node is its degree.
+The degree of a node is the number of edges that meet it
+where we count a loop as meeting its node twice.
 For example, node B has degree 4 and all the other nodes have degree 2.
 
 If the graph is directed, then the in-degree of a node is the number of

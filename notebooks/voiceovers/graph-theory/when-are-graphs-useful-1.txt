@@ -6,9 +6,9 @@ possibly reducing it to a simpler and easier-to-solve problem.
 
 For example, suppose you are on vacation in London, England and 
 want to travel around the city using the Underground, commonly known as the Tube.
-You could use the this geographically accurate map showing Central London Connections.
+You could use the this geographically-accurate map showing Central London Connections.
 This type of map has the advantage that you can accurately judge distances, but
-it is somewhat challenging to plan your route
-because of the way the Tube lines curve and cross.
-In a sense, this type of map contains too much information.
+it is somewhat challenging to use it for planning your route
+because of the way the Tube lines curve and cross each other.
+In a sense, this geographically-accurate map contains too much information.
 All you are really interested in is how the Tube stations are connected.

@@ -1,5 +1,5 @@
-Some diagrams are clearer than others.
-For example, a diagram becomes clearer as we reduce the number of times
-edges cross each other.
-The following diagram contains an edge crossover but represents that same graph
-as the previous diagram.
+Some diagrams of graphs are clearer than others.
+One way to make a diagram clearer is to reduce the number 
+of times that edges cross each other.
+The following diagram represents exactly the same graph
+as the previous diagram but is not as clear because it contains an edge crossover.

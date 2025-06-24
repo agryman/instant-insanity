@@ -1,0 +1,20 @@
+Our quest to solve the puzzle has been reduced to finding two independent 2-factors of the
+opposite-face graph, where each 2-factor contains exactly one edge per cube.
+Let's do a little combinatorics to see how difficult this is.
+
+Suppose we do a brute-force search on the graph.
+First we find all possible top-bottom 2-factors.
+We need to select one edge per cube.
+Each cube has three edges and there are four cubes so there
+are at most 3 times 3 times 3 times 3 = 81 top-bottom 2-factors.
+
+Next, for each possible top-bottom 2-factor, we find all possible front-back 2-factors.
+Again, we need to select one edge per cube, but now there are only two edges per cube left.
+So there are at most 2 times 2 times 2 times 2 = 16 front-back 2-factors.
+
+Combining the top-bottom and front-back searchs we have a total of 81 times 16 = 1,296 possibilities to consider.
+This is much smaller than the previous number of 41,472 cube arrangements to check.
+
+In fact, very few combinations of the edges result in 2-factors so searching the opposite-face graph
+is very quick. A human can do it a minute or two.
+Let's do that now.

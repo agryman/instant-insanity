@@ -18,5 +18,6 @@ For the London Tube the objects are stations and the relation is that a Tube lin
 For Konisberg the objects are landmasses and the relation is that a bridge connects them.
 
 For Rock-Paper-Scissors the objects are choices and the directed relation is that one choice beats the other.
-Its game graph has three nodes, each representing a possible choice, and three directed edges
+Its game graph has three nodes, each representing a possible choice, 
+and three directed edges,
 each representing a case where one choice beats another.

@@ -1,4 +1,4 @@
-Graphs often arise in situations where nodes and edges have properties.
+Graphs often arise in situations where nodes and edges have additional properties beyond their connectivity.
 A graph in which each node and edge is labelled with some data is called a labelled graph.
 The label might simply be an identifier, or it might contain numerical data.
 
