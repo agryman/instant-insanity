@@ -1,0 +1,7 @@
+The 1947 Eureka paper, 
+The Coloured Cubes Problem by F. de Carteblanche 
+which gives the elegant graph theory solution to the problem states that 
+if you pick a random arrangement of the cubes your chance of it being a solution is 1 in 41,472.
+At that time, the puzzle was called the Tantalizer.
+F. de Carteblanche was the pseudonym of a group of four Cambridge mathematics students 
+which included the future eminent graph theorist Bill Tutte.

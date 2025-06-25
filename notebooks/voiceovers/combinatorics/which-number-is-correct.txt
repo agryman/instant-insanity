@@ -1,0 +1,3 @@
+Neither the original 1947 Carteblanche paper 
+nor the YouTube videos actually show us how they arrived at their numbers.
+Let's apply some combinatorics and compute the answer ourselves.
