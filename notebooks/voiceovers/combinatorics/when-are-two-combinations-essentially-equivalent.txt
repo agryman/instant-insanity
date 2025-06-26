@@ -1,0 +1,26 @@
+We can specify a combination by giving a cube ordering and an orientation for each cube.
+An orientation is given by specifying the top and front faces.
+Consider the combination given by the four-tuple (one z x', two z x', three z y', four z x').
+This combination is in fact a solution.
+
+Now create a new combination by swapping the positions of any two cubes, say one and two, 
+without changing their orientations.
+The new combination is given by the four-tuple (two z x', one z x', three z y', four z x').
+Since each side of the row contained four different colours before the swap, 
+it will still contain four different colours after the swap.
+Therefore the new combination is also a solution.
+
+In general, changing the order of the cubes while perserving the orientation of each cube 
+sends combinations to combinations and solutions to solutions.
+We can achieve any cube ordering by swapping pairs of cubes.
+As we computed above, there are twenty-four possible orderings of four cubes.
+Therefore, we can use swaps to split up the set of all combinations into families 
+that each consist of twenty-four related combinations.
+This means that given any solution, it belongs to a family of twenty-four solutions 
+that differ from each other only in the cube ordering.
+
+It is natural to regard solutions that differ only in the cube ordering as being essentially equivalent 
+since we can transform one into the other by a sequence of swaps.
+We can therefore use this notion of equivalence to cut down the size of our search space by a factor of twenty-four.
+Rather than examining all combinations for solutions, we can safely confine our attention to one fixed cube ordering, 
+say the natural ordering one, two, three, four.
