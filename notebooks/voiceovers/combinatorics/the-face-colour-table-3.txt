@@ -1,7 +1,8 @@
 For example, face 3y' is the name of the left face of cube 3.
-It's colour is given in the cell at row y' and column 3 of the face colour table.
+It's colour is given in the cell at row y' and column 3 of the face-colour table.
 We can look up the colour of this face in the table and see that it is B which stands for blue.
 
-There is nothing special about this particular way of labelling the faces other than the fact 
-that the front and top faces contain each colour once.
-However, the back and bottom faces contain some repeated colours so we still have to search for a solution.
+There is nothing remarkable about this particular way of ordering and orienting the cubes
+other than the fact that both the front and top faces contain each colour once.
+However, the back and bottom faces contain some repeated colours so we do not have a solution yet.
+We need to do some searching.

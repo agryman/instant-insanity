@@ -1,10 +1,13 @@
 Let's apply this naming scheme to the Instant Insanity puzzle currently sold by Winning Moves.
-Now the colours are G for green, R for red, B for blue, and W for white.
 
-First pick some arbitrary order for the cubes and name them 1, 2, 3, and 4.
-Of course, there is nothing special about this particular numbering.
+First arrange the four cubes in some order name them 1, 2, 3, and 4.
+Any order will do.
 
-Next pick some arbitrary orientation for each cube and name the front, right, and top faces x, y, and z.
-Name their opposite faces x', y', and z'.
+Next orient each cube by chosing one of its six faces to be the top
+and one of the four adjacent faces to be the front.
+Any orientation will do.
+Name the front, right, and top faces as x, y, and z.
+Name their opposite faces as x', y', and z'.
 
-Having numbered the cubes and labelled their faces, we can record the face colours in the table.
+Now all the cubes and faces have been named so we can fill in the table with their colours.
+Use G for green, R for red, B for blue, and W for white.

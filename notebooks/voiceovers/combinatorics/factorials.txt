@@ -1,0 +1,12 @@
+Combinatorics is the branch of mathematics that tells us how to count things.
+
+One of the most important cases in combinatorics is how to count the number of ways that you can arrange a set of distinct objects in some order.
+An arrangement of a set of distinct objects in some order is called a permuation of that set.
+
+Combinatorics tells us that there are n factorial permutations of a set of n distinct objects.
+To see this, observe that there are n ways to pick the first object, 
+then for each choice of the first object there are n minus 1 ways to pick the second, and so on.
+
+This is exactly how we counted the number of cube orderings.
+There are four cubes and so combinatorics tells us there are four factorial ordering.
+But four factorial equals twenty-four which is the result we obtained by enumerating all the orderings.

@@ -1,0 +1,12 @@
+Our goal is to count the total number of possible combinations.
+A combination consists of an ordering of the cubes together with an orientation for each cube.
+Let's start by counting the total number of possible cube orderings.
+
+We'll build up each ordering from left to right and keep track of our progress in a decision tree.
+Each cube ordering requires us to make four choices, namely which cube goes in each position.
+We have four choices for the first cube.
+After we have made the first choice there are three cubes left so for each choice of the first cube we have three possibilities left for the second cube.
+Similarly, for each ordering of the first two cubes we have two possibilities left for the third cube.
+Finally, for each ordering of the first three cubes we only have one possibility left for the four cube.
+
+Count all the cube orderings. There are 24 of them.
