@@ -1,0 +1,9 @@
+In the spring of 1966 the first computer installed in a secondary school
+in Canada for instructional purposes only, an IBM model 1130, began
+operations at Northview Heights Secondary School.
+
+Arthur entered Northview in the fall of 1966 and so became one of the first
+high school students in Canada to have hands-on access to a real computer.
+He learned how to write FORTRAN programs and immediately coded up a brute-force
+search to solve Instant Insanity.
+The program took a long time to run but it eventually printed out the solution.
