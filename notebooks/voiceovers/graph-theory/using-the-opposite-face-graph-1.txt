@@ -5,7 +5,7 @@ Suppose we have solved the top-bottom faces.
 This means that we have selected one opposite-face pair from each cube.
 But each opposite-face pair corresponds to an edge of the graph.
 So a top-bottom solution picks out four edges from the graph.
-Both the top and bottom rows of faces contain every colour so the
+Both the top and bottom rows of faces contain every colour, so the
 four edges connect all four nodes.
 
 A subset of nodes and edges that themselves form a graph is called a subgraph.
@@ -13,7 +13,7 @@ So in the language of graph theory, a top-bottom solution corresponds to a subgr
 that contains four nodes and four edges, one from each cube.
 
 A subgraph that contains all the nodes of a graph is called a spanning subgraph.
-A spanning subgraph in which each node has degree n, where is any whole number, is called an n-factor.
+A spanning subgraph in which each node has degree n, where n is any whole number, is called an n-factor.
 In the top-bottom solution, each colour appears once on top and once on bottom.
 This translates to the statement that every node in its subgraph has degree two.
 Therefore, a top-bottom solution corresponds to a 2-factor that contains one edge per cube.
@@ -21,15 +21,15 @@ Therefore, a top-bottom solution corresponds to a 2-factor that contains one edg
 Conversely, suppose we are given a 2-factor that contains one edge per cube. 
 We can convert it into a top-bottom solution as follows.
 Pick any edge and give it a direction. It doesn't matter which edge you pick or which direction you give it,
-Then give the other edges directions such that each node has one edge leaving it and edge edge entering it.
+Then give the other edges directions so that each node has one edge leaving it and one edge entering it.
 You can do this because each node has degree two.
 Finally, orient each cube so its edge points from its top face to its bottom face.
-The results in a top-bottom solution.
+This results in a top-bottom solution.
 
 Of course, all of this discussion applies equally to the front-back solutions.
-So a solution to the puzzle corresponds to two 2-factors, but with the extra requirement
+So a solution to the puzzle corresponds to a pair of 2-factors, but with the extra requirement
 that no edge appears in both 2-factors. 
-In this case we say that the 2-factors are independent.
+In this case, we say that the 2-factors are independent.
 
 In summary, a pair of independent 2-factors, each containing one edge per cube, solves the puzzle.
-Next we'll discuss how to search for these 2-factors.
+Next, we'll discuss how to search the opposite-face graph for these 2-factors.
