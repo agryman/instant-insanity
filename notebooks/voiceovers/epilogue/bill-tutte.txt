@@ -1,0 +1,21 @@
+William (Bill) T. Tut was an eniment British graph theorist who,
+after getting his PhD from Cambridge, came to Canada.
+He started at the University of Toronto and later moved to the University of Waterloo.
+
+Tut's PhD studies were interrupted by World War II when he joined the team of
+legendary code-breakers, including Alan Turing, at Bletchley Park.
+While Turing is famous for breaking the Enigma cipher, Tut is far less well-known for
+cracking Lorenz, a.k.a. Fish, a.k.a. Tunny, which was much more challenging and kept top-secret for much longer.
+Those familiar with his accomplishment say it was the greatest intellectual feat of World War II.
+
+Tut was a member of the Trinity Four who, writing under the pseudonym of F. de Carteblanche,
+published the 1947 Eureka paper containing the elegant graph theory solution to The Coloured Cubes Problem,
+now known as Instant Insanity.
+
+It is highly likely that Tut showed the solution to Honsberger, his puzzle-loving colleague at Waterloo.
+Honsberger in turn showed it to the students at Northview, two of whom made this video.
+Therefore, by watching this video, you have become part of an unbroken chain of communication 
+that stretches right back to Tut!
+If you have enjoyed learning Carteblanche's solution, then
+be sure to retell it to the upcoming generation of math enthusiasts
+and keep the chain growing.
