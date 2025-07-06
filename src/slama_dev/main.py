@@ -1,4 +1,5 @@
 from manim import *
+
 class DefaultTemplate(Scene):
     def construct(self):
         circle = Circle()  # create a circle
