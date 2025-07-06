@@ -35,3 +35,22 @@ with spaces since the latter cause anomalies in the synthesized speech.
 
 You must install the `gcloud` CLI, create a GCP account and project, and initialize
 your development machine as described in the GCP documentation.
+
+## Manim Community
+
+I am going to experiment with manin to generate animations.
+
+GitHub: https://github.com/manimcommunity/manim
+
+PyPI: https://pypi.org/project/manim/
+
+Docs: https://docs.manim.community/en/stable/index.html
+
+Since I already have a virtual environment and don't want to learn
+`uv` at this time, I have installed `manim` using `pip`:
+
+```shell
+pip install manim
+```
+Defer setting up Jupyter Notebooks and VSCode for now.
+
