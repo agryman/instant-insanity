@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import IntEnum
-from instant_insanity.cube import Cube, FaceLabel, FaceColour
+from cube import Cube, FaceLabel, FaceColour
 
 class CubeNumber(IntEnum):
     """ The numbers of the cubes in an Instant Insanity puzzle. """
