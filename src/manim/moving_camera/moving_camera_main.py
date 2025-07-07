@@ -1,4 +1,6 @@
 from manim import *
+
+
 class MovingCameraTemplate(MovingCameraScene):
     def construct(self):
         text = Text("Hello World").set_color(BLUE)
@@ -7,6 +9,7 @@ class MovingCameraTemplate(MovingCameraScene):
         self.play(self.camera.frame.animate.set(width=text.width * 1.2))
         self.wait(0.3)
         self.play(Restore(self.camera.frame))
+
 
 if __name__ == "__main__":
     scene = MovingCameraTemplate()
