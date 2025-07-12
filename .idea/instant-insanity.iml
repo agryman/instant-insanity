@@ -2,20 +2,6 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/media" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/archive/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/images/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/images/latex/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/media" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/voiceovers/combinatorics/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/voiceovers/epilogue/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/voiceovers/graph-theory/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/notebooks/voiceovers/introduction/.ipynb_checkpoints" />
-      <excludeFolder url="file://$MODULE_DIR$/src/instant_insanity.egg-info" />
-      <excludeFolder url="file://$MODULE_DIR$/src/manim/axes/media" />
-      <excludeFolder url="file://$MODULE_DIR$/src/manim/default/media" />
-      <excludeFolder url="file://$MODULE_DIR$/src/manim/moving_camera/media" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11 virtualenv at ~/Documents/repositories/GitHub/agryman/instant-insanity/venv" jdkType="Python SDK" />

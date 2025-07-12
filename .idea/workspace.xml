@@ -4,28 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="82cfa931-8843-4726-b16e-04d1925c227f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/matplotlib/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/matplotlib/__init__.py" afterDir="false" />
+    <list default="true" id="44c994cd-31bb-4527-b193-c3e63b8acd42" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/cube_net.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/face_labels_on_pause.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/instant_insanity_manim.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/labeled_cube.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/rotating_labelled_cube.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/small_axes.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/instant-insanity.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/instant-insanity.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/instant_insanity/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/instant_insanity/animator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/matplotlib/animator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/instant_insanity/check_sys.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/check_sys.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/instant_insanity/puzzle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/puzzle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/manim/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/barchart_race.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/barchart_race.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/cube_animation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/cube_animation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/debugger_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/debugger_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/examples.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/examples.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/generate_3d_cube.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/generate_3d_cube.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/generate_3d_polygons.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/generate_3d_polygons.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/labelled_cube.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/labelled_cube.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/line_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/line_plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/scatter_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/scatter_plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/sine_plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/sine_plot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/sine_plot_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/sine_plot_class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/sine_trail.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/sine_trail.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matplotlib_examples/sine_wave_1080p.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/matplotlib/sine_wave_1080p.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/Manim 3D Examples.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Manim 3D Examples.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,23 +31,23 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "agryman"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;agryman&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/agryman/instant-insanity.git",
-    "accountId": "6ccef387-3bdc-4fea-9832-082d3dd5d288"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/agryman/instant-insanity.git&quot;,
+    &quot;accountId&quot;: &quot;6ccef387-3bdc-4fea-9832-082d3dd5d288&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
-  <component name="ProjectId" id="2zWAMP2FnRnZdzYEonDLQMMGx64" />
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2zWdnNVfYoZXdOEtdE7wyyXqB92" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -67,25 +56,27 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.axes_3d_example.executor": "Run",
-    "Python.axes_main.executor": "Run",
-    "Python.basic_3d_example.executor": "Run",
-    "Python.default_main.executor": "Run",
-    "Python.moving_camera_main.executor": "Run",
-    "Python.rotation_3d_example.executor": "Run",
+    "Python.cube_net.executor": "Run",
+    "Python.face_labels_on_pause.executor": "Run",
+    "Python.instant_insanity_manim.executor": "Run",
+    "Python.labeled_cube.executor": "Run",
+    "Python.rotating_cube.executor": "Run",
+    "Python.rotating_labelled_cube.executor": "Run",
+    "Python.small_axes.executor": "Run",
+    "Python.unfold_cube.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "reorganize-instant__insanity-package"
+    "git-widget-placeholder": "animate-graph-theory",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/instant_insanity" />
-      <recent name="$PROJECT_DIR$/src/instant_insanity/matplotlib" />
+      <recent name="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.moving_camera_main">
-    <configuration name="axes_3d_example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.unfold_cube">
+    <configuration name="cube_net" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -94,11 +85,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/slama_dev" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/slama_dev/axes_3d_example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/cube_net.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -107,7 +98,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="basic_3d_example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="instant_insanity_manim" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -116,11 +107,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/slama_dev" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/slama_dev/basic_3d_example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/instant_insanity_manim.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -129,7 +120,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="default_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="rotating_labelled_cube" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -138,11 +129,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/manim/default" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/manim/default/default_main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/rotating_labelled_cube.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -151,7 +142,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="moving_camera_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="small_axes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -160,11 +151,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/manim/moving_camera" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/manim/moving_camera/moving_camera_main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/small_axes.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,7 +164,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="rotation_3d_example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="unfold_cube" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -182,11 +173,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/slama_dev" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/slama_dev/rotation_3d_example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -197,22 +188,43 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.moving_camera_main" />
-        <item itemvalue="Python.basic_3d_example" />
-        <item itemvalue="Python.rotation_3d_example" />
-        <item itemvalue="Python.axes_3d_example" />
-        <item itemvalue="Python.default_main" />
+        <item itemvalue="Python.unfold_cube" />
+        <item itemvalue="Python.instant_insanity_manim" />
+        <item itemvalue="Python.cube_net" />
+        <item itemvalue="Python.rotating_labelled_cube" />
+        <item itemvalue="Python.small_axes" />
       </list>
     </recent_temporary>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="82cfa931-8843-4726-b16e-04d1925c227f" name="Changes" comment="" />
-      <created>1751836407411</created>
+      <changelist id="44c994cd-31bb-4527-b193-c3e63b8acd42" name="Changes" comment="" />
+      <created>1751850928748</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1751836407411</updated>
+      <updated>1751850928748</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py</url>
+          <line>35</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py</url>
+          <line>22</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py</url>
+          <line>131</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
