@@ -2,7 +2,12 @@ from typing import Self
 
 import numpy as np
 
-from manim import *
+from manim import (
+    VGroup, Square, ThreeDScene, Rotate, config,
+    OUT, UP, DOWN, LEFT, RIGHT, ORIGIN, PI, DEGREES,
+    PURE_RED, PURE_BLUE, YELLOW, PURPLE, PURE_GREEN,
+    ORANGE, BLACK, WHITE
+)
 from manim.typing import Point3D
 
 config.background_color = WHITE  # must be set before scene instantiation
@@ -120,7 +125,7 @@ class UnfoldCubeToNet(ThreeDScene):
         self.wait(delay)
 
 
-# For running in PyCharm
+# For running the scene directly
 if __name__ == "__main__":
     scene = UnfoldCubeToNet()
     scene.render(preview=True)
