@@ -1,5 +1,5 @@
 import pytest
-from instant_insanity.cube import FaceColour
+from instant_insanity.core.puzzle import FaceColour
 
 @pytest.mark.parametrize("char, expected", [
     ('b', FaceColour.BLUE),

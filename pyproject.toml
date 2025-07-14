@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "instant-insanity"
-version = "0.0.2"
+version = "0.0.3"
 description = "A project for solving and animating the Instant Insanity puzzle."
 authors = [
     { name = "Arthur Ryman", email = "arthur.ryman@gmail.com" }

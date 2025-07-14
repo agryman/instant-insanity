@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from instant_insanity.interpolate import interpolate  # Replace with actual module name if needed
+from instant_insanity.core.interpolate import interpolate  # Replace with actual module name if needed
 
 def test_basic_interpolation():
     x = interpolate(0.0, 1.0, 5)
