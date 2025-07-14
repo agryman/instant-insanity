@@ -5,16 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44c994cd-31bb-4527-b193-c3e63b8acd42" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/cube_net.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/face_labels_on_pause.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/instant_insanity_manim.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/labeled_cube.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/rotating_labelled_cube.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/small_axes.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/instant_insanity/core/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/instant_insanity/core/puzzle/test_face_label.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/instant_insanity/core/puzzle/test_puzzle_cube.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/instant-insanity.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/instant-insanity.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/Manim 3D Examples.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Manim 3D Examples.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/instant_insanity/cube.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/core/cube.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/instant_insanity/interpolate.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/core/interpolate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/instant_insanity/puzzle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/instant_insanity/core/puzzle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/instant_insanity/cubes/test_facecolour.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/instant_insanity/core/puzzle/test_face_colour.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/instant_insanity/cubes/test_facenumber.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/instant_insanity/core/cube/test_face_number.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/instant_insanity/interpolate/test_interpolate.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/instant_insanity/core/interpolate/test_interpolate.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +58,11 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.pytest for test_puzzle_cube.test_puzzle.executor": "Run",
+    "Python tests.pytest for test_puzzle_cube.test_puzzle_cube.executor": "Run",
+    "Python tests.pytest in test_puzzle_cube.py.executor": "Run",
+    "Python tests.pytest in test_puzzlecube.py.executor": "Run",
+    "Python tests.pytest in tests.executor": "Run",
     "Python.axes_3d_example.executor": "Run",
     "Python.cube_net.executor": "Run",
     "Python.face_labels_on_pause.executor": "Run",
@@ -72,98 +80,13 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tests/instant_insanity/core/puzzle" />
+      <recent name="$PROJECT_DIR$/tests/instant_insanity/core" />
+      <recent name="$PROJECT_DIR$/src/instant_insanity/core" />
       <recent name="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.unfold_cube">
-    <configuration name="cube_net" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="instant-insanity" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/cube_net.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="instant_insanity_manim" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="instant-insanity" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/instant_insanity_manim.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="rotating_labelled_cube" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="instant-insanity" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/rotating_labelled_cube.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="small_axes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="instant-insanity" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/small_axes.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python tests.pytest in tests">
     <configuration name="unfold_cube" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="instant-insanity" />
       <option name="ENV_FILES" value="" />
@@ -186,13 +109,81 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="pytest for test_puzzle_cube.test_puzzle" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="instant-insanity" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/instant_insanity/core/puzzle" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_puzzle_cube.test_puzzle&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_puzzle_cube.test_puzzle_cube" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="instant-insanity" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/instant_insanity/core/puzzle" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_puzzle_cube.test_puzzle_cube&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in test_puzzle_cube.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="instant-insanity" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/instant_insanity/core/puzzle" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/instant_insanity/core/puzzle/test_puzzle_cube.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in tests" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="instant-insanity" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.pytest in tests" />
+        <item itemvalue="Python tests.pytest for test_puzzle_cube.test_puzzle_cube" />
+        <item itemvalue="Python tests.pytest for test_puzzle_cube.test_puzzle" />
+        <item itemvalue="Python tests.pytest in test_puzzle_cube.py" />
         <item itemvalue="Python.unfold_cube" />
-        <item itemvalue="Python.instant_insanity_manim" />
-        <item itemvalue="Python.cube_net" />
-        <item itemvalue="Python.rotating_labelled_cube" />
-        <item itemvalue="Python.small_axes" />
       </list>
     </recent_temporary>
   </component>
@@ -221,7 +212,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/instant_insanity/manim/graph_theory/unfold_cube.py</url>
-          <line>131</line>
+          <line>124</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>

@@ -74,13 +74,6 @@ class UnfoldingCube(VGroup):
         for face, colour in face_colours:
             face.set_fill(colour, opacity=opacity).set_stroke(color=stroke_color, width=stroke_width)
 
-        # self.front.set_fill(PURE_RED, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-        # self.back.set_fill(PURE_BLUE, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-        # self.top.set_fill(YELLOW, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-        # self.bottom.set_fill(PURPLE, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-        # self.left.set_fill(PURE_GREEN, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-        # self.right.set_fill(ORANGE, opacity=1.0).set_stroke(color=stroke_color, width=stroke_width)
-
         return self
 
 
