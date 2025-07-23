@@ -17,7 +17,7 @@ def test_opposite_faces(face, expected_opposite):
     assert face.opposite() is expected_opposite
 
 @pytest.mark.parametrize(
-    "face, expected_label",
+    "face, expected_name",
     [
         (FaceNumber.FRONT, FaceName.FRONT),
         (FaceNumber.RIGHT, FaceName.RIGHT),
@@ -27,5 +27,5 @@ def test_opposite_faces(face, expected_opposite):
         (FaceNumber.BACK, FaceName.BACK),
     ]
 )
-def test_face_number_to_name(face, expected_label):
-    assert FACE_NUMBER_TO_NAME[face] is expected_label
+def test_face_number_to_name(face, expected_name):
+    assert FACE_NUMBER_TO_NAME[face] is expected_name

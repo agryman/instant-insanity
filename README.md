@@ -25,6 +25,24 @@ I believe this is possibly associated with branch creation.
 When this happens, run the menu command to recreate the project configuration.
 Run the menu command `File -> Repair IDE` or `File -> Invalidate Caches...`.
 
+The repair tactic no longer works.
+The code editor fails to resolve Python objects contained
+in the modules I import, which are present in the venv.
+I reported this bug:
+* 2025-07-14 PyCharm is unusable: https://youtrack.jetbrains.com/issue/PY-82615/PyCharm-code-editor-fails-to-find-packages-installed-in-my-virtual-environment
+
+I found the cause of the problem. 
+I had moved my Manim examples directory named `manim` to the top level under
+my `src` folder, which made it a package named `manim`. This conflicted
+with the Manim CE package named `manim`.
+The PyCharm editor found my `manim` first and stopped searching for references.
+The Python runtime kept searching and found the Manim CE objects.
+The lesson learned is to avoid using `manim` as a directory name in your Python
+source directory.
+
+TODO: Create a gist and post it to the Discord discussion:
+https://discord.com/channels/581738731934056449/1019649969596153968/threads/1395943742925443174
+
 ## Google Colab
 
 This project contains Jupyter notebooks.
@@ -84,3 +102,34 @@ The Manim documentation also mentions a plig-in for VSCode called *Manim Sidevie
 I looked at a YouTube video about it. It didn't look significantly better than my
 PyCharm setup, which is configured to launch the VLC mp4 viewer.
 Defer VSCode for now.
+
+### Manim Bugs
+
+#### Cairo does not respect order of mobjects when rendering a 3d scene #4336
+
+I hit a bug in the Cairo renderer for 3d scenes.
+See https://github.com/ManimCommunity/manim/issues/4336
+
+The OpenGL renderer works so use it for 3D scenes.
+Use Cairo for 2d scenes.
+
+### Manim Workarounds
+
+I hit a couple of bugs using 3D scenes and OpenGL.
+In order to produce something, I am going to avoid those and instead
+restrict my use of Manin to Scene and the Cairo renderer.
+
+I make limited use of 3D content, namely to show the cubes, the cubes rotating,
+and the cubes unfolding into a net.
+I can simulate 3D by using orthographic projection, converting the cube faces into
+Polygon objects.
+All the resulting polygons are convex so it should be possible to sort them into
+a correctly-ordered set in which any polygon that is obscured by another one is drawn
+before it.
+This boils down to creating a directed graph of convex polygons in which an edge
+from polygon X to polygon Y means that polygon X must be drawn before polygon Y.
+I then need to perform a 
+[topological sort
+](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.dag.topological_sort.html) 
+on this graph, say using 
+[NetworkX](https://networkx.org/).

@@ -1,7 +1,7 @@
 import pytest
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import (FaceColour, PuzzleCube, PuzzleCubeNumber, Puzzle,
-                                          TANTALIZER_PUZZLE, WINNING_MOVES_PUZZLE)
+                                          CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE)
 
 TANTALIZER_1 = { # ROWOGG
     FaceName.FRONT: FaceColour.RED,
@@ -80,10 +80,10 @@ WINNING_MOVES_4 = { # BRGWBW
     [
         ('wwwwww', {face_name: FaceColour.WHITE for face_name in FaceName}),
         ('WWWWWW', {face_name: FaceColour.WHITE for face_name in FaceName}),
-        (TANTALIZER_PUZZLE[0], TANTALIZER_1),
-        (TANTALIZER_PUZZLE[1], TANTALIZER_2),
-        (TANTALIZER_PUZZLE[2], TANTALIZER_3),
-        (TANTALIZER_PUZZLE[3], TANTALIZER_4),
+        (CARTEBLANCHE_PUZZLE[0], TANTALIZER_1),
+        (CARTEBLANCHE_PUZZLE[1], TANTALIZER_2),
+        (CARTEBLANCHE_PUZZLE[2], TANTALIZER_3),
+        (CARTEBLANCHE_PUZZLE[3], TANTALIZER_4),
         (WINNING_MOVES_PUZZLE[0], WINNING_MOVES_1),
         (WINNING_MOVES_PUZZLE[1], WINNING_MOVES_2),
         (WINNING_MOVES_PUZZLE[2], WINNING_MOVES_3),
@@ -97,7 +97,7 @@ def test_puzzle_cube(cube_spec, expected_faces):
 @pytest.mark.parametrize(
     "puzzle_spec, expected_cubes",
     [
-        (TANTALIZER_PUZZLE, [TANTALIZER_1, TANTALIZER_2, TANTALIZER_3, TANTALIZER_4]),
+        (CARTEBLANCHE_PUZZLE, [TANTALIZER_1, TANTALIZER_2, TANTALIZER_3, TANTALIZER_4]),
         (WINNING_MOVES_PUZZLE, [WINNING_MOVES_1, WINNING_MOVES_2, WINNING_MOVES_3, WINNING_MOVES_4])
     ]
 )

@@ -109,6 +109,8 @@ class PuzzleCube:
         if len(cube_spec) != 6:
             raise ValueError(f"Expected string of length 6, got length {len(cube_spec)}")
 
+        label: FaceLabel
+        initial: str
         self.faces = {FACE_LABEL_TO_NAME[label]: FaceColour.from_initial(initial)
                       for label, initial in zip(FaceLabel, cube_spec)}
 
@@ -128,15 +130,15 @@ class PuzzleCubeNumber(IntEnum):
 # Each string contains six characters that are the initial letters of the face colours.
 PuzzleSpec = list[PuzzleCubeSpec]
 
-# The Carteblanche 1947 Tantalizer puzzle specification
-TANTALIZER_PUZZLE: PuzzleSpec = [
+# The 1947 Carteblanche Tantalizer puzzle specification
+CARTEBLANCHE_PUZZLE: PuzzleSpec = [
     'ROWOGG',
     'GRORWW',
     'OWGWGR',
     'WGRGRW'
 ]
 
-# The Winning Moves puzzle specification
+# The 1967 Winning Moves Instant Insanity puzzle specification
 WINNING_MOVES_PUZZLE: PuzzleSpec = [
     'GWBRRR',
     'RGBBWG',

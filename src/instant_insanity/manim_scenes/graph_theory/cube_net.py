@@ -9,7 +9,7 @@ class CubeNet(Scene):
 
         # Arrange in T-shape net for a cube
         positions = [
-            UP,         # Top face
+            UP,             # Top face
             ORIGIN,         # Center face
             LEFT,           # Left face
             RIGHT,          # Right face

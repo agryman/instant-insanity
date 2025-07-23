@@ -1,15 +1,18 @@
 from manim import *
+
+
 class AxesTemplate(Scene):
     def construct(self):
         graph = Axes(
-            x_range=[-1,10,1],
-            y_range=[-1,10,1],
+            x_range=[-1, 10, 1],
+            y_range=[-1, 10, 1],
             x_length=9,
             y_length=6,
-            axis_config={"include_tip":False}
+            axis_config={"include_tip": True}
         )
         labels = graph.get_axis_labels()
         self.add(graph, labels)
+
 
 if __name__ == "__main__":
     scene = AxesTemplate()
