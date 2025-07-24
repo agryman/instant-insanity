@@ -1,13 +1,15 @@
 # Projections
 
-This document gives a precise, mathematical specification of projections.
+A projection is a mapping from 3d space to 2d space.
 Projections let us draw 3d objects on 2d screens.
+This document gives a precise, mathematical specification of projections.
 
 Implementing projections will let us draw simple 3d scenes in Manim
 using the `Scene` class and the Cairo renderer.
 
-Although work is underway to finalize the OpenGL renderer for use with the `ThreeDScene` class,
-the majority of our planned content is 2d so using the `Scene` class is attractive.
+Although work is underway to produce a high-quality OpenGL renderer for use with the `ThreeDScene` class,
+the majority of our planned content is 2d so using Cairo with the `Scene` class
+is an acceptable short-term workaround.
 
 ## Model Space
 
@@ -17,20 +19,21 @@ Model space is where our simple 3d objects live.
 Let $x, y, z$ be the usual Cartesian coordinates on model space.
 
 We will use the default Manim orientation of model space relative to the display screen, 
-namely x increases from left to right,
-y increases from bottom to top, 
-and z increases from in (back) to out (front).
+namely:
+* x increases from left to right,
+* y increases from bottom to top, and 
+* z increases from in (back) to out (front).
 
 ## The Camera Plane 
 
-Let $C \subset S$ denote the camera plane in model space.
+Let $C$ denote the camera plane in model space.
 The camera plane is where we will draw the 2d projections of 3d objects.
-The camera plane itself will be mapped to the display screen but the Manim Scene class
-handles that.
+The points in the camera plane get mapped to the pixels of the 
+display screen by the Manim `Scene` class.
 
 The camera plane is oriented parallel to the plane z = 0.
-Let $c \in \mathbb{R}$ be a real number that defines the camera plane 
-given by the equation $z = c$.
+Let $c$ be a real number that defines the camera plane 
+as the solutions to the equation $z = c$.
 
 $$
 C = \{~(x, y, c) \mid (x, y) \in \mathbb{R}^2~\}
@@ -39,17 +42,31 @@ $$
 ## Projections
 
 Our goal is to draw 3d objects that live in model space $S$ as 2d objects on the camera plane $C$.
-However, we need to draw the 2d objects in the right order to achieve the correct appearance.
+However, we need to draw the 2d projections of our 3d objects in the correct order to achieve the correct appearance.
 If object A is behind object B in model space then we need to draw the 2d projection
 of object A before we draw that of object B.
 
-For simplicity, we will assume that 3d objects can be modelled as sets of opaque, convex, planar
-polygons so that we can always draw their 2d projections in the right order.
+For simplicity, we will assume that our 3d objects can be modelled as collections of opaque, convex, planar
+polygons and that we can always sort them into some drawing order that will produce the correct visual appearance.
+
+Note that it is possible to arrange three nonintersecting, convex, 
+planar polygons in a way that has no corresponding correct drawing order.
+
+Given the known requirements for our current project, 
+all collections of 3d objects will be simple enough so that a correct
+drawing order always exists.
+
+If we actually needed to draw some collection of polygons that had no correct drawing order,
+then we would have to split some of the polygons.
+If we split the polygons enough then a correct drawing order always exists.
+In the extreme case, we could split each polygon into individual pixels.
+We'll defer dealing with this situation until project requirements force us to do so.
+
 
 A projection 
 $P: S \rightarrow C \times \mathbb{R}$
 is a pair of functions $(p, t)$
-where $p$ maps model space to the camera plane
+where $p$ maps the model space to the camera plane
 $$
 p: S \rightarrow C 
 $$
@@ -74,16 +91,17 @@ These will be defined next.
 
 ## Perspective Projection
 
-A perspective projection models the way we see things in the sense that
-objects that are further away appear smaller and parallel lines converge.
+A perspective projection models the way we see things.
+Objects that are further away appear smaller and parallel lines converge.
 
 A perspective projection is defined by giving a viewpoint $V \in S$.
 The viewpoint represents the position of our eyes.
 
 Treat $V$ as a fixed parameter in what follows.
 
-Let $L(M) \subset S$ be the line in model space that passes through $M$ and $V$.
-The projection $p(M)$ is the unique point where this line intersects the camera plane.
+Let $L(M)$ be the line in model space that passes through the points $M$ and $V$.
+Think of $L(M)$ as a light ray that leaves the 3d object at $M$ and enters our eye at $V$.
+The projection $p(M)$ is the unique point where the light ray intersects the camera plane.
 
 $$
 L(M) \cap C = \{ p(M) \}
@@ -105,8 +123,8 @@ $$
 \hat{u}(M) = (u_x, u_y, u_z)
 $$
 
-The line $L(M)$ has the following equation in terms of the real
-parameter $\lambda$:
+Define $L(M,\lambda)$ to be the point on $L(M)$ corresponding to the
+real parameter $\lambda$ as follows:
 $$
 L(M, \lambda) = p(M) + \lambda \hat{u}(M)
 $$
@@ -118,17 +136,17 @@ $$
 L(M,\lambda) = (x + \lambda u_x, y + \lambda u_y, c + \lambda u_z)
 $$
 
-By construction, the parameter value $\lambda = 0$ corresponds to the point $p(M)$.
+By construction, the parameter value $\lambda = 0$ maps to the point $p(M)$.
 $$
 L(M, 0) = p(M)
 $$
 
-By construction, the parameter value $\lambda = \lVert V - M \rVert$ corresponds to the point $V$.
+By construction, the parameter value $\lambda = \lVert V - M \rVert$ maps to the point $V$.
 $$
 L(M, \lVert V - M \rVert) = V
 $$
 
-Define $t(M)$ to be the parameter value that corresponds to the point $M$.
+Define $\lambda = t(M)$ to be the parameter value that maps to the point $M$.
 $$
 L(M, t(M)) = M
 $$
@@ -167,7 +185,8 @@ $$
 \hat{u}(M, \mu) = \frac{V(\mu) - M}{\lVert V(\mu) - M \rVert}
 $$
 
-Clearly, as $\mu$ becomes very large $V(\mu) - M$ is dominated by $\mu \hat{v}$.
+Clearly, as $\mu$ becomes very large, 
+$V(\mu)$ approaches $\mu \hat{v}$.
 $$
 \begin{align}
 \lim_{\mu \to \infty} \hat{u}(M, \mu) 
