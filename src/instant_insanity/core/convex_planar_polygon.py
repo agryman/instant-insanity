@@ -3,8 +3,37 @@ This module defines the ConvexPlanarPolygon class.
 """
 
 import numpy as np
-import numpy.typing as npt
+from shapely.geometry import Polygon
+from shapely.validation import explain_validity
 
+from instant_insanity.core.type_check import check_matrix_nx3_float64
+
+def check_convex_polygon(points: np.ndarray) -> None:
+    """Validate that a NumPy array of 2D points defines a valid, convex polygon.
+
+    Args:
+        points: A NumPy array of shape (n, 2) representing polygon vertices.
+
+    Raises:
+        ValueError: If the input does not define a valid convex polygon.
+    """
+    if points.ndim != 2 or points.shape[1] != 2:
+        raise ValueError('Input must be a 2D NumPy array of shape (n, 2).')
+
+    if points.shape[0] < 3:
+        raise ValueError('A polygon must have at least 3 points.')
+
+    polygon = Polygon(points)
+
+    if not polygon.is_valid:
+        reason = explain_validity(polygon)
+        raise ValueError(f'Invalid polygon geometry: {reason}')
+
+    if not polygon.equals(polygon.convex_hull):
+        raise ValueError('The polygon is not convex.')
+
+
+# the default minimum polygon edge length
 MIN_EDGE_LENGTH: float = 1e-3
 
 class ConvexPlanarPolygon:
@@ -21,63 +50,57 @@ class ConvexPlanarPolygon:
     product edges[0] x edges[1].
 
     Attributes:
-        vertices: the (n,3) array of n 3d points defining the vertices
-        edges: the (n,3) array of n 3d vectors defining the edges
-        normal: the 3d vector normal to the plane of the polygon
+        min_edge_length: The minimum length of the edges.
+        vertices: The (n,3) array of vertices.
+        edges: The (n,3) array of edges.
+        unit_normal: The 3d vector unit normal to the plane of the polygon.
     """
 
-    vertices: npt.NDArray[np.float64]
-    edges: npt.NDArray[np.float64]
-    normal: npt.NDArray[np.float64]
+    min_edge_length: float
+    vertices: np.ndarray
+    edges: np.ndarray
+    unit_normal: np.ndarray
 
-    def __init__(self, vertices: npt.NDArray[np.float64]) -> None:
+    def __init__(self, vertices: np.ndarray, min_edge_length: float = MIN_EDGE_LENGTH) -> None:
 
-        # check the type of vertices
-        if not isinstance(vertices, np.ndarray):
-            raise TypeError("vertices must be a NumPy array")
+        # validate min_edge_length
+        if min_edge_length <= 0.0:
+            raise ValueError('minimum edge length must be positive')
+        self.min_edge_length = min_edge_length
 
-        if vertices.dtype != np.float64:
-            raise TypeError("vertices must contain 64-bit floats")
-
-        self.vertices = vertices
-
-        # check the number of dimensions
-        ndim: int = vertices.ndim
-        if ndim != 2:
-            raise ValueError("vertices must be a 2-d array")
-
+        # validate vertices
+        check_matrix_nx3_float64(vertices)
         n: int
         d: int
         n, d = vertices.shape
         if n < 3:
-            raise ValueError("there must be at least 3 vertices.")
-        if d != 3:
-            raise ValueError("each vertex must be a 3-d point")
+            raise ValueError('there must be at least 3 vertices.')
+        self.vertices = vertices
 
         # compute the array of edge vectors and
         # check that each edge is at least the minimum allowed length
         self.edges = np.zeros_like(vertices)
-        i1: int
-        for i1 in range(n):
-            i2: int = (i1 + 1) % n
-            edge: npt.NDArray[np.float64] = vertices[i2] - vertices[i1]
-            self.edges[i1] = edge
-            edge_length: float = float(np.linalg.norm(edge))
-            if edge_length < MIN_EDGE_LENGTH:
-                raise ValueError(f"edge {i1} is too small")
-
-        # compute the normal vector from the cross product of the first two edges
-        normal: npt.NDArray[np.float64] = np.cross(self.edges[0], self.edges[1])
-        if np.allclose(normal, 0.0):
-            raise ValueError("the normal to the polygon plane is approximately 0")
-        self.normal = normal
-
-        # each edge vector must be orthogonal to the normal
         i: int
         for i in range(n):
-            dot: float = np.dot(normal, self.edges[i])
+            j: int = (i + 1) % n
+            edge: np.ndarray = vertices[j] - vertices[i]
+            edge_length: float = float(np.linalg.norm(edge))
+            if edge_length < min_edge_length:
+                raise ValueError(f'edge {i} is too small')
+            self.edges[i] = edge
+
+        # compute the normal vector as the cross product of the first two edges
+        normal: np.ndarray = np.cross(self.edges[0], self.edges[1])
+        norm: np.floating = np.linalg.norm(normal)
+        if np.isclose(norm, 0.0):
+            raise ValueError('the normal to the polygon plane is approximately 0')
+        self.unit_normal = normal / norm
+
+        # each edge vector must be orthogonal to the normal
+        for i in range(n):
+            dot: float = np.dot(self.unit_normal, self.edges[i])
             if not np.isclose(dot,0.0):
-                raise ValueError(f"edge {i} is not orthogonal to the normal")
+                raise ValueError(f'edge {i} is not orthogonal to the normal')
 
         # test for convexity
         # define the inward-pointing vector normal cross edge1
