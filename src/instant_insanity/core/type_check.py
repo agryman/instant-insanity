@@ -1,6 +1,6 @@
 import numpy as np
 
-def _check_array(x, name, ndim, components):
+def check_array_float64(x, name, ndim, components):
     """Validate that x is a NumPy array with specified shape and dtype float64.
 
     Args:
@@ -33,7 +33,7 @@ def check_vector3_float64(v):
         TypeError: If v is not a NumPy array or has incorrect dtype.
         ValueError: If v is not 1-dimensional or does not contain exactly 3 elements.
     """
-    _check_array(v, "v", ndim=1, components=3)
+    check_array_float64(v, "v", ndim=1, components=3)
 
 def check_matrix_nx3_float64(m):
     """Validate that m is a 2D NumPy array with shape (n, 3) and dtype float64.
@@ -45,4 +45,4 @@ def check_matrix_nx3_float64(m):
         TypeError: If m is not a NumPy array or has incorrect dtype.
         ValueError: If m is not 2-dimensional or does not have exactly 3 columns.
     """
-    _check_array(m, "m", ndim=2, components=3)
+    check_array_float64(m, "m", ndim=2, components=3)
