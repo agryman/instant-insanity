@@ -87,17 +87,25 @@ class ConvexPlanarPolygon:
 
         unit_j: np.ndarray = np.cross(unit_k, unit_i)
 
-        # check that each edge is at least the minimum allowed length and planar
-        i: int
-        for i in range(n):
-            j: int = (i + 1) % n
-            edge: np.ndarray = vertices[j] - vertices[i]
-            edge_length: np.floating = np.linalg.norm(edge)
-            if edge_length < min_edge_length:
-                raise ValueError(f'edge {i} is too small')
-            dot: float = np.dot(unit_k, edge)
-            if np.isclose(dot, 0):
-                raise ValueError(f'edge {i} is nonplanar')
+        # Compute edge vectors using np.roll to wrap around the polygon
+        edges: np.ndarray = np.roll(vertices, -1, axis=0) - vertices  # shape (n, 3)
+
+        # Compute edge lengths
+        edge_lengths: np.ndarray = np.linalg.norm(edges, axis=1)  # shape (n,)
+        short_edges: np.ndarray = edge_lengths < min_edge_length
+
+        if np.any(short_edges):
+            i: int = int(np.where(short_edges)[0][0])
+            raise ValueError(f'edge {i} is too small')
+
+        # Check planarity: dot product with unit_k must be zero
+        # Use abs(dot) > tol rather than np.isclose to avoid ambiguity with array inputs
+        dot_products: np.ndarray = edges @ unit_k  # shape (n,)
+        nonplanar: np.ndarray = ~np.isclose(dot_products, 0.0)
+
+        if np.any(nonplanar):
+            i: int = int(np.where(nonplanar)[0][0])
+            raise ValueError(f'edge {i} is nonplanar')
 
         # compute the 2d coordinates of the polygon and check for convexity
         v_rel: np.ndarray = vertices - vertices[0]  # shape (n, 3)
