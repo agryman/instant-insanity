@@ -1,7 +1,7 @@
 
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE
-from instant_insanity.manim.coloured_cube import ColouredCube
+from instant_insanity.manim_scenes.coloured_cube import ColouredCube
 
 from manim import (
     ThreeDScene, Rotate, config,

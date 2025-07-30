@@ -45,18 +45,21 @@ class ConvexPlanarPolygon:
     The vertices of the polygon are the intersections of the half-planes.
     The polygon is therefore defined by its vertex list.
 
-    The edges are vectors that point from each vertex to the next one.
-
-    The normal is the vector perpendicular to the plane defined as the cross
-    product edges[0] x edges[1].
+    The edges are vectors that point from each vertex to the next one with wrap-around.
 
     Attributes:
         vertices: The (n,3) array of vertices.
         min_edge_length: The minimum length of the edges.
+        unit_i: unit vector tangent to the polygon plane along the first edge.
+        unit_j: unit vector tangent to the polygon plane orthogonal to unit_i.
+        unit_k: unit vector perpendicular to the polygon plane forming a right-handed system.
     """
 
     vertices: np.ndarray
     min_edge_length: float
+    unit_i: np.ndarray
+    unit_j: np.ndarray
+    unit_k: np.ndarray
 
     def __init__(self, vertices: np.ndarray, min_edge_length: float = MIN_EDGE_LENGTH) -> None:
 
@@ -79,13 +82,19 @@ class ConvexPlanarPolygon:
         if np.allclose(unit_i, 0):
             raise ValueError('unit_i vector is ill-defined')
         unit_i = unit_i / np.linalg.norm(unit_i)
+        self.unit_i = unit_i
 
         unit_k: np.ndarray = np.cross(unit_i, vertices[2] - vertices[1])
         if np.allclose(unit_k, 0):
             raise ValueError('unit_k vector is ill-defined')
         unit_k = unit_k / np.linalg.norm(unit_k)
+        self.unit_k = unit_k
 
         unit_j: np.ndarray = np.cross(unit_k, unit_i)
+        if np.allclose(unit_j, 0):
+            raise ValueError('unit_j vector is ill-defined')
+        unit_j = unit_j / np.linalg.norm(unit_j)
+        self.unit_j = unit_j
 
         # Compute edge vectors using np.roll to wrap around the polygon
         edges: np.ndarray = np.roll(vertices, -1, axis=0) - vertices  # shape (n, 3)

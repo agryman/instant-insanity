@@ -9,7 +9,7 @@ from manim.typing import Point3D
 
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, CARTEBLANCHE_PUZZLE
-from instant_insanity.manim.coloured_cube import ColouredCube, FACE_NORMAL, OPPOSITE_FACES
+from instant_insanity.manim_scenes.coloured_cube import ColouredCube, FACE_NORMAL, OPPOSITE_FACES
 
 config.background_color = WHITE  # must be set before scene instantiation
 RENDERER_TYPE: RendererType = RendererType.OPENGL

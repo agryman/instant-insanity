@@ -73,20 +73,28 @@ FACE_NUMBER_TO_NAME: dict[FaceNumber, FaceName] = {
     FaceNumber.BACK: FaceName.BACK
 }
 
+def mk_point(point: list[float]) -> np.array:
+    return np.array(point, dtype=np.float64)
+
 # 3D coordinates of standard cube vertices
-RTF = np.array([1.0, 1.0, 1.0])
-RTB = np.array([1.0, 1.0, -1.0])
-RBF = np.array([1.0, -1.0, 1.0])
-RBB = np.array([1.0, -1.0, -1.0])
-LTF = np.array([-1.0, 1.0, 1.0])
-LTB = np.array([-1.0, 1.0, -1.0])
-LBF = np.array([-1.0, -1.0, 1.0])
-LBB = np.array([-1.0, -1.0, -1.0])
+RTF: np.ndarray = mk_point([1.0, 1.0, 1.0])
+RTB: np.ndarray = mk_point([1.0, 1.0, -1.0])
+RBF: np.ndarray = mk_point([1.0, -1.0, 1.0])
+RBB: np.ndarray = mk_point([1.0, -1.0, -1.0])
+LTF: np.ndarray = mk_point([-1.0, 1.0, 1.0])
+LTB: np.ndarray = mk_point([-1.0, 1.0, -1.0])
+LBF: np.ndarray = mk_point([-1.0, -1.0, 1.0])
+LBB: np.ndarray = mk_point([-1.0, -1.0, -1.0])
+
+def mk_points(points: list[np.ndarray]) -> np.ndarray:
+    return np.array(points, dtype=np.float64)
 
 # vertex lists of standard cube faces
-RIGHT = np.array([RTF, RTB, RBB, RBF, RTF])
-LEFT = np.array([LTF, LTB, LBB, LBF, LTF])
-TOP = np.array([RTF, RTB, LTB, LTF, RTF])
-BOTTOM = np.array([RBF, RBB, LBB, LBF, RBF])
-FRONT = np.array([RTF, LTF, LBF, RBF, RTF])
-BACK = np.array([RTB, LTB, LBB, RBB, RTB])
+FACE_NAME_TO_VERTICES: dict[FaceName, np.ndarray] = {
+    FaceName.RIGHT: mk_points([RTF, RTB, RBB, RBF]),
+    FaceName.LEFT: mk_points([LTF, LTB, LBB, LBF]),
+    FaceName.TOP: mk_points([RTF, RTB, LTB, LTF]),
+    FaceName.BOTTOM: mk_points([RBF, RBB, LBB, LBF]),
+    FaceName.FRONT: mk_points([RTF, LTF, LBF, RBF]),
+    FaceName.BACK: mk_points([RTB, LTB, LBB, RBB])
+}

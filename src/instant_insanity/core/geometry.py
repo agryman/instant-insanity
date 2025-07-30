@@ -1,5 +1,7 @@
 """
 This module contains functions for the geometry of convex polygons in 2 and 3 dimensions.
+
+TO DO: remove dependency on manim. Use pure NumPy instead.
 """
 
 import numpy as np

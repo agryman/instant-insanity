@@ -9,7 +9,9 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from instant_insanity.core.type_check import check_vector3_float64
+from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
+from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
+
 
 class Projection(ABC):
     """
@@ -25,6 +27,9 @@ class Projection(ABC):
         self.camera_z = camera_z
 
     @abstractmethod
+    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
+        pass
+
     def project_point(self, model_point: np.ndarray) -> np.ndarray:
         """Projects the model point onto the camera plane and computes its parameter t along the projection line.
 
@@ -39,7 +44,17 @@ class Projection(ABC):
             TypeError: if model_point is not a NumPy array of float64 values.
             ValueError: if model_point is not a 3-vector
         """
-        pass
+        check_vector3_float64(model_point)
+        u: np.ndarray = self.compute_u(model_point)
+
+        return self._project_point_along_u(model_point, u)
+
+    def project_points(self, model_points: np.ndarray) -> np.ndarray:
+        check_matrix_nx3_float64(model_points)
+
+        projected_points: list[np.ndarray] = [self.project_point(model_point)
+                                              for model_point in model_points]
+        return np.array(projected_points, dtype=np.float64)
 
     def _project_point_along_u(self, model_point: np.ndarray, u: np.ndarray) -> np.ndarray:
         """Projects the model point onto the camera plane along the direction given by the unit vector u.
@@ -78,6 +93,41 @@ class Projection(ABC):
 
         return np.array((x, y, t), dtype=np.float64)
 
+    def polygon_t(self, polygon: ConvexPlanarPolygon, x: float, y: float) -> float:
+        """
+        Compute the t parameter of the point in model space that projects to (x, y).
+        Args:
+            polygon: the convex planar polygon in model space.
+            x: the x coordinate of the projected point.
+            y: the y coordinate of the projected point.
+
+        Returns:
+            the parameter t of the point in model space.
+
+        Let u be the unit vector that defines the direction of the light ray.
+        Let P = (x, y, c) be a point on the camera plane.
+        Let M be the point in model space that projects to (x, y).
+        We have:
+        M = P + t * u
+        for some parameter t.
+
+        Let v0 be the first vertex of the polygon.
+        Let k be the unit vector perpendicular to the plane of the polygon.
+        Any model point M that lies on the polygon satisfies:
+        (M - v0) @ k = 0
+        where here @ means dot product.
+
+        Therefore (P + t * u - v0) @ k = 0. We can solve for t as follows:
+        t = (v0 - P) @ k / u @ k
+        """
+        p: np.ndarray = np.array([x, y, self.camera_z], dtype=np.float64)
+        unit_u: np.ndarray = self.compute_u(p)
+        v0: np.ndarray = polygon.vertices[0]
+        unit_k: np.ndarray = polygon.unit_k
+        t: float = np.dot(v0 - p, unit_k) / np.dot(unit_u, unit_k)
+
+        return t
+
 
 class PerspectiveProjection(Projection):
     """This class models a perspective projection.
@@ -105,7 +155,7 @@ class PerspectiveProjection(Projection):
         check_vector3_float64(viewpoint)
         self.viewpoint = viewpoint
 
-    def project_point(self, model_point: np.ndarray) -> np.ndarray:
+    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
         check_vector3_float64(model_point)
 
         # compute the unit vector u pointing from the model point to the viewpoint
@@ -115,7 +165,7 @@ class PerspectiveProjection(Projection):
             raise ValueError('model point is too close to viewpoint')
         u: np.ndarray = direction / norm
 
-        return self._project_point_along_u(model_point, u)
+        return u
 
 
 class OrthographicProjection(Projection):
@@ -154,8 +204,7 @@ class OrthographicProjection(Projection):
 
         self.u = u
 
-    def project_point(self, model_point: np.ndarray) -> np.ndarray:
-        """Projects the model point along the direction of the unit vector."""
+    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
         check_vector3_float64(model_point)
 
-        return self._project_point_along_u(model_point, self.u)
+        return self.u

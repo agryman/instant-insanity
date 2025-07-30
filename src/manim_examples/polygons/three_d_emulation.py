@@ -14,6 +14,12 @@ from instant_insanity.core.projection import PerspectiveProjection
 
 class ThreeDSceneEmulation(Scene):
     def construct(self):
+
+        # create a perspective projection
+        camera_z: float = 0
+        viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
+        projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+
         # create a triangle
         model_vertices: np.ndarray = np.array([
             [0, 0, -1],
@@ -21,19 +27,51 @@ class ThreeDSceneEmulation(Scene):
             [1, 1, -3]
         ], dtype=np.float64)
 
-        # create a perspective projection
-        camera_z: float = 0
-        viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
-        projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+        translation_vector: np.ndarray = np.array([2, 3, -4], dtype=np.float64)
 
-        # project the vertices
-        scene_vertices: np.ndarray = np.array([
-            projection.project_point(model_vertex) for model_vertex in model_vertices
-        ])
+        def mk_triangle(alpha: float) -> Polygon:
+            """Makes the triangle corresponding to the animation parameter alpha"""
 
-        # create a manim polygon
-        triangle = Polygon(*scene_vertices, fill_color=RED, stroke_color=BLACK, stroke_width=2, fill_opacity=1)
-        self.add(triangle)
+            translated_vertices: np.ndarray = model_vertices + alpha * translation_vector
+
+            # project the vertices
+            scene_vertices: np.ndarray = np.array([
+                projection.project_point(vertex) for vertex in translated_vertices
+            ])
+
+            # create a manim polygon
+            triangle: Polygon = Polygon(
+                *scene_vertices,
+                fill_color=RED,
+                stroke_color=BLACK,
+                stroke_width=2,
+                fill_opacity=1)
+
+            return triangle
+
+        # we are going to create new triangle objects during the animation
+        # so put them in a VGroup which will be updated for each frame
+        polygons: VGroup = VGroup(mk_triangle(0.0))
+
+        # the tracker parameterizes the animation
+        tracker: ValueTracker = ValueTracker(0)
+
+        def updater(vgroup: Mobject) -> Mobject:
+            vgroup.remove(*vgroup.submobjects)
+            alpha: float = tracker.get_value()
+            triangle: Polygon = mk_triangle(alpha)
+            vgroup.add(triangle)
+            return vgroup
+
+        self.add(polygons)
+        self.wait(2.0)
+
+        polygons.add_updater(updater)
+        polygons.remove(*polygons.submobjects)
+
+        self.play(tracker.animate.set_value(1.0), run_time=2)
+        self.wait(2.0)
+
 
 my_config: dict = {
     "background_color": WHITE,
