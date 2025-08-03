@@ -17,64 +17,67 @@ class ThreeDSceneEmulation(Scene):
 
         # create a perspective projection
         camera_z: float = 0
-        viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
+        #viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
+        viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
         projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
 
-        # create a triangle
-        model_vertices: np.ndarray = np.array([
-            [0, 0, -1],
-            [1, 0, -2],
-            [1, 1, -3]
-        ], dtype=np.float64)
-
-        translation_vector: np.ndarray = np.array([2, 3, -4], dtype=np.float64)
-
-        def mk_triangle(alpha: float) -> Polygon:
+        def mk_polygons(alpha: float) -> list[Polygon]:
             """Makes the triangle corresponding to the animation parameter alpha"""
 
-            translated_vertices: np.ndarray = model_vertices + alpha * translation_vector
+            translation_vector: np.ndarray = np.array([2, 3, -4], dtype=np.float64)
+            alpha_translation: np.ndarray = alpha * translation_vector
+
+            # create a triangle
+            model_vertices: np.ndarray = np.array([
+                [0, 0, -1],
+                [1, 0, -2],
+                [1, 1, -3]
+            ], dtype=np.float64)
+            transformed_vertices: np.ndarray = model_vertices + alpha_translation
 
             # project the vertices
-            scene_vertices: np.ndarray = np.array([
-                projection.project_point(vertex) for vertex in translated_vertices
-            ])
+            scene_vertices: np.ndarray = projection.project_points(transformed_vertices)
 
             # create a manim polygon
-            triangle: Polygon = Polygon(
+            polygon: Polygon = Polygon(
                 *scene_vertices,
                 fill_color=RED,
+                fill_opacity=1.0,
                 stroke_color=BLACK,
-                stroke_width=2,
-                fill_opacity=1)
+                stroke_width=2.0
+            )
 
-            return triangle
+            return [polygon]
 
-        # we are going to create new triangle objects during the animation
+        # we are going to create new polygon mobjects during the animation
         # so put them in a VGroup which will be updated for each frame
-        polygons: VGroup = VGroup(mk_triangle(0.0))
+        polygons: list[Polygon] = mk_polygons(0.0)
+        vgroup: VGroup = VGroup(*polygons)
+        self.add(vgroup)
+        elapsed_time: float = 1.0
+        self.wait(elapsed_time)
+
+        vgroup.remove(*vgroup.submobjects)
 
         # the tracker parameterizes the animation
         tracker: ValueTracker = ValueTracker(0)
 
         def updater(vgroup: Mobject) -> Mobject:
-            vgroup.remove(*vgroup.submobjects)
             alpha: float = tracker.get_value()
-            triangle: Polygon = mk_triangle(alpha)
-            vgroup.add(triangle)
+            polygons: list[Polygon] = mk_polygons(alpha)
+            vgroup.remove(*vgroup.submobjects)
+            vgroup.add(*polygons)
             return vgroup
 
-        self.add(polygons)
-        self.wait(2.0)
+        vgroup.add_updater(updater)
+        self.play(tracker.animate.set_value(1.0), run_time=elapsed_time)
 
-        polygons.add_updater(updater)
-        polygons.remove(*polygons.submobjects)
-
-        self.play(tracker.animate.set_value(1.0), run_time=2)
-        self.wait(2.0)
+        self.wait(elapsed_time)
 
 
 my_config: dict = {
     "background_color": WHITE,
+    "disable_caching": True,
     "preview": True
 }
 
