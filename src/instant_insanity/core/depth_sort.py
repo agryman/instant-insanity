@@ -118,6 +118,11 @@ class DepthSort:
                 if not isinstance(polygon_ij, Polygon):
                     continue
 
+                # if the area is nearly zero we can ignore it
+                area: float = polygon_ij.area
+                if np.isclose(area, 0.0):
+                    continue
+
                 # get a representative point of the intersection
                 point_ij: Point = polygon_ij.representative_point()
                 x: float = point_ij.x

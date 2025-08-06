@@ -48,3 +48,29 @@ def rotation_matrix_about_line(p: np.ndarray, u: np.ndarray, theta: float) -> np
     rotation_matrix: np.ndarray = t_inv @ rot_mat @ t_mat
 
     return rotation_matrix
+
+
+def apply_linear_transform(mat: np.ndarray, v: np.ndarray) -> np.ndarray:
+    """Apply a 4×4 transformation matrix to an array of n 3D vectors.
+
+    Args:
+        mat: A NumPy array of shape (4, 4) representing a linear transformation.
+        v: A NumPy array of shape (n, 3), each row a 3D vector.
+
+    Returns:
+        A NumPy array of shape (n, 3) with the transformed 3D vectors.
+    """
+    if mat.shape != (4, 4):
+        raise ValueError('mat must be of shape (4, 4)')
+    if v.ndim != 2 or v.shape[1] != 3:
+        raise ValueError('v must be of shape (n, 3)')
+
+    # Convert to homogeneous coordinates by appending a column of ones
+    n: int = v.shape[0]
+    v_hom: np.ndarray = np.hstack([v, np.ones((n, 1), dtype=v.dtype)])
+
+    # Apply transformation
+    v_transformed: np.ndarray = v_hom @ mat.T
+
+    # Return only the x, y, z components
+    return v_transformed[:, :3]

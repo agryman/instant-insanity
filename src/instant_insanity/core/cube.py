@@ -98,3 +98,13 @@ FACE_NAME_TO_VERTICES: dict[FaceName, np.ndarray] = {
     FaceName.FRONT: mk_points([RTF, LTF, LBF, RBF]),
     FaceName.BACK: mk_points([RTB, LTB, LBB, RBB])
 }
+
+# unit normals of standard cube faces
+FACE_NAME_TO_UNIT_NORMAL: dict[FaceName, np.ndarray] = {
+    FaceName.RIGHT: mk_point([1.0, 0.0, 0.0]),
+    FaceName.LEFT: mk_point([-1.0, 0.0, 0.0]),
+    FaceName.TOP: mk_point([0.0, 1.0, 0.0]),
+    FaceName.BOTTOM: mk_point([0.0, -1.0, 0.0]),
+    FaceName.FRONT: mk_point([0.0, 0.0, 1.0]),
+    FaceName.BACK: mk_point([0.0, 0.0, -1.0])
+}
