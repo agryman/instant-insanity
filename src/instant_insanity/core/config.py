@@ -5,3 +5,9 @@ STANDARD_CONFIG: dict = {
     "disable_caching": True,
     "preview": True
 }
+
+ALTERNATE_CONFIG: dict = {
+    "background_color": "#ece6e2",
+    "disable_caching": True,
+    "preview": True
+}

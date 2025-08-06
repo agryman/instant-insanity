@@ -14,14 +14,15 @@ import math
 from typing import Any, Callable, Iterable, TypeAlias
 from abc import ABC, abstractmethod
 
+import numpy as np
 from scipy.spatial.transform import Rotation as R
 from manim import *
 
-from instant_insanity.core.config import STANDARD_CONFIG
+from instant_insanity.core.config import STANDARD_CONFIG, ALTERNATE_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, RTF, LTF, LBF
 from instant_insanity.core.depth_sort import DepthSort
-from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
+from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
+from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, WINNING_MOVES_PUZZLE
 from instant_insanity.core.rotation_about_axis import rotation_matrix_about_line, apply_linear_transform
 from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC, MANIM_COLOUR_MAP
 
@@ -31,11 +32,14 @@ class TrackedVGroup(VGroup):
 
     Attributes:
         tracker: the ValueTracker
+        sorted_name_keys: the list of polygon names in depth-sorted order
     """
     tracker: ValueTracker
+    sorted_name_keys: list[str]
 
-    def __init__(self, *vmobjects: Iterable[VMobject], **kwargs: Any) -> None:
+    def __init__(self, sorted_name_keys: list[str], *vmobjects: list[VMobject], **kwargs: Any) -> None:
         super().__init__(*vmobjects, **kwargs)
+        self.sorted_name_keys = sorted_name_keys
         self.tracker = ValueTracker(0.0)
 
 
@@ -105,12 +109,15 @@ class CubeAnimation(ABC):
         """
         pass
 
-    def mk_polygons(self, alpha: float) -> list[Polygon]:
+    def mk_polygons(self, alpha: float) -> tuple[list[str], list[Polygon]]:
         """
         Make the cube corresponding the value of alpha in the animation.
 
         Args:
             alpha: the frame parameter which ranges from 0 to 1
+
+        Returns:
+            (sorted_name_keys, polygon_list) where both lists are in the depth-sorted order.
         """
         # create a dict of the transformed vertices
         transformed_vertices_dict: dict[str, np.ndarray] = {}
@@ -143,7 +150,7 @@ class CubeAnimation(ABC):
             )
             polygon_list.append(polygon)
 
-        return polygon_list
+        return sorted_name_keys, polygon_list
 
     def mk_updater(self) -> TrackedVGroupUpdater:
         """
@@ -168,8 +175,11 @@ class CubeAnimation(ABC):
             tracked_vgroup.remove(*tracked_vgroup.submobjects)
             tracker: ValueTracker = tracked_vgroup.tracker
             alpha: float = tracker.get_value()
-            polygons: list[Polygon] = self.mk_polygons(alpha)
-            tracked_vgroup.add(*polygons)
+            sorted_name_keys: list[str]
+            polygon_list: list[Polygon]
+            sorted_name_keys, polygon_list = self.mk_polygons(alpha)
+            tracked_vgroup.sorted_name_keys = sorted_name_keys
+            tracked_vgroup.add(*polygon_list)
             return tracked_vgroup
 
         return updater
@@ -306,13 +316,20 @@ class CubeExplosion(CubeAnimation):
 
 class ProjectedCube(Scene):
     def construct(self):
+        projection: Projection
+        camera_z: float = 2.0
+
         # create a perspective projection
-        camera_z: float = 0
         viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
-        projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+        projection = PerspectiveProjection(camera_z, viewpoint)
+
+        # create an orthographic projection
+        # u: np.ndarray = np.array([0.5, 0.5, 4], dtype=np.float64)
+        # u = u / np.linalg.norm(u)
+        # projection = OrthographicProjection(camera_z, u)
 
         # use the colours from the test cube
-        cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
+        cube_spec: PuzzleCubeSpec = WINNING_MOVES_PUZZLE[0]
 
         # rotation: np.ndarray = np.array([1.0, 0.0, 0.0], dtype=np.float64) * 2.0 * np.pi
         # translation: np.ndarray = np.array([-2, 3, -4], dtype=np.float64)
@@ -323,20 +340,35 @@ class ProjectedCube(Scene):
 
         # we are going to create new list of polygon mobjects during each frame of the animation
         # so put them in a TrackedVGroup which will be updated for each frame
-        polygons: list[Polygon] = cube_animation.mk_polygons(0.0)
+        sorted_name_keys: list[str]
+        polygon_list: list[Polygon]
+        sorted_name_keys, polygon_list= cube_animation.mk_polygons(0.0)
 
         # the tracker parameterizes the animation
-        tracked_vgroup: TrackedVGroup = TrackedVGroup(*polygons)
+        tracked_vgroup: TrackedVGroup = TrackedVGroup(sorted_name_keys, *polygon_list)
         self.add(tracked_vgroup)
         self.wait(1.0)
 
         tracked_vgroup.remove(*tracked_vgroup.submobjects)
-        tracked_vgroup.add_updater(cube_animation.mk_updater())
+        updater: TrackedVGroupUpdater = cube_animation.mk_updater()
+        tracked_vgroup.add_updater(updater)
         tracker: ValueTracker = tracked_vgroup.tracker
         self.play(tracker.animate.set_value(1.0), run_time=4.0)
+        tracked_vgroup.remove_updater(updater)
 
         self.wait(1.0)
 
-with tempconfig(STANDARD_CONFIG):
+        # animate movement of exploded cube to the left
+        self.play(tracked_vgroup.animate.shift(4 * LEFT + DOWN), run_time=2.0)
+        self.wait(4.0)
+
+        # fade-in the vertices of the opposite-face graph
+
+        # morph the front-back faces to dots and connect them with a graph edge
+        # move the dots onto the graph, with the graph edge connected, label as x
+
+        # repeat this for the left-right faces and the top-bottom faces, labelling as y and z
+
+with tempconfig(ALTERNATE_CONFIG):
     scene = ProjectedCube()
     scene.render()
