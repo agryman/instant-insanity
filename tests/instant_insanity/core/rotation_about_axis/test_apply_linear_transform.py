@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pytest
-from instant_insanity.core.rotation_about_axis import rotation_matrix_about_line, apply_linear_transform
+from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform
 
 def test_identity():
     mat: np.ndarray = np.eye(4, 4, dtype=np.float64)

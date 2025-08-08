@@ -19,6 +19,7 @@ of the standard cube using the standard coordinate system.
 """
 
 from enum import IntEnum, StrEnum
+from typing import Self
 import numpy as np
 
 
@@ -49,7 +50,7 @@ class FaceNumber(IntEnum):
     BOTTOM = 5
     LEFT = 6
 
-    def opposite(self) -> 'FaceNumber':
+    def opposite(self) -> Self:
         """Return the opposite face number."""
         return FaceNumber(7 - self.value)
 
@@ -73,7 +74,7 @@ FACE_NUMBER_TO_NAME: dict[FaceNumber, FaceName] = {
     FaceNumber.BACK: FaceName.BACK
 }
 
-def mk_point(point: list[float]) -> np.array:
+def mk_point(point: list[float]) -> np.ndarray:
     return np.array(point, dtype=np.float64)
 
 # 3D coordinates of standard cube vertices
@@ -99,7 +100,7 @@ FACE_NAME_TO_VERTICES: dict[FaceName, np.ndarray] = {
     FaceName.BACK: mk_points([RTB, LTB, LBB, RBB])
 }
 
-# unit normals of standard cube faces
+# outward-pointing unit normals of standard cube faces
 FACE_NAME_TO_UNIT_NORMAL: dict[FaceName, np.ndarray] = {
     FaceName.RIGHT: mk_point([1.0, 0.0, 0.0]),
     FaceName.LEFT: mk_point([-1.0, 0.0, 0.0]),

@@ -10,21 +10,21 @@ after those behind.
 Finally, the polygons are converted into Manim Polygons
 and added to the scene.
 """
-import math
-from typing import Any, Callable, Iterable, TypeAlias
+from typing import Any, Callable, TypeAlias
 from abc import ABC, abstractmethod
 
-import numpy as np
-from scipy.spatial.transform import Rotation as R
 from manim import *
 
-from instant_insanity.core.config import STANDARD_CONFIG, ALTERNATE_CONFIG
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, RTF, LTF, LBF
+from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
 from instant_insanity.core.depth_sort import DepthSort
-from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
+from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, WINNING_MOVES_PUZZLE
-from instant_insanity.core.rotation_about_axis import rotation_matrix_about_line, apply_linear_transform
-from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC, MANIM_COLOUR_MAP
+from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertices
+from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP
+from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph, WINNING_MOVES_NODE_LAYOUT
+from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import TestThreeDPuzzleCube
+
 
 class TrackedVGroup(VGroup):
     """
@@ -32,37 +32,15 @@ class TrackedVGroup(VGroup):
 
     Attributes:
         tracker: the ValueTracker
-        sorted_name_keys: the list of polygon names in depth-sorted order
     """
     tracker: ValueTracker
-    sorted_name_keys: list[str]
 
-    def __init__(self, sorted_name_keys: list[str], *vmobjects: list[VMobject], **kwargs: Any) -> None:
+    def __init__(self, *vmobjects: list[VMobject], **kwargs: Any) -> None:
         super().__init__(*vmobjects, **kwargs)
-        self.sorted_name_keys = sorted_name_keys
         self.tracker = ValueTracker(0.0)
 
 
-TrackedVGroupUpdater: TypeAlias = Callable[[TrackedVGroup], object]
-
-
-def transform_vertices(rotation, translation, vertices) -> np.ndarray:
-    """
-    Transform the vertices by applying a rotation followed by a translation.
-
-    Let R be a rotation, let T be a translation, and let V be a vertex.
-    The transformed vertex is R(V) + T.
-
-    Args:
-        rotation: a rotation 3-vector.
-        translation: a translation 3-vector.
-        vertices: a matrix of n 3-vectors.
-
-    Returns:
-        the matrix of n transformed 3-vectors.
-    """
-    rot = R.from_rotvec(rotation)
-    return rot.apply(vertices) + translation
+Updater: TypeAlias = Callable[[Mobject], object]
 
 
 class CubeAnimation(ABC):
@@ -152,7 +130,7 @@ class CubeAnimation(ABC):
 
         return sorted_name_keys, polygon_list
 
-    def mk_updater(self) -> TrackedVGroupUpdater:
+    def mk_updater(self) -> Updater:
         """
         Make a nontime-based updater function for the animation.
 
@@ -160,7 +138,7 @@ class CubeAnimation(ABC):
             An updater for the animation.
         """
 
-        def updater(tracked_vgroup: TrackedVGroup) -> TrackedVGroup:
+        def updater(tracked_vgroup: Mobject) -> object:
             """
             Updates the polygons in the TrackedVGroup to its current alpha parameter.
 
@@ -178,7 +156,7 @@ class CubeAnimation(ABC):
             sorted_name_keys: list[str]
             polygon_list: list[Polygon]
             sorted_name_keys, polygon_list = self.mk_polygons(alpha)
-            tracked_vgroup.sorted_name_keys = sorted_name_keys
+            #tracked_vgroup.sorted_name_keys = sorted_name_keys
             tracked_vgroup.add(*polygon_list)
             return tracked_vgroup
 
@@ -342,33 +320,67 @@ class ProjectedCube(Scene):
         # so put them in a TrackedVGroup which will be updated for each frame
         sorted_name_keys: list[str]
         polygon_list: list[Polygon]
-        sorted_name_keys, polygon_list= cube_animation.mk_polygons(0.0)
+        sorted_name_keys, polygon_list = cube_animation.mk_polygons(0.0)
 
         # the tracker parameterizes the animation
-        tracked_vgroup: TrackedVGroup = TrackedVGroup(sorted_name_keys, *polygon_list)
-        self.add(tracked_vgroup)
+        cube_face_vgroup: TrackedVGroup = TrackedVGroup(*polygon_list)
+        self.add(cube_face_vgroup)
         self.wait(1.0)
 
-        tracked_vgroup.remove(*tracked_vgroup.submobjects)
-        updater: TrackedVGroupUpdater = cube_animation.mk_updater()
-        tracked_vgroup.add_updater(updater)
-        tracker: ValueTracker = tracked_vgroup.tracker
-        self.play(tracker.animate.set_value(1.0), run_time=4.0)
-        tracked_vgroup.remove_updater(updater)
+        cube_face_vgroup.remove(*cube_face_vgroup.submobjects)
+        updater: Updater = cube_animation.mk_updater()
+        cube_face_vgroup.add_updater(updater)
+        tracker: ValueTracker = cube_face_vgroup.tracker
+        alpha_1: float = 1.0
+        self.play(tracker.animate.set_value(alpha_1), run_time=4.0)
+        cube_face_vgroup.remove_updater(updater)
+
+        # save the final configuration of the cube faces so we can compute their centres later
+        sorted_name_keys: list[str]
+        polygon_list: list[Polygon]
+        sorted_name_keys, polygon_list = cube_animation.mk_polygons(alpha_1)
+
+        # store the polygons in a dict keyed by the face name
+        # NOTE: this will not work because I need to get the actual Polygon from the Scene and morph it!
+        face_polygon_dict: dict[FaceName, Polygon] = {}
+        face_name_str: str
+        polygon: Polygon
+        for face_name_str, polygon in zip(sorted_name_keys, polygon_list):
+            face_name: FaceName = FaceName(face_name_str)
+            face_polygon_dict[face_name] = polygon
 
         self.wait(1.0)
 
         # animate movement of exploded cube to the left
-        self.play(tracked_vgroup.animate.shift(4 * LEFT + DOWN), run_time=2.0)
-        self.wait(4.0)
+        cube_shift: np.ndarray = 4 * LEFT + DOWN
+        self.play(cube_face_vgroup.animate.shift(cube_shift), run_time=2.0)
+        self.wait(1.0)
+
+        # shift the saved configuration to match the animation
+        # this does not change the depth sorted order
+        for polygon in polygon_list:
+            polygon.shift(cube_shift)
 
         # fade-in the vertices of the opposite-face graph
+        graph: VGroup = OppositeFaceGraph(3 * RIGHT, WINNING_MOVES_NODE_LAYOUT)
+        self.play(FadeIn(graph))
+        self.wait(4.0)
 
-        # morph the front-back faces to dots and connect them with a graph edge
+        # compute the centroids of the face polygons
+        face_centroid_dict: dict[FaceName, np.ndarray] = {}
+        for face_name, polygon in face_polygon_dict.items():
+            vertices: np.ndarray = polygon.get_vertices()
+            centroid: np.ndarray = np.mean(vertices, axis=0)
+            face_centroid_dict[face_name] = centroid
+
+        # morph the front-back faces to dots
+        # connect the front-back dots with a graph edge
         # move the dots onto the graph, with the graph edge connected, label as x
 
         # repeat this for the left-right faces and the top-bottom faces, labelling as y and z
 
-with tempconfig(ALTERNATE_CONFIG):
-    scene = ProjectedCube()
-    scene.render()
+
+if __name__ == "__main__":
+    with tempconfig(ALTERNATE_CONFIG):
+        scene = ProjectedCube()
+        scene.render()

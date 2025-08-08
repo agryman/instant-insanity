@@ -1,4 +1,7 @@
+import numpy
 import numpy as np
+from scipy.spatial.transform import Rotation
+
 from instant_insanity.core.type_check import check_array_float64
 
 def rotation_matrix_about_line(p: np.ndarray, u: np.ndarray, theta: float) -> np.ndarray:
@@ -74,3 +77,22 @@ def apply_linear_transform(mat: np.ndarray, v: np.ndarray) -> np.ndarray:
 
     # Return only the x, y, z components
     return v_transformed[:, :3]
+
+
+def transform_vertices(rotation, translation, vertices) -> np.ndarray:
+    """
+    Transform the vertices by applying a rotation followed by a translation.
+
+    Let R be a rotation, let T be a translation, and let V be a vertex.
+    The transformed vertex is R(V) + T.
+
+    Args:
+        rotation: a rotation 3-vector.
+        translation: a translation 3-vector.
+        vertices: a matrix of n 3-vectors.
+
+    Returns:
+        the matrix of n transformed 3-vectors.
+    """
+    rot = Rotation.from_rotvec(rotation)
+    return rot.apply(vertices) + translation

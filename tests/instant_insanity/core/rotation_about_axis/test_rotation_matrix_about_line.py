@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import pytest
-from instant_insanity.core.rotation_about_axis import rotation_matrix_about_line
+from instant_insanity.core.transformation import rotation_matrix_about_line
 
 def test_rotation_matrix_identity():
     p = np.array([0, 0, 0], dtype=np.float64)
