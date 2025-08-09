@@ -1,7 +1,7 @@
-from typing import OrderedDict
+from typing import OrderedDict, Any
 
 from manim import *
-from manim import Animation, VGroup, Polygon, ManimColor, BLACK
+from manim import Animation, VGroup, Polygon, ManimColor, BLACK, ValueTracker, VMobject
 
 from instant_insanity.core.config import ALTERNATE_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES
@@ -13,7 +13,21 @@ from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC, M
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
 
 
-class ThreeDPuzzleCube(VGroup):
+class TrackedVGroup(VGroup):
+    """
+    This class is a VGroup with a ValueTracker.
+
+    Attributes:
+        tracker: the ValueTracker
+    """
+    tracker: ValueTracker
+
+    def __init__(self, *vmobjects: list[VMobject], **kwargs: Any) -> None:
+        super().__init__(*vmobjects, **kwargs)
+        self.tracker = ValueTracker(0.0)
+
+
+class ThreeDPuzzleCube(TrackedVGroup):
     """
     This class is a VGroup that renders as a 3D puzzle cube in model space.
     The appearance of the cube is determined by a projection from model space to scene space.
@@ -23,6 +37,7 @@ class ThreeDPuzzleCube(VGroup):
 
     """
     projection: Projection
+    cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
     depth_sorter: DepthSort
     initial_model_vertices: dict[FaceName, np.ndarray]
@@ -34,11 +49,12 @@ class ThreeDPuzzleCube(VGroup):
                  **kwargs) -> None:
         """
         Args:
-            projection: the perspective projection
-            cube_spec: the cube face colour specification
+            projection: the projection
+            cube_spec: the puzzle cube specification
         """
         super().__init__(**kwargs)
         self.projection = projection
+        self.cube_spec = cube_spec
         self.depth_sorter = DepthSort(projection)
         self.puzzle_cube = PuzzleCube(cube_spec)
 
@@ -150,9 +166,9 @@ class TestThreeDPuzzleCube(Scene):
         # self.add(polygon)
         # self.wait(4.0)
 
-        camera_z: float = 8.0
 
-        # create a perspective projection
+        # create a projection
+        camera_z: float = 8.0
         viewpoint: np.ndarray = np.array([5, 5, 20], dtype=np.float64)
         projection: Projection = PerspectiveProjection(camera_z, viewpoint)
 
