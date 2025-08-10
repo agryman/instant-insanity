@@ -1,6 +1,6 @@
 from manim import *
 from collections import OrderedDict
-from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.config import LINEN_CONFIG
 
 class NamedMobjectDict(Scene):
     def construct(self):
@@ -28,6 +28,6 @@ class NamedMobjectDict(Scene):
         self.play(node_map['B'].animate.shift(UP))
 
 if __name__ == "__main__":
-    with tempconfig(ALTERNATE_CONFIG):
+    with tempconfig(LINEN_CONFIG):
         scene = NamedMobjectDict()
         scene.render()

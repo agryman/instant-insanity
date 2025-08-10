@@ -4,7 +4,7 @@ import numpy as np
 from manim import VGroup, Mobject, LEFT, UP, RIGHT, DOWN, ManimColor, Dot, DEFAULT_DOT_RADIUS, BLACK, Scene, ORIGIN, \
     FadeIn, tempconfig
 
-from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.puzzle import FaceColour, PuzzleCubeNumber, FaceLabel
 from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP
 
@@ -100,6 +100,6 @@ class FourNodeSquareGraph(Scene):
 
 
 if __name__ == "__main__":
-    with tempconfig(ALTERNATE_CONFIG):
+    with tempconfig(LINEN_CONFIG):
         scene = FourNodeSquareGraph()
         scene.render()

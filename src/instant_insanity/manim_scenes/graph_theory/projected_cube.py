@@ -15,7 +15,7 @@ from abc import ABC, abstractmethod
 
 from manim import *
 
-from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.projection import Projection, PerspectiveProjection
@@ -225,23 +225,48 @@ class ConstructGraph(Scene):
 
         # animate movement of exploded cube to the left
         cube_shift: np.ndarray = 4 * LEFT + DOWN
-        self.play(cube.animate.shift(cube_shift), run_time=2.0)
+        self.play(cube.animate.shift(cube_shift), run_time=1.0)
         self.wait(1.0)
 
         # fade-in the nodes of the opposite-face graph
         graph: VGroup = OppositeFaceGraph(3 * RIGHT, WINNING_MOVES_NODE_LAYOUT)
         self.play(FadeIn(graph))
-        self.wait(4.0)
+        self.wait(1.0)
+
+        # create same-coloured dots at the centroids of the face polygons
+        name: FaceName
+        polygon: Polygon
+        dot_dict: dict[FaceName, Dot] = {}
+        for name, polygon in cube.polygon_dict.items():
+            vertices: np.ndarray = polygon.get_vertices()
+            centroid: np.ndarray = np.mean(vertices, axis=0)
+            colour: FaceColour = cube.get_colour_name(name)
+            dot: Dot = graph.mk_dot(colour, centroid)
+            dot_dict[name] = dot
 
         # TODO:
-        # compute the centroids of the face polygons
-        # face_centroid_dict: dict[FaceName, np.ndarray] = {}
-        # for face_name, polygon in face_polygon_dict.items():
-        #     vertices: np.ndarray = polygon.get_vertices()
-        #     centroid: np.ndarray = np.mean(vertices, axis=0)
-        #     face_centroid_dict[face_name] = centroid
-
         # morph the front-back faces to dots
+        front_polygon: Polygon = cube.polygon_dict[FaceName.FRONT]
+        front_dot: Dot = dot_dict[FaceName.FRONT]
+        radius: float = front_dot.radius
+        back_polygon: Polygon = cube.polygon_dict[FaceName.BACK]
+        back_dot: Dot = dot_dict[FaceName.BACK]
+        self.play(Transform(front_polygon, front_dot), Transform(back_polygon, back_dot), run_time=2.0)
+
+        # Fade in the line
+        # Compute boundary points
+        vec = back_polygon.get_center() - front_polygon.get_center()
+        vec[2] = 0.0
+        unit_vec = vec / np.linalg.norm(vec)
+
+        start_point = front_polygon.get_center() + unit_vec * radius
+        end_point = back_polygon.get_center() - unit_vec * radius
+
+        # Line connecting edges of the dots
+        line = Line(start_point, end_point, color=BLACK)
+        self.play(FadeIn(line))
+        self.wait(4.0)
+
         # connect the front-back dots with a graph edge
         # move the dots onto the graph, with the graph edge connected, label as x
 
@@ -249,6 +274,6 @@ class ConstructGraph(Scene):
 
 
 if __name__ == "__main__":
-    with tempconfig(ALTERNATE_CONFIG):
+    with tempconfig(LINEN_CONFIG):
         scene = ConstructGraph()
         scene.render()

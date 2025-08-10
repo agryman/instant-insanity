@@ -3,7 +3,7 @@ from typing import OrderedDict, Any
 from manim import *
 from manim import Animation, VGroup, Polygon, ManimColor, BLACK, ValueTracker, VMobject
 
-from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.projection import Projection, PerspectiveProjection
@@ -61,6 +61,31 @@ class ThreeDPuzzleCube(TrackedVGroup):
         self.initial_model_vertices = FACE_NAME_TO_VERTICES.copy()
         self.mk_polygons(self.initial_model_vertices)
 
+    def get_colour_name(self, name: FaceName) -> FaceColour:
+        """
+        Returns the colour name for the given face colour.
+        Args:
+            name: the face name.
+
+        Returns:
+            the colour name for the given face name.
+        """
+        colour_name: FaceColour = self.puzzle_cube.faces[name]
+        return colour_name
+
+    def get_manim_colour(self, name: FaceName) -> ManimColor:
+        """
+        Returns the colour of the given face.
+        Args:
+            name: The name of the face.
+
+        Returns:
+            The Manim colour of the given face.
+        """
+        colour_name: FaceColour = self.get_colour_name(name)
+        colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
+        return colour
+
     def mk_polygons(self, model_vertices: dict[FaceName, np.ndarray]) -> None:
         """
         Makes the scene space polygons from the model space vertices and adds them to the group.
@@ -93,8 +118,7 @@ class ThreeDPuzzleCube(TrackedVGroup):
         for name_key in sorted_name_keys:
             # create a Manim Polygon
             name = FaceName(name_key)
-            colour_name: FaceColour = self.puzzle_cube.faces[name]
-            colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
+            colour: ManimColor = self.get_manim_colour(name)
             scene_vertices: np.ndarray = scene_vertices_dict[name_key]
             polygon: Polygon = Polygon(
                 *scene_vertices,
@@ -227,7 +251,9 @@ class TestThreeDPuzzleCube(Scene):
         self.add(three_d_puzzle_cube)
         self.wait(1.0)
 
-        self.remove(three_d_puzzle_cube)
+        #self.remove(three_d_puzzle_cube)
+        three_d_puzzle_cube.remove(*three_d_puzzle_cube.submobjects)
+        self.wait(1.0)
 
         # animate movement of the cube to the left
         self.play(animation, run_time=3.0)
@@ -235,6 +261,6 @@ class TestThreeDPuzzleCube(Scene):
 
 
 if __name__ == "__main__":
-    with tempconfig(ALTERNATE_CONFIG):
+    with tempconfig(LINEN_CONFIG):
         scene = TestThreeDPuzzleCube()
         scene.render()

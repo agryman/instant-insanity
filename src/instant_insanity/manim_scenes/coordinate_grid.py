@@ -1,6 +1,6 @@
 from manim import *
 
-from instant_insanity.core.config import ALTERNATE_CONFIG
+from instant_insanity.core.config import LINEN_CONFIG
 
 
 def add_coordinate_grid(scene: Scene) -> None:
@@ -36,6 +36,6 @@ class SceneCoordinateGrid(Scene):
 
 
 if __name__ == "__main__":
-    with tempconfig(ALTERNATE_CONFIG):
+    with tempconfig(LINEN_CONFIG):
         scene = SceneCoordinateGrid()
         scene.render()
