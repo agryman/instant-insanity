@@ -5,11 +5,14 @@ from mypyc.primitives.generic_ops import next_op
 from svgelements import Curve
 
 from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import (Puzzle, FaceColour, PuzzleCubeNumber, AxisLabel,
                                           WINNING_MOVES_PUZZLE, CARTEBLANCHE_PUZZLE,
-                                          WINNING_MOVES_COLOURS, CARTEBLANCHE_COLOURS, CubeAxis, FaceColourPair)
+                                          CubeAxis, FaceColourPair,
+                                          AXIS_TO_FACE_NAME_PAIR, PuzzleCube)
 from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
+
 
 class ObjectToCountMapping:
     """
@@ -40,13 +43,16 @@ class ObjectToCountMapping:
         self.object_to_count[key] = count + 1
         return count
 
+
 class Quadrant(StrEnum):
     I = "I"
     II = "II"
     III = "III"
     IV = "IV"
 
+
 NodePair: TypeAlias = tuple[Quadrant, Quadrant]
+
 
 def mk_standard_node_pair(quadrant1: Quadrant, quadrant2: Quadrant) -> NodePair:
     """
@@ -62,6 +68,7 @@ def mk_standard_node_pair(quadrant1: Quadrant, quadrant2: Quadrant) -> NodePair:
 
     return min(quadrant1, quadrant2), max(quadrant1, quadrant2)
 
+
 QUADRANT_TO_POSITION: dict[Quadrant, np.ndarray] = {
     Quadrant.I: RIGHT + UP,
     Quadrant.II: LEFT + UP,
@@ -69,26 +76,39 @@ QUADRANT_TO_POSITION: dict[Quadrant, np.ndarray] = {
     Quadrant.IV: RIGHT + DOWN
 }
 
+QUADRANT_TO_BASIS: dict[Quadrant, tuple[np.ndarray, np.ndarray]] = {
+    Quadrant.I: (RIGHT, UP),
+    Quadrant.II: (UP, LEFT),
+    Quadrant.III: (LEFT, DOWN),
+    Quadrant.IV: (DOWN, RIGHT)
+}
+
 # each node is identified by its quadrant and has a unique colour
 ColourToNodeMapping: TypeAlias = dict[FaceColour, Quadrant]
 NodeToColourMapping: TypeAlias = dict[Quadrant, FaceColour]
 
+DEFAULT_EDGE_FONT_COLOR: ManimColor = BLACK
+DEFAULT_EDGE_FONT_SIZE: int = 15
+DEFAULT_EDGE_STROKE_COLOUR: ManimColor = BLACK
+DEFAULT_EDGE_STROKE_WIDTH: float = 2.0
 
-def mk_colour_to_node(colours: set[FaceColour]) -> ColourToNodeMapping:
+
+def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
     """
     Make the mapping of face colours to quadrants.
-    The colours are sorted and then assigned to the quadrants in their standard order.
+    The colours are sorted and then assigned to the quadrants to minimize diagonal crossovers.
 
     Args:
-        colours: a set of exactly four face colours.
+        puzzle: the puzzle
 
     Returns:
         a mapping of the faces colours to quadrants as a dict.
 
     """
-    if not isinstance(colours, set):
-        raise TypeError(f'Expected a set but got {type(colours).__name__}')
+    if not isinstance(puzzle, Puzzle):
+        raise TypeError(f'Expected a Puzzle but got {type(puzzle).__name__}')
 
+    colours: set[FaceColour] = puzzle.mk_colours()
     colour: FaceColour
     for colour in colours:
         if not isinstance(colour, FaceColour):
@@ -98,16 +118,91 @@ def mk_colour_to_node(colours: set[FaceColour]) -> ColourToNodeMapping:
     if n != 4:
         raise ValueError(f'Expected 4 colours but got {n}')
 
+    # make the set of strictly increasing colour pairs
     sorted_colours: list[FaceColour] = sorted(colours)
-    quadrant: Quadrant
-    node_layout: ColourToNodeMapping = {
-        colour: quadrant for colour, quadrant in zip(sorted_colours, Quadrant)
+    colour_pairs: set[FaceColourPair] = {
+        (colour_1, colour_2)
+        for colour_1 in sorted_colours
+        for colour_2 in sorted_colours
+        if colour_1 < colour_2
     }
+
+    # initialize their counts to 0
+    colour_pair_to_count: dict[FaceColourPair, int] = {
+        key: 0 for key in colour_pairs
+    }
+
+    # add the counts for the puzzle
+    cube: PuzzleCube
+    for cube in puzzle.number_to_cube.values():
+        # add the counts for the cube
+        name_1: FaceName
+        name_2: FaceName
+        for (name_1, name_2) in AXIS_TO_FACE_NAME_PAIR.values():
+            # add the counts for the axis
+            colour_1: FaceColour = cube.name_to_colour[name_1]
+            colour_2: FaceColour = cube.name_to_colour[name_2]
+            # ignore loops
+            if colour_1 == colour_2:
+                continue
+            colour_min: FaceColour = min(colour_1, colour_2)
+            colour_max: FaceColour = max(colour_1, colour_2)
+            colour_pair_to_count[(colour_min, colour_max)] += 1
+
+    # always assign sorted_colours[0] to quadrant I
+    # compute the crossover count when sorted_colours[i] for i in 1, 2, 3 is in quadrant III
+
+    # define short variable names for the sorted colours
+    c0: FaceColour
+    c1: FaceColour
+    c2: FaceColour
+    c3: FaceColour
+    c0, c1, c2, c3 = tuple(sorted_colours)
+
+    # define short variable names for the edge counts
+    c01: int = colour_pair_to_count[(c0, c1)]
+    c02: int = colour_pair_to_count[(c0, c2)]
+    c03: int = colour_pair_to_count[(c0, c3)]
+    c12: int = colour_pair_to_count[(c1, c2)]
+    c13: int = colour_pair_to_count[(c1, c3)]
+    c23: int = colour_pair_to_count[(c2, c3)]
+
+    # define short variable names for the crossover counts
+    cc1: int = c01 * c23
+    cc2: int = c02 * c13
+    cc3: int = c03 * c12
+
+    # use the layout that has the minimum crossover count
+    cc_min: int = min(cc1, cc2, cc3)
+    node_layout: ColourToNodeMapping
+    if cc1 == cc_min:
+        node_layout = {
+            c0: Quadrant.I,
+            c1: Quadrant.III,
+            c2: Quadrant.II,
+            c3: Quadrant.IV
+        }
+    elif cc2 == cc_min:
+        node_layout = {
+            c0: Quadrant.I,
+            c2: Quadrant.III,
+            c1: Quadrant.II,
+            c3: Quadrant.IV
+        }
+    else:
+        assert cc3 == cc_min
+        node_layout = {
+            c0: Quadrant.I,
+            c3: Quadrant.III,
+            c1: Quadrant.II,
+            c2: Quadrant.IV
+        }
+
     return node_layout
 
 
-CARTEBLANCHE_NODE_LAYOUT: ColourToNodeMapping = mk_colour_to_node(CARTEBLANCHE_COLOURS)
-WINNING_MOVES_NODE_LAYOUT: ColourToNodeMapping = mk_colour_to_node(WINNING_MOVES_COLOURS)
+CARTEBLANCHE_NODE_LAYOUT: ColourToNodeMapping = mk_colour_to_node(CARTEBLANCHE_PUZZLE)
+WINNING_MOVES_NODE_LAYOUT: ColourToNodeMapping = mk_colour_to_node(WINNING_MOVES_PUZZLE)
 
 
 def mk_dot(face_colour: FaceColour, point: np.ndarray) -> Dot:
@@ -128,8 +223,15 @@ def mk_dot(face_colour: FaceColour, point: np.ndarray) -> Dot:
                    stroke_width=2)
     return dot
 
+
 def mk_text(text: str, point: np.ndarray) -> Text:
-    return Text(text, font_size=24, color=BLACK).move_to(point)
+    label: Text = Text(text,
+                       font_size=DEFAULT_EDGE_FONT_SIZE,
+                       color=DEFAULT_EDGE_FONT_COLOR,
+                       font='sans-serif')
+    label.move_to(point)
+    return label
+
 
 class CurveEdge:
     """
@@ -156,6 +258,7 @@ class CurveEdge:
         self.text = text
         self.sequence_number = sequence_number
 
+
 class LineEdge(CurveEdge):
     """
     A LineEdge is a graph edge that connects two distinct nodes.
@@ -169,15 +272,53 @@ class LineEdge(CurveEdge):
                  sequence_number: int,
                  start_point: np.ndarray,
                  end_point: np.ndarray):
+        start_node: Quadrant
+        end_node: Quadrant
+        start_node, end_node = node_pair
+        if start_node >= end_node:
+            raise ValueError(f'Expected start_node < end_node but got {start_node} >= {end_node}')
+
         super().__init__(node_pair, text, sequence_number)
         self.start_point = start_point
         self.end_point = end_point
-        # TODO: use cubic Bezier and adjust to sequent number
-        line: Line = Line(start_point, end_point, color=BLACK)
+
+        direction: np.ndarray = end_point - start_point
+        unit_tangent: np.ndarray = direction / np.linalg.norm(direction)
+        unit_normal: np.ndarray = np.cross(unit_tangent, OUT)
+
+        # special case treatment: reverse the normal for I - IV edges so it points outward
+        if start_node == Quadrant.I and end_node == Quadrant.IV:
+            unit_normal = -1.0 * unit_normal
+
+        # create the curve
+        diagonals: set[NodePair] = {
+            (Quadrant.I, Quadrant.III),
+            (Quadrant.II, Quadrant.IV)
+        }
+        alpha: float
+        beta: float
+        alpha, beta = (0.5, 0.5) if node_pair in diagonals else (0.5, 0.6)
+
+        tangent_displacement: np.ndarray = alpha * unit_tangent
+        normal_displacement: np.ndarray = beta * sequence_number * unit_normal
+
+        start_handle: np.ndarray = start_point + tangent_displacement + normal_displacement
+        end_handle: np.ndarray = end_point - tangent_displacement + normal_displacement
+
+        line: CubicBezier = CubicBezier(start_point,
+                                        start_handle,
+                                        end_handle,
+                                        end_point,
+                                        color=BLACK,
+                                        stroke_width=DEFAULT_EDGE_STROKE_WIDTH)
         self.curve = line
-        # TODO: position label better
-        label_point: np.ndarray = (start_point + end_point) / 2.0
-        self.label = mk_text(text, label_point)
+
+        # create the label
+        line_midpoint: np.ndarray = line.point_from_proportion(0.5)
+        label: Text = mk_text(text, line_midpoint)
+        label.move_to(line_midpoint + 0.15 * unit_normal)
+        self.label = label
+
 
 class LoopEdge(CurveEdge):
     """
@@ -186,18 +327,46 @@ class LoopEdge(CurveEdge):
     point: np.ndarray
 
     def __init__(self, node_pair: NodePair, text: str, sequence_number: int, point: np.ndarray) -> None:
+        start_node: Quadrant
+        end_node: Quadrant
+        start_node, end_node = node_pair
+        if start_node != end_node:
+            raise ValueError(f'Expected start_node == end_node but got {start_node} != {end_node}')
+
         super().__init__(node_pair, text, sequence_number)
         self.point = point
-        # TODO: use cubic Bezier and adjust to sequent number
-        line: Line = Line(point, point, color=BLACK)
-        self.curve = line
-        # TODO: position label better
-        label_point: np.ndarray = point
-        self.label = mk_text(text, label_point)
+
+        # create the loop
+        start_anchor: np.ndarray = point
+        end_anchor: np.ndarray = point
+        start_tangent: np.ndarray
+        end_tangent: np.ndarray
+        start_tangent, end_tangent = QUADRANT_TO_BASIS[start_node]
+        velocity_0: float = 1.5
+        acceleration: float = 0.5
+        velocity: float = velocity_0 + acceleration * sequence_number
+        start_handle = start_anchor + velocity * start_tangent
+        end_handle = end_anchor + velocity * end_tangent
+        loop: CubicBezier = CubicBezier(start_anchor,
+                                        start_handle,
+                                        end_handle,
+                                        end_anchor,
+                                        color=BLACK,
+                                        stroke_width=DEFAULT_EDGE_STROKE_WIDTH)
+        self.curve = loop
+
+        # create the label
+        loop_midpoint: np.ndarray = loop.point_from_proportion(0.5)
+        label: Text = mk_text(text, loop_midpoint)
+        outward_direction: np.ndarray = start_tangent + end_tangent
+        label.move_to(loop_midpoint + 0.125 * outward_direction)
+        self.label = label
+
 
 NodeToMobjectMapping: TypeAlias = dict[Quadrant, VMobject]
 EdgeToMobjectMapping: TypeAlias = dict[CubeAxis, VMobject]
 EdgeToCurveMapping: TypeAlias = dict[CubeAxis, CurveEdge]
+
 
 class OppositeFaceGraph(VGroup):
     """
@@ -241,7 +410,7 @@ class OppositeFaceGraph(VGroup):
     node_pair_to_count: ObjectToCountMapping
     node_to_mobject: NodeToMobjectMapping
     edge_to_curve: EdgeToCurveMapping
-    edge_to_mobject: EdgeToMobjectMapping # TODO: use edge_to_cube instead
+    edge_to_mobject: EdgeToMobjectMapping  # TODO: use edge_to_curve instead
 
     def __init__(self, centre: np.ndarray, puzzle: Puzzle) -> None:
         """
@@ -251,7 +420,7 @@ class OppositeFaceGraph(VGroup):
         self.centre = centre
         self.puzzle = puzzle
         self.colours = puzzle.mk_colours()
-        self.colour_to_node = mk_colour_to_node(self.colours)
+        self.colour_to_node = mk_colour_to_node(puzzle)
 
         face_colour: FaceColour
         quadrant: Quadrant
@@ -335,20 +504,22 @@ class OppositeFaceGraph(VGroup):
                 self.edge_to_mobject[cube_axis] = loop
 
 
-
 class FourNodeSquareGraph(Scene):
     def construct(self):
-        add_coordinate_grid(self)
+        # add_coordinate_grid(self)
 
         cb_graph: OppositeFaceGraph = OppositeFaceGraph(ORIGIN + 3 * LEFT, CARTEBLANCHE_PUZZLE)
-        self.play(FadeIn(cb_graph))
-        self.wait()
+        self.add(cb_graph)
+        # self.play(FadeIn(cb_graph))
+        # self.wait()
 
         wm_graph: OppositeFaceGraph = OppositeFaceGraph(ORIGIN + 3 * RIGHT, WINNING_MOVES_PUZZLE)
-        self.play(FadeIn(wm_graph))
-        self.wait()
+        self.add(wm_graph)
+        # self.play(FadeIn(wm_graph))
+        # self.wait()
+        #
+        #self.wait(4.0)
 
-        self.wait(4.0)
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
