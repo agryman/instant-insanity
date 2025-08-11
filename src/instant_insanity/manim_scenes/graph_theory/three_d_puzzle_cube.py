@@ -70,7 +70,7 @@ class ThreeDPuzzleCube(TrackedVGroup):
         Returns:
             the colour name for the given face name.
         """
-        colour_name: FaceColour = self.puzzle_cube.faces[name]
+        colour_name: FaceColour = self.puzzle_cube.name_to_colour[name]
         return colour_name
 
     def get_manim_colour(self, name: FaceName) -> ManimColor:

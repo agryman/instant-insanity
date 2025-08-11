@@ -1,7 +1,7 @@
 import pytest
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import (FaceColour, PuzzleCube, PuzzleCubeNumber, Puzzle,
-                                          CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE)
+                                          CARTEBLANCHE_PUZZLE_SPEC, WINNING_MOVES_PUZZLE_SPEC)
 
 TANTALIZER_1 = { # ROWOGG
     FaceName.FRONT: FaceColour.RED,
@@ -80,28 +80,28 @@ WINNING_MOVES_4 = { # BRGWBW
     [
         ('wwwwww', {face_name: FaceColour.WHITE for face_name in FaceName}),
         ('WWWWWW', {face_name: FaceColour.WHITE for face_name in FaceName}),
-        (CARTEBLANCHE_PUZZLE[0], TANTALIZER_1),
-        (CARTEBLANCHE_PUZZLE[1], TANTALIZER_2),
-        (CARTEBLANCHE_PUZZLE[2], TANTALIZER_3),
-        (CARTEBLANCHE_PUZZLE[3], TANTALIZER_4),
-        (WINNING_MOVES_PUZZLE[0], WINNING_MOVES_1),
-        (WINNING_MOVES_PUZZLE[1], WINNING_MOVES_2),
-        (WINNING_MOVES_PUZZLE[2], WINNING_MOVES_3),
-        (WINNING_MOVES_PUZZLE[3], WINNING_MOVES_4)
+        (CARTEBLANCHE_PUZZLE_SPEC[0], TANTALIZER_1),
+        (CARTEBLANCHE_PUZZLE_SPEC[1], TANTALIZER_2),
+        (CARTEBLANCHE_PUZZLE_SPEC[2], TANTALIZER_3),
+        (CARTEBLANCHE_PUZZLE_SPEC[3], TANTALIZER_4),
+        (WINNING_MOVES_PUZZLE_SPEC[0], WINNING_MOVES_1),
+        (WINNING_MOVES_PUZZLE_SPEC[1], WINNING_MOVES_2),
+        (WINNING_MOVES_PUZZLE_SPEC[2], WINNING_MOVES_3),
+        (WINNING_MOVES_PUZZLE_SPEC[3], WINNING_MOVES_4)
     ]
 )
 def test_puzzle_cube(cube_spec, expected_faces):
     puzzle_cube: PuzzleCube = PuzzleCube(cube_spec)
-    assert puzzle_cube.faces == expected_faces
+    assert puzzle_cube.name_to_colour == expected_faces
 
 @pytest.mark.parametrize(
     "puzzle_spec, expected_cubes",
     [
-        (CARTEBLANCHE_PUZZLE, [TANTALIZER_1, TANTALIZER_2, TANTALIZER_3, TANTALIZER_4]),
-        (WINNING_MOVES_PUZZLE, [WINNING_MOVES_1, WINNING_MOVES_2, WINNING_MOVES_3, WINNING_MOVES_4])
+        (CARTEBLANCHE_PUZZLE_SPEC, [TANTALIZER_1, TANTALIZER_2, TANTALIZER_3, TANTALIZER_4]),
+        (WINNING_MOVES_PUZZLE_SPEC, [WINNING_MOVES_1, WINNING_MOVES_2, WINNING_MOVES_3, WINNING_MOVES_4])
     ]
 )
 def test_puzzle(puzzle_spec, expected_cubes):
     puzzle: Puzzle = Puzzle(puzzle_spec)
     for (i, cube_number) in enumerate(PuzzleCubeNumber):
-        assert puzzle.cubes[cube_number].faces == expected_cubes[i]
+        assert puzzle.number_to_cube[cube_number].name_to_colour == expected_cubes[i]

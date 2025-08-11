@@ -17,14 +17,12 @@ from manim import *
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
-from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, WINNING_MOVES_PUZZLE
+from instant_insanity.core.puzzle import PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC, WINNING_MOVES_PUZZLE
 from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertices
-from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
-from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph, WINNING_MOVES_NODE_LAYOUT
-from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube, TrackedVGroup
+from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph, mk_dot
+from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube
 
 Updater: TypeAlias = Callable[[Mobject], object]
 
@@ -198,7 +196,7 @@ class ConstructGraph(Scene):
         projection: Projection = PerspectiveProjection(camera_z, viewpoint)
 
         # create the cube object
-        cube_spec: PuzzleCubeSpec = WINNING_MOVES_PUZZLE[0]
+        cube_spec: PuzzleCubeSpec = WINNING_MOVES_PUZZLE_SPEC[0]
         cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
         self.add(cube)
         self.wait(1.0)
@@ -229,7 +227,7 @@ class ConstructGraph(Scene):
         self.wait(1.0)
 
         # fade-in the nodes of the opposite-face graph
-        graph: VGroup = OppositeFaceGraph(3 * RIGHT, WINNING_MOVES_NODE_LAYOUT)
+        graph: VGroup = OppositeFaceGraph(3 * RIGHT, WINNING_MOVES_PUZZLE)
         self.play(FadeIn(graph))
         self.wait(1.0)
 
@@ -241,7 +239,7 @@ class ConstructGraph(Scene):
             vertices: np.ndarray = polygon.get_vertices()
             centroid: np.ndarray = np.mean(vertices, axis=0)
             colour: FaceColour = cube.get_colour_name(name)
-            dot: Dot = graph.mk_dot(colour, centroid)
+            dot: Dot = mk_dot(colour, centroid)
             dot_dict[name] = dot
 
         # TODO:

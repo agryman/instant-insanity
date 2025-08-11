@@ -105,7 +105,7 @@ class ColouredCube(VGroup):
         # not sure what this accomplishes
         super().init_colors(propagate_colors)
 
-        for face, colour_name in self.puzzle_cube.faces.items():
+        for face, colour_name in self.puzzle_cube.name_to_colour.items():
             face_square = self.face_square[face]
             face_square.set_fill(MANIM_COLOUR_MAP[colour_name], opacity=1.0)
             face_square.set_stroke(color=BLACK, width=1.0)

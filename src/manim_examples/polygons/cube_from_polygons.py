@@ -23,7 +23,7 @@ class CubeFromPolygons(Scene):
 
         # create a puzzle cube spec that has a different colour for each face
         puzzle_cube: PuzzleCube = PuzzleCube(TEST_PUZZLE_CUBE_SPEC)
-        face_colour: dict[FaceName, FaceColour] = puzzle_cube.faces
+        face_colour: dict[FaceName, FaceColour] = puzzle_cube.name_to_colour
 
         # define the vertices of the standard cube
         v1: Vector3D = LEFT + DOWN + OUT

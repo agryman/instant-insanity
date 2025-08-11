@@ -1,6 +1,6 @@
 
 from instant_insanity.core.cube import FaceName
-from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE
+from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE_SPEC
 from instant_insanity.manim_scenes.coloured_cube import ColouredCube
 
 from manim import (
@@ -17,7 +17,7 @@ class UnfoldCubeToNet(ThreeDScene):
 
         self.set_camera_orientation(phi=-15 * DEGREES, theta=-90 * DEGREES, gamma=0 * DEGREES)
 
-        cube: ColouredCube = ColouredCube(side_length=1.0, cube_spec=WINNING_MOVES_PUZZLE[0])
+        cube: ColouredCube = ColouredCube(side_length=1.0, cube_spec=WINNING_MOVES_PUZZLE_SPEC[0])
         cube.shift(3 * LEFT)
 
         # Function to sort faces based on distance to camera
