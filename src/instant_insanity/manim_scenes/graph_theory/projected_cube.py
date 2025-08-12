@@ -21,7 +21,8 @@ from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC, WINNING_MOVES_PUZZLE
 from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertices
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
-from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph, mk_dot
+from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
+from instant_insanity.manim_scenes.graph_theory.coloured_node import mk_dot
 from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube
 
 Updater: TypeAlias = Callable[[Mobject], object]

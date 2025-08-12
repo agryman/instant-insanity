@@ -1,7 +1,7 @@
 from manim import *
 
 
-class LabeledCube(ThreeDScene):
+class LabelledCube(ThreeDScene):
     def construct(self):
         self.renderer.background_color = WHITE
         self.set_camera_orientation(phi=70 * DEGREES, theta=45 * DEGREES)
@@ -53,5 +53,5 @@ class LabeledCube(ThreeDScene):
 
 
 if __name__ == "__main__":
-    scene = LabeledCube()
+    scene = LabelledCube()
     scene.render(preview=True)
