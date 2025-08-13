@@ -1,10 +1,9 @@
 """
 This module implements the LabelledEdge class which is used in the OppositeFaceGraph.
 """
-from PIL.GimpGradientFile import curved
+from typing import Self
+
 from manim import *
-from manim import ManimColor, BLACK, Text, VMobject, OUT, CubicBezier
-from scipy.optimize import curve_fit
 
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
 
@@ -168,3 +167,20 @@ class LabelledEdge(VGroup):
         label.move_to(curve_midpoint + 0.15 * unit_normal)
 
         self.set_label(label)
+
+    def copy_to(self, start_point: np.ndarray, end_point: np.ndarray) -> Self:
+        """
+        Copies this LabelledEdge instance to the given start_point and end_point.
+
+        Args:
+            start_point: the new start point.
+            end_point: the new end point.
+
+        Returns:
+            the new LabelledEdge instance at the given start_point and end_point.
+        """
+        return LabelledEdge(self.node_pair,
+                            self.text,
+                            self.sequence_number,
+                            start_point,
+                            end_point)

@@ -134,7 +134,7 @@ class OppositeFaceGraph(VGroup):
 
     The graph has zero or more edges.
     The edges mobjects are stored in the edge_dict.
-    The key for each edge is a pair that consists of its PuzzleCubeNumber and AxisLabel.
+    The key for each edge is CubeAxis, namely a pair that consists of its PuzzleCubeNumber and AxisLabel.
     For example, the edge key for the x-axis of cube 2
     is the pair (PuzzleCubeNumber.TWO, AxisLabel.X).
 
@@ -200,17 +200,29 @@ class OppositeFaceGraph(VGroup):
         empty_subgraph: EdgeToSubgraphMapping = self.mk_subgraph_for_flag(False)
         self.set_subgraph(empty_subgraph)
 
+    def mk_node_at(self, quadrant: Quadrant, point: np.ndarray) -> Dot:
+        """
+        Creates a node for a given quadrant at a given point.
+        Args:
+            quadrant: the quadrant.
+            point: the point.
+
+        Returns:
+            a new node object at the given point with the quadrant's colour.
+        """
+        face_colour: FaceColour = self.node_to_colour[quadrant]
+        return mk_dot(face_colour, point)
+
     def init_node_to_mobject(self) -> None:
         """
         Initializes node_to_mobject.
         """
         self.node_to_mobject = {}
-        position: np.ndarray
-        for face_colour, quadrant in self.colour_to_node.items():
+        quadrant: Quadrant
+        for quadrant in Quadrant:
             position: np.ndarray = QUADRANT_TO_POSITION[quadrant]
             point: np.ndarray = position + self.centre
-            node: Dot = mk_dot(face_colour, point)
-            self.node_to_mobject[quadrant] = node
+            self.node_to_mobject[quadrant] = self.mk_node_at(quadrant, point)
 
     def init_edge_to_mobject(self) -> None:
         """
@@ -228,35 +240,45 @@ class OppositeFaceGraph(VGroup):
             axis: AxisLabel
             number, axis = cube_axis
             text: str = f'{number.value}{axis.value}'
+
             colour1: FaceColour
             colour2: FaceColour
             colour1, colour2 = face_colour_pair
+
             quadrant1: Quadrant = self.colour_to_node[colour1]
             quadrant2: Quadrant = self.colour_to_node[colour2]
             node_pair: NodePair = mk_standard_node_pair(quadrant1, quadrant2)
+
             start_quadrant: Quadrant
             end_quadrant: Quadrant
             start_quadrant, end_quadrant = node_pair
+
             sequence_number: int = self.node_pair_to_count.post_increment(node_pair)
-            if quadrant1 != quadrant2:
-                # add a link edge
-                start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
-                end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
-                link_edge: LabelledEdge = LabelledEdge(node_pair,
-                                                       text,
-                                                       sequence_number,
-                                                       start_point,
-                                                       end_point)
-                self.edge_to_mobject[cube_axis] = link_edge
-            else:
-                # add a loop edge
-                point: np.ndarray = self.node_to_mobject[quadrant1].get_center()
-                loop_edge: LabelledEdge = LabelledEdge(node_pair,
-                                                       text,
-                                                       sequence_number,
-                                                       point,
-                                                       point)
-                self.edge_to_mobject[cube_axis] = loop_edge
+            start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
+            end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
+            self.edge_to_mobject[cube_axis] = LabelledEdge(node_pair,
+                                                           text,
+                                                           sequence_number,
+                                                           start_point,
+                                                           end_point)
+
+    def copy_edge_to(self,
+                     cube_axis: CubeAxis,
+                     start_point: np.ndarray,
+                     end_point: np.ndarray) -> LabelledEdge:
+        """
+        Copies the given labelled edge to a new start point and end point.
+        Args:
+            cube_axis: the cube axis of LabelledEdge to copy.
+            start_point: the new start point.
+            end_point: the new end point.
+
+        Returns:
+            the new labelled edge.
+        """
+        edge: LabelledEdge = self.edge_to_mobject[cube_axis]
+        return edge.copy_to(start_point, end_point)
+
 
     def set_subgraph(self, subgraph: EdgeToSubgraphMapping) -> None:
         """
@@ -309,7 +331,7 @@ class OppositeFaceGraph(VGroup):
         subgraph: EdgeToSubgraphMapping = dict.fromkeys(keys, flag)
         return subgraph
 
-class FourNodeSquareGraph(Scene):
+class OppositeFaceGraphs(Scene):
     def construct(self):
         # add_coordinate_grid(self)
 
@@ -319,18 +341,15 @@ class FourNodeSquareGraph(Scene):
         cb_graph.set_subgraph(full_subgraph)
         self.add(cb_graph)
         self.play(FadeIn(cb_graph))
-        self.wait()
 
         wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN + 3 * RIGHT)
         wm_graph.set_subgraph(full_subgraph)
         self.add(wm_graph)
         self.play(FadeIn(wm_graph))
+
         self.wait()
-
-        self.wait(4.0)
-
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = FourNodeSquareGraph()
+        scene = OppositeFaceGraphs()
         scene.render()
