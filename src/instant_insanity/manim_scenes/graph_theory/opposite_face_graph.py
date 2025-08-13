@@ -9,7 +9,7 @@ from instant_insanity.core.puzzle import (Puzzle, FaceColour, PuzzleCubeNumber, 
                                           CubeAxis, FaceColourPair,
                                           AXIS_TO_FACE_NAME_PAIR, PuzzleCube)
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
-from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledLink, LabelledLoop, LabelledEdge
+from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledEdge
 from instant_insanity.manim_scenes.graph_theory.coloured_node import mk_dot
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant, mk_standard_node_pair, NodePair, \
     QUADRANT_TO_POSITION
@@ -242,7 +242,7 @@ class OppositeFaceGraph(VGroup):
                 # add a link edge
                 start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
                 end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
-                link_edge: LabelledLink = LabelledLink(node_pair,
+                link_edge: LabelledEdge = LabelledEdge(node_pair,
                                                        text,
                                                        sequence_number,
                                                        start_point,
@@ -251,9 +251,10 @@ class OppositeFaceGraph(VGroup):
             else:
                 # add a loop edge
                 point: np.ndarray = self.node_to_mobject[quadrant1].get_center()
-                loop_edge: LabelledLoop = LabelledLoop(node_pair,
+                loop_edge: LabelledEdge = LabelledEdge(node_pair,
                                                        text,
                                                        sequence_number,
+                                                       point,
                                                        point)
                 self.edge_to_mobject[cube_axis] = loop_edge
 
@@ -300,19 +301,28 @@ class OppositeFaceGraph(VGroup):
         Returns:
             the subgraph for a boolean flag.
         """
-        subgraph: EdgeToSubgraphMapping = dict.fromkeys(CubeAxis, flag)
+        cube_number: PuzzleCubeNumber
+        axis_label: AxisLabel
+        keys: list[CubeAxis] = [(cube_number, axis_label)
+                                for cube_number in PuzzleCubeNumber
+                                for axis_label in AxisLabel]
+        subgraph: EdgeToSubgraphMapping = dict.fromkeys(keys, flag)
         return subgraph
 
 class FourNodeSquareGraph(Scene):
     def construct(self):
         # add_coordinate_grid(self)
 
+        full_subgraph: EdgeToSubgraphMapping = OppositeFaceGraph.mk_subgraph_for_flag(True)
+
         cb_graph: OppositeFaceGraph = OppositeFaceGraph(CARTEBLANCHE_PUZZLE, ORIGIN + 3 * LEFT)
+        cb_graph.set_subgraph(full_subgraph)
         self.add(cb_graph)
         self.play(FadeIn(cb_graph))
         self.wait()
 
         wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN + 3 * RIGHT)
+        wm_graph.set_subgraph(full_subgraph)
         self.add(wm_graph)
         self.play(FadeIn(wm_graph))
         self.wait()
