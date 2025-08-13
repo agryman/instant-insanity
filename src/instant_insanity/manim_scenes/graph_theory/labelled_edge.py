@@ -14,6 +14,20 @@ DEFAULT_EDGE_STROKE_WIDTH: float = 2.0
 DEFAULT_EDGE_STROKE_COLOUR: ManimColor = BLACK
 
 
+def mk_cubic_bezier(start_point: np.ndarray,
+                    start_handle: np.ndarray,
+                    end_handle: np.ndarray,
+                    end_point: np.ndarray,
+                    colour: ManimColor = BLACK,
+                    stroke_width: float = DEFAULT_EDGE_STROKE_WIDTH) -> CubicBezier:
+    curve: CubicBezier = CubicBezier(start_point,
+                                     start_handle,
+                                     end_handle,
+                                     end_point,
+                                     color=colour,
+                                     stroke_width=stroke_width)
+    return curve
+
 def mk_text(text: str, point: np.ndarray) -> Text:
     label: Text = Text(text,
                        font=DEFAULT_EDGE_FONT,
@@ -41,14 +55,16 @@ class LabelledEdge(VGroup):
     node_pair: NodePair
     text: str
     sequence_number: int
-    curve: CubicBezier
-    label: Text
+    curve: CubicBezier | None
+    label: Text | None
 
     def __init__(self, node_pair: NodePair, text: str, sequence_number: int) -> None:
         super().__init__()
         self.node_pair = node_pair
         self.text = text
         self.sequence_number = sequence_number
+        self.curve = None
+        self.label = None
 
     def set_label(self, label: Text) -> None:
         self.label = label
@@ -105,12 +121,10 @@ class LabelledLink(LabelledEdge):
         start_handle: np.ndarray = start_point + tangent_displacement + normal_displacement
         end_handle: np.ndarray = end_point - tangent_displacement + normal_displacement
 
-        link: CubicBezier = CubicBezier(start_point,
-                                        start_handle,
-                                        end_handle,
-                                        end_point,
-                                        color=BLACK,
-                                        stroke_width=DEFAULT_EDGE_STROKE_WIDTH)
+        link: CubicBezier = mk_cubic_bezier(start_point,
+                                            start_handle,
+                                            end_handle,
+                                            end_point)
         self.set_curve(link)
 
         # create the label
@@ -147,12 +161,10 @@ class LabelledLoop(LabelledEdge):
         velocity: float = velocity_0 + acceleration * sequence_number
         start_handle = start_anchor + velocity * start_tangent
         end_handle = end_anchor + velocity * end_tangent
-        loop: CubicBezier = CubicBezier(start_anchor,
-                                        start_handle,
-                                        end_handle,
-                                        end_anchor,
-                                        color=BLACK,
-                                        stroke_width=DEFAULT_EDGE_STROKE_WIDTH)
+        loop: CubicBezier = mk_cubic_bezier(start_anchor,
+                                            start_handle,
+                                            end_handle,
+                                            end_anchor)
         self.set_curve(loop)
 
         # create the label

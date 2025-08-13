@@ -7,7 +7,7 @@ from instant_insanity.core.projection import Projection, OrthographicProjection
 def test_depth_sort():
     camera_z: float = 0.0
     u: np.ndarray = np.array([0, 0, 1], dtype=np.float64)
-    projection: Projection = OrthographicProjection(camera_z, u)
+    projection: Projection = OrthographicProjection(u, camera_z=camera_z)
     depth_sorter: DepthSort = DepthSort(projection)
     triangle_A: np.ndarray = np.array([
         [0, 0, 0],

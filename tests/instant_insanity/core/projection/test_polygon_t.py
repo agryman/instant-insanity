@@ -10,13 +10,13 @@ SQRT_3 = np.sqrt(3)
 @pytest.mark.parametrize(
     "projection",
     [
-        PerspectiveProjection(0.0, np.array([0, 0, 1], dtype=np.float64)),
-        PerspectiveProjection(0.0, np.array([0, 0, 10], dtype=np.float64)),
-        PerspectiveProjection(0.0, np.array([0, 10, 10], dtype=np.float64)),
-        PerspectiveProjection(0.0, np.array([10, 10, 10], dtype=np.float64)),
-        OrthographicProjection(0.0, np.array([0, 0, 1], dtype=np.float64)),
-        OrthographicProjection(0.0, np.array([0, 1, 1], dtype=np.float64) / SQRT_2),
-        OrthographicProjection(0.0, np.array([1, 1, 1], dtype=np.float64) / SQRT_3),
+        PerspectiveProjection(np.array([0, 0, 1], dtype=np.float64), camera_z=0.0),
+        PerspectiveProjection(np.array([0, 0, 10], dtype=np.float64), camera_z=0.0),
+        PerspectiveProjection(np.array([0, 10, 10], dtype=np.float64), camera_z=0.0),
+        PerspectiveProjection(np.array([10, 10, 10], dtype=np.float64), camera_z=0.0),
+        OrthographicProjection(np.array([0, 0, 1], dtype=np.float64), camera_z=0.0),
+        OrthographicProjection(np.array([0, 1, 1], dtype=np.float64) / SQRT_2, camera_z=0.0),
+        OrthographicProjection(np.array([1, 1, 1], dtype=np.float64) / SQRT_3, camera_z=0.0),
     ]
 )
 def test_perspective_projection(projection):

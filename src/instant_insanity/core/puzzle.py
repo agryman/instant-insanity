@@ -132,9 +132,11 @@ class PuzzleCube:
     An Instant Insanity puzzle cube. A cube has a colour assigned to each face.
 
     Attributes:
+        cube_spec: the puzzle cube specification
         name_to_colour: maps face names to face colours.
 
     """
+    cube_spec: PuzzleCubeSpec
     name_to_colour: dict[FaceName, FaceColour]
 
     def __init__(self, cube_spec: PuzzleCubeSpec):
@@ -143,6 +145,8 @@ class PuzzleCube:
             raise ValueError(f"Expected a string, got {type(cube_spec).__name__}")
         if len(cube_spec) != 6:
             raise ValueError(f"Expected string of length 6, got length {len(cube_spec)}")
+
+        self.cube_spec = cube_spec
 
         label: FaceLabel
         initial: str
@@ -205,26 +209,28 @@ class Puzzle:
     Attributes:
         number_to_cube: maps cube numbers to puzzle cubes.
     """
+    puzzle_spec: PuzzleSpec
     number_to_cube: dict[PuzzleCubeNumber, PuzzleCube]
 
-    def __init__(self, puzzle: PuzzleSpec) -> None:
+    def __init__(self, puzzle_spec: PuzzleSpec) -> None:
         """
         Create a puzzle from a specification.
 
         Args:
-            puzzle: a list of 4 6-letter strings giving the initial letters of the face colours.
+            puzzle_spec: a list of 4 6-letter strings giving the initial letters of the face colours.
 
         Raises:
             ValueError: if puzzle is not a list of 4 6-letter strings,
             or if any of the letters are not valid face colour initials.
         """
-        n_cubes: int = len(puzzle)
+        n_cubes: int = len(puzzle_spec)
         if n_cubes != 4:
             raise ValueError(f"Expected 4 cubes, got: {n_cubes}")
 
+        self.puzzle_spec = puzzle_spec
         self.number_to_cube = {
             cube_number: PuzzleCube(cube_spec)
-            for cube_number, cube_spec in zip(PuzzleCubeNumber, puzzle)
+            for cube_number, cube_spec in zip(PuzzleCubeNumber, puzzle_spec)
         }
 
     def mk_colours(self) -> set[FaceColour]:

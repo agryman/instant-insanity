@@ -15,7 +15,7 @@ from instant_insanity.core.projection import PerspectiveProjection, Orthographic
 )
 def test_perspective_projection(camera_z, viewpoint, model_point, expected):
     viewpoint = np.array(viewpoint, dtype=np.float64)
-    projection = PerspectiveProjection(camera_z, viewpoint)
+    projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
     model_point = np.array(model_point, dtype=np.float64)
     expected = np.array(expected, dtype=np.float64)
     actual = projection.project_point(model_point)
@@ -39,7 +39,7 @@ SQRT_10 = math.sqrt(10)
 )
 def test_orthographic_projection(camera_z, u, model_point, expected):
     u = np.array(u, dtype=np.float64)
-    projection = OrthographicProjection(camera_z, u)
+    projection = OrthographicProjection(u, camera_z=camera_z)
     model_point = np.array(model_point, dtype=np.float64)
     expected = np.array(expected, dtype=np.float64)
     actual = projection.project_point(model_point)

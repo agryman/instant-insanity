@@ -20,7 +20,7 @@ class MoveDotsUpdateLine(Scene):
         # Line that always connects current centers of dot1 and dot2
         line = always_redraw(lambda: Line(dot1.get_center(), dot2.get_center(), color=BLACK))
 
-        self.add(dot3, dot4, dot1, dot2, line)
+        self.add(line, dot3, dot4, dot1, dot2)
         self.wait(0.3)
 
         # Animate in parallel

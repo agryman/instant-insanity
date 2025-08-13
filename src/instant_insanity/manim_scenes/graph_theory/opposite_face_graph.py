@@ -9,7 +9,7 @@ from instant_insanity.core.puzzle import (Puzzle, FaceColour, PuzzleCubeNumber, 
                                           CubeAxis, FaceColourPair,
                                           AXIS_TO_FACE_NAME_PAIR, PuzzleCube)
 from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
-from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledLink, LabelledLoop
+from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledLink, LabelledLoop, LabelledEdge
 from instant_insanity.manim_scenes.graph_theory.coloured_node import mk_dot
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant, mk_standard_node_pair, NodePair, \
     QUADRANT_TO_POSITION
@@ -119,8 +119,9 @@ def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
 CARTEBLANCHE_NODE_MAPPING: ColourToNodeMapping = mk_colour_to_node(CARTEBLANCHE_PUZZLE)
 WINNING_MOVES_NODE_MAPPING: ColourToNodeMapping = mk_colour_to_node(WINNING_MOVES_PUZZLE)
 
-NodeToMobjectMapping: TypeAlias = dict[Quadrant, VMobject]
-EdgeToMobjectMapping: TypeAlias = dict[CubeAxis, VMobject]
+NodeToMobjectMapping: TypeAlias = dict[Quadrant, Dot]
+EdgeToMobjectMapping: TypeAlias = dict[CubeAxis, LabelledEdge]
+EdgeToSubgraphMapping: TypeAlias = dict[CubeAxis, bool]
 
 
 class OppositeFaceGraph(VGroup):
@@ -147,15 +148,20 @@ class OppositeFaceGraph(VGroup):
     Each edge is drawn as a cubic spline with the same endpoints but differing control points
     that vary depending on the sequence number.
 
+    The graph state includes the subset of edges that it contains.
+    This state defines a subgraph which always contains all four nodes but only
+    the indicated edges. Initially the subgraph contains no edges.
+
     Attributes:
-        centre: the scene coordinates of the centre of the graph
-        puzzle: the puzzle
-        colours: the set of face colours in the puzzle
-        colour_to_node: the mapping of face colours to quadrants
-        node_to_colour: the mapping of quadrants to face colours
-        node_to_mobject: the mapping of quadrants to mobjects that draw the nodes
-        node_pair_to_count: the node pair to count mapping
-        edge_to_mobject: the mapping of edge keys to mobjects that draw the edges
+        centre: the scene coordinates of the centre of the graph.
+        puzzle: the puzzle.
+        colours: the set of face colours in the puzzle.
+        colour_to_node: the mapping of face colours to quadrants.
+        node_to_colour: the mapping of quadrants to face colours.
+        node_to_mobject: the mapping of quadrants to mobjects that draw the nodes.
+        node_pair_to_count: the node-pair-to-count mapping.
+        edge_to_mobject: the mapping of edge keys to mobjects that draw the edges.
+        edge_to_subgraph: the mapping of edge keys to subgraph membership values
     """
     centre: np.ndarray
     puzzle: Puzzle
@@ -165,8 +171,9 @@ class OppositeFaceGraph(VGroup):
     node_pair_to_count: ObjectToCountMapping
     node_to_mobject: NodeToMobjectMapping
     edge_to_mobject: EdgeToMobjectMapping
+    edge_to_subgraph: EdgeToSubgraphMapping
 
-    def __init__(self, centre: np.ndarray, puzzle: Puzzle) -> None:
+    def __init__(self, puzzle: Puzzle, centre: np.ndarray) -> None:
         """
         Creates a new opposite face graph with no edges.
         """
@@ -189,12 +196,9 @@ class OppositeFaceGraph(VGroup):
         self.init_node_to_mobject()
         self.init_edge_to_mobject()
 
-        # add the edges before the nodes so that the nodes will be drawn over the edges
-        self.add(*self.edge_to_mobject.values())
-        self.add(*self.node_to_mobject.values())
-        # curve_edges: list[CurveEdge] = list(self.edge_to_curve.values())
-        # curve_edge: CurveEdge
-        # self.add(*[curve_edge.label for curve_edge in curve_edges])
+        # the subgraph is initially empty
+        empty_subgraph: EdgeToSubgraphMapping = self.mk_subgraph_for_flag(False)
+        self.set_subgraph(empty_subgraph)
 
     def init_node_to_mobject(self) -> None:
         """
@@ -239,31 +243,76 @@ class OppositeFaceGraph(VGroup):
                 start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
                 end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
                 link_edge: LabelledLink = LabelledLink(node_pair,
-                                               text,
-                                               sequence_number,
-                                               start_point,
-                                               end_point)
+                                                       text,
+                                                       sequence_number,
+                                                       start_point,
+                                                       end_point)
                 self.edge_to_mobject[cube_axis] = link_edge
             else:
                 # add a loop edge
                 point: np.ndarray = self.node_to_mobject[quadrant1].get_center()
                 loop_edge: LabelledLoop = LabelledLoop(node_pair,
-                                               text,
-                                               sequence_number,
-                                               point)
+                                                       text,
+                                                       sequence_number,
+                                                       point)
                 self.edge_to_mobject[cube_axis] = loop_edge
 
+    def set_subgraph(self, subgraph: EdgeToSubgraphMapping) -> None:
+        """
+        Sets the subgraph of the graph.
+
+        Args:
+            subgraph: the edge-to-subgraph mapping.
+        """
+
+        self.edge_to_subgraph = subgraph.copy()
+
+        # remove all the nodes and edges
+        self.remove(*self.submobjects)
+
+        # add the subgraph edges first so they are drawn before the nodes
+        cube_axis: CubeAxis
+        for cube_axis in subgraph.keys():
+            if subgraph[cube_axis]:
+                self.add(self.edge_to_mobject[cube_axis])
+
+        # finally, add back all the nodes so they are drawn after the edges
+        self.add(*self.node_to_mobject.values())
+
+    def set_subgraph_edge(self, cube_axis: CubeAxis, flag: bool) -> None:
+        """
+        Sets the subgraph edge of the graph.
+        Args:
+            cube_axis: the edge
+            flag: the subgraph membership flag
+        """
+        subgraph: EdgeToSubgraphMapping = self.edge_to_subgraph.copy()
+        subgraph[cube_axis] = flag
+        self.set_subgraph(subgraph)
+
+    @staticmethod
+    def mk_subgraph_for_flag(flag: bool) -> EdgeToSubgraphMapping:
+        """
+        Returns a subgraph for a boolean flag .
+        Args:
+            flag: True for the full subgraph, False for the empty subgraph.
+
+        Returns:
+            the subgraph for a boolean flag.
+        """
+        subgraph: EdgeToSubgraphMapping = dict.fromkeys(CubeAxis, flag)
+        return subgraph
 
 class FourNodeSquareGraph(Scene):
     def construct(self):
         # add_coordinate_grid(self)
 
-        cb_graph: OppositeFaceGraph = OppositeFaceGraph(ORIGIN + 3 * LEFT, CARTEBLANCHE_PUZZLE)
+        cb_graph: OppositeFaceGraph = OppositeFaceGraph(CARTEBLANCHE_PUZZLE, ORIGIN + 3 * LEFT)
         self.add(cb_graph)
         self.play(FadeIn(cb_graph))
         self.wait()
 
-        wm_graph: OppositeFaceGraph = OppositeFaceGraph(ORIGIN + 3 * RIGHT, WINNING_MOVES_PUZZLE)
+        wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN + 3 * RIGHT)
         self.add(wm_graph)
         self.play(FadeIn(wm_graph))
         self.wait()

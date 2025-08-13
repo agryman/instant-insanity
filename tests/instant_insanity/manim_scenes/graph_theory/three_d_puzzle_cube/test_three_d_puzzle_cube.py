@@ -11,7 +11,7 @@ def test_three_d_puzzle_cube():
     # create a perspective projection
     camera_z: float = 2.0
     viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
-    projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+    projection: PerspectiveProjection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
@@ -37,7 +37,7 @@ def test_three_d_puzzle_cube():
 def test_translation():
     camera_z: float = 2.0
     viewpoint: np.ndarray = np.array([0, 0, 6], dtype=np.float64)
-    projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+    projection: PerspectiveProjection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
