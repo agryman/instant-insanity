@@ -1,6 +1,6 @@
-from manim import *
+import numpy as np
 
-from manim import *
+from manim import ThreeDScene, DEGREES, Cube, VGroup, Text, BLACK, WHITE, PI, UP, Group, Rotate
 
 class RotatingLabelledCube(ThreeDScene):
     def construct(self):

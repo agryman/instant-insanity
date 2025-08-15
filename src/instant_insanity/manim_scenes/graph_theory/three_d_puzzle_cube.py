@@ -1,8 +1,10 @@
-from typing import OrderedDict, Any
+from typing import OrderedDict
+import numpy as np
 
-from manim import *
-from manim import Animation, VGroup, Polygon, ManimColor, BLACK, ValueTracker, VMobject
+from manim import Polygon, ManimColor, BLACK, GREEN, BLUE, Scene, Animation, ORIGIN, LEFT, tempconfig
 
+from instant_insanity.core.geometry_types import (Vertex, VertexPath, PolygonId, PolygonIdToVertexPathMapping,
+                                                  SortedPolygonIdToVertexPathMapping, SortedPolygonIdToPolygonMapping)
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES
 from instant_insanity.core.depth_sort import DepthSort
@@ -10,21 +12,8 @@ from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 from instant_insanity.core.transformation import transform_vertices
 from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC, MANIM_COLOUR_MAP
-from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
-
-
-class TrackedVGroup(VGroup):
-    """
-    This class is a VGroup with a ValueTracker.
-
-    Attributes:
-        tracker: the ValueTracker
-    """
-    tracker: ValueTracker
-
-    def __init__(self, *vmobjects: list[VMobject], **kwargs: Any) -> None:
-        super().__init__(*vmobjects, **kwargs)
-        self.tracker = ValueTracker(0.0)
+from instant_insanity.manim_scenes.graph_theory.three_d_polygons import TrackedVGroup
+from instant_insanity.manim_scenes.coordinate_grid import GridMixin
 
 
 class ThreeDPuzzleCube(TrackedVGroup):
@@ -40,7 +29,7 @@ class ThreeDPuzzleCube(TrackedVGroup):
     cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
     depth_sorter: DepthSort
-    initial_model_vertices: dict[FaceName, np.ndarray]
+    initial_model_paths: dict[FaceName, VertexPath]
     polygon_dict: OrderedDict[FaceName, Polygon]
 
     def __init__(self,
@@ -58,8 +47,8 @@ class ThreeDPuzzleCube(TrackedVGroup):
         self.depth_sorter = DepthSort(projection)
         self.puzzle_cube = PuzzleCube(cube_spec)
 
-        self.initial_model_vertices = FACE_NAME_TO_VERTICES.copy()
-        self.mk_polygons(self.initial_model_vertices)
+        self.initial_model_paths = FACE_NAME_TO_VERTICES.copy()
+        self.mk_polygons(self.initial_model_paths)
 
     def get_colour_name(self, name: FaceName) -> FaceColour:
         """
@@ -86,7 +75,7 @@ class ThreeDPuzzleCube(TrackedVGroup):
         colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
         return colour
 
-    def mk_polygons(self, model_vertices: dict[FaceName, np.ndarray]) -> None:
+    def mk_polygons(self, name_to_model_path: dict[FaceName, VertexPath]) -> None:
         """
         Makes the scene space polygons from the model space vertices and adds them to the group.
 
@@ -95,42 +84,47 @@ class ThreeDPuzzleCube(TrackedVGroup):
         The polygons are added to the VGroup in the depth-sorted order.
 
         Args:
-            model_vertices: the dict of model space vertices of the faces
+            name_to_model_path: the dict of model space vertices of the faces
         """
 
         # convert the FaceName keys of model_vertices to str.
-        vertices_dict: dict[str, np.ndarray] = {
-            str(name.value): vertices for name, vertices in model_vertices.items()
+        name: FaceName
+        model_path: VertexPath
+        id_to_model_path: PolygonIdToVertexPathMapping = {
+            PolygonId(name.value) : model_path for name, model_path in name_to_model_path.items()
         }
 
         # project the transformed vertices onto the scene and depth-sort them
-        sorted_name_keys: list[str]
-        scene_vertices_dict: dict[str, np.ndarray]
-        sorted_name_keys, scene_vertices_dict = self.depth_sorter.depth_sort(vertices_dict)
+        #sorted_name_keys: list[str]
+        #scene_vertices_dict: dict[str, np.ndarray]
+        #sorted_name_keys, scene_vertices_dict = self.depth_sorter.depth_sort_old(vertices_dict)
+        id_to_scene_path: SortedPolygonIdToVertexPathMapping = self.depth_sorter.depth_sort(id_to_model_path)
 
         # we are going to create new Polygons so remove any that are present in the group
         self.remove(*self.submobjects)
 
         # store the new Polygons in an OrderedDict
-        polygon_dict: OrderedDict[FaceName, Polygon] = OrderedDict()
+        name_to_polygon: OrderedDict[FaceName, Polygon] = OrderedDict()
 
         # create and add a new Manim Polygon for each projected face of the cube
-        for name_key in sorted_name_keys:
+        name_key: str
+        for name_key in id_to_scene_path.keys():
             # create a Manim Polygon
             name = FaceName(name_key)
             colour: ManimColor = self.get_manim_colour(name)
-            scene_vertices: np.ndarray = scene_vertices_dict[name_key]
+            #scene_vertices: np.ndarray = scene_vertices_dict[name_key]
+            polygon_id: PolygonId = PolygonId(name_key)
             polygon: Polygon = Polygon(
-                *scene_vertices,
+                *id_to_scene_path[polygon_id],
                 fill_color=colour,
                 fill_opacity=1.0,
                 stroke_color=BLACK,
                 stroke_width=1.0
             )
             self.add(polygon)
-            polygon_dict[name] = polygon
+            name_to_polygon[name] = polygon
 
-        self.polygon_dict = polygon_dict
+        self.polygon_dict = name_to_polygon
 
 
 class CubeRigidMotionAnimation(Animation):
@@ -160,17 +154,17 @@ class CubeRigidMotionAnimation(Animation):
         model_vertices: dict[FaceName, np.ndarray] = {
             name: transform_vertices(alpha_rotation,
                                      alpha_translation,
-                                     self.mobject.initial_model_vertices[name])
+                                     self.mobject.initial_model_paths[name])
             for name in FaceName
         }
         self.mobject.mk_polygons(model_vertices)
 
 
-class TestThreeDPuzzleCube(Scene):
+class TestThreeDPuzzleCube(GridMixin, Scene):
     def construct(self):
 
         # this grid confirms that the (x,y) coordinates are faithfully mapped to the frame
-        #add_coordinate_grid(scene)
+        self.add_grid(True)
 
         # these dots confirm that the z-component of points is ignored
         # diagonal = RIGHT + UP - OUT
@@ -194,7 +188,7 @@ class TestThreeDPuzzleCube(Scene):
         # create a projection
         camera_z: float = 8.0
         viewpoint: np.ndarray = np.array([5, 5, 20], dtype=np.float64)
-        projection: Projection = PerspectiveProjection(camera_z, viewpoint)
+        projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         # use the colours from the test cube
         cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC

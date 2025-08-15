@@ -1,4 +1,4 @@
-from manim import *
+from manim import Scene, Circle, PINK, Square, RIGHT, TAU, Create, Transform, FadeOut
 class DefaultTemplate(Scene):
     def construct(self):
         circle = Circle()  # create a circle

@@ -1,4 +1,6 @@
-from manim import *
+from manim import (ThreeDScene, ThreeDAxes, Cube, PURE_RED, PURE_BLUE, PURE_GREEN,
+                   WHITE, YELLOW, PURPLE, BLACK, DEGREES, RIGHT, LEFT, UP, DOWN, IN, OUT,
+                   PI, Rotate)
 
 
 #config.background_color = WHITE  # must be set before scene instantiation

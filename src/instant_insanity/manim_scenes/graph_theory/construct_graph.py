@@ -14,16 +14,19 @@ from typing import Callable, TypeAlias
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from manim import *
+import numpy as np
+
+from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn, ReplacementTransform,
+                   always_redraw, DOWN)
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
 from instant_insanity.core.force_ccw import force_ccw
 from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import (Puzzle, PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC,
+from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR)
 from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertices
-from instant_insanity.manim_scenes.coordinate_grid import add_coordinate_grid
+from instant_insanity.manim_scenes.coordinate_grid import GridMixin
 from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledEdge
 from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant
@@ -103,7 +106,7 @@ class CubeRigidMotionAnimator(CubeAnimator):
     def interpolate(self, alpha: float) -> None:
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
-        initial_vertices: dict[FaceName, np.ndarray] = self.cube.initial_model_vertices
+        initial_vertices: dict[FaceName, np.ndarray] = self.cube.initial_model_paths
         transformed_vertices: dict[FaceName, np.ndarray] = {
             name: transform_vertices(alpha_rotation, alpha_translation, initial_vertices[name])
             for name in FaceName
@@ -194,93 +197,71 @@ class FaceData:
     polygon: Polygon
     dot: Dot
 
-class ConstructGraph(Scene):
+def mk_face_data(graph: OppositeFaceGraph, cube: ThreeDPuzzleCube, name: FaceName) -> FaceData:
+    colour: FaceColour = cube.get_colour_name(name)
+    quadrant: Quadrant = graph.colour_to_node[colour]
+    polygon: Polygon = cube.polygon_dict[name]
+    vertices: np.ndarray = polygon.get_vertices()
+    centroid: np.ndarray = np.mean(vertices, axis=0)
+    dot: Dot = graph.mk_node_at(quadrant, centroid)
+    return FaceData(colour, quadrant, polygon, dot)
+
+
+class ConstructGraph(GridMixin, Scene):
     """
     This scene animates the construction of the opposite-face graph of a puzzle.
     Each cube of the puzzle is exploded into opposite-face pairs.
     Each opposite-face pair is morphed into an edge and added to the graph.
-
-    Attributes:
-        puzzle: the puzzle being transformed into its opposite-face graph.
-        graph: the opposite-face graph being constructed.
-        cube_number: the number of the cube currently being animated.
-        cube: the 3D projection of the cube currently being animated.
-        axis_label: the label of the axis of the cube currently being animated.
-        cube_axis: the axis of the cube currently being animated.
     """
-    puzzle: Puzzle | None
-    graph: OppositeFaceGraph | None
-    cube_number: PuzzleCubeNumber | None
-    cube: ThreeDPuzzleCube | None
-    axis_label: AxisLabel | None
-    cube_axis: CubeAxis | None
-    start: FaceData | None
-    end: FaceData | None
 
-    def setup(self):
-
-        # depend on puzzle
-        self.puzzle = Puzzle(WINNING_MOVES_PUZZLE_SPEC)
-        self.graph = OppositeFaceGraph(self.puzzle, 3 * RIGHT)
-
-        # depend on cube
-        self.cube_number = None
-        self.cube = None
-
-        # depend on axis
-        self.axis_label = None
-        self.cube_axis = None
-        self.start = None
-        self.end = None
-
-    def get_face_data(self, name: FaceName) -> FaceData:
-        colour: FaceColour = self.cube.get_colour_name(name)
-        quadrant: Quadrant = self.graph.colour_to_node[colour]
-        polygon: Polygon = self.cube.polygon_dict[name]
-        vertices: np.ndarray = polygon.get_vertices()
-        centroid: np.ndarray = np.mean(vertices, axis=0)
-        dot: Dot = self.graph.mk_node_at(quadrant, centroid)
-        return FaceData(colour, quadrant, polygon, dot)
-
-    def add_grid(self, show: bool) -> None:
+    @staticmethod
+    def mk_cube(cube_spec: PuzzleCubeSpec) -> ThreeDPuzzleCube:
         """
-        Adds a coordinate grid to aid in designing the scene.
-
-        Args:
-            show: whether to show the grid.
-        """
-        if show:
-            add_coordinate_grid(self)
-
-    def add_cube(self) -> None:
-        """
-        Adds a puzzle cube to the scene.
+        Makes a puzzle cube.
         """
         # create a projection
         camera_z: float = 2.0
         viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
+
+        # Alternatively:
         # camera_z: float = 8.0
         # viewpoint: np.ndarray = np.array([5, 5, 20], dtype=np.float64)
+
         projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         # create the cube object
-        puzzle_cube: PuzzleCube = self.puzzle.number_to_cube[self.cube_number]
-        cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
-        self.cube = ThreeDPuzzleCube(projection, cube_spec)
+        cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
         # find the scene coordinates of the centre of the front face
-        front_face: Polygon = self.cube.polygon_dict[FaceName.FRONT]
+        front_face: Polygon = cube.polygon_dict[FaceName.FRONT]
         centre: np.ndarray = front_face.get_center()
         scene_x: float = float(centre[0])
         scene_y: float = float(centre[1])
 
         # recreate the cube centered in the scene
         projection = PerspectiveProjection(viewpoint, scene_x=scene_x, scene_y=scene_y, camera_z=camera_z)
-        self.cube = ThreeDPuzzleCube(projection, cube_spec)
+        cube = ThreeDPuzzleCube(projection, cube_spec)
 
-        self.add(self.cube)
+        return cube
 
-    def animate_explode_cube(self) -> None:
+    @staticmethod
+    def mk_start_end(graph: OppositeFaceGraph,
+                     cube: ThreeDPuzzleCube,
+                     axis_label: AxisLabel) -> tuple[FaceData, FaceData]:
+        face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[axis_label]
+        first: FaceData = mk_face_data(graph, cube, face_pair[0])
+        second: FaceData = mk_face_data(graph, cube, face_pair[1])
+
+        # sort the start and end nodes to match the order in the graph
+        if first.quadrant <= second.quadrant:
+            return first, second
+        else:
+            return second, first
+
+    def play_cube_animation(self, cube: ThreeDPuzzleCube, animator: CubeAnimator, run_time=1.0) -> None:
+        pass
+
+    def animate_explode_cube(self, cube: ThreeDPuzzleCube) -> None:
         # animate cube rigid motion
         # rotation: np.ndarray = ORIGIN
         # translation: np.ndarray = 7 * LEFT #+ DOWN
@@ -288,103 +269,126 @@ class ConstructGraph(Scene):
 
         # animate cube explosion
         expansion_factor: float = 2.0
-        animator: CubeAnimator = CubeExplosionAnimator(self.cube, expansion_factor)
+        animator: CubeAnimator = CubeExplosionAnimator(cube, expansion_factor)
 
-        self.cube.remove(*self.cube.submobjects)
+        cube.remove(*cube.submobjects)
         updater: Updater = animator.mk_updater()
-        self.cube.add_updater(updater)
-        tracker: ValueTracker = self.cube.tracker
+        cube.add_updater(updater)
+        tracker: ValueTracker = cube.tracker
         self.play(tracker.animate.set_value(1.0), run_time=4.0)
-        self.cube.remove_updater(updater)
+        cube.remove_updater(updater)
 
-    def animate_shift_cube(self) -> None:
+    def animate_shift_cube(self, cube: ThreeDPuzzleCube) -> None:
         # animate movement of exploded cube to the left
         cube_shift: np.ndarray = 3 * LEFT
-        self.play(self.cube.animate.shift(cube_shift), run_time=1.0)
+        self.play(cube.animate.shift(cube_shift), run_time=1.0)
 
-    def fade_in_graph(self) -> None:
-        # fade-in the nodes of the empty opposite-face graph
-        self.play(FadeIn(self.graph))
-
-    def morph_opposite_faces_to_dots(self) -> None:
+    def morph_opposite_faces_to_dots(self,
+                                     start: FaceData,
+                                     end: FaceData) -> None:
         # morph the pair of opposite faces from polygons to dots
-        face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[self.axis_label]
-        first: FaceData = self.get_face_data(face_pair[0])
-        second: FaceData = self.get_face_data(face_pair[1])
-
-        # sort the start and end nodes to match the order in the graph
-        if first.quadrant <= second.quadrant:
-            self.start, self.end = first, second
-        else:
-            self.start, self.end = second, first
 
         # force the polygons to have ccw orientation so the morphing to dots is smooth
-        force_ccw(self.start.polygon)
-        force_ccw(self.end.polygon)
+        force_ccw(start.polygon)
+        force_ccw(end.polygon)
 
         # morph the polygons to dots
-        self.play(ReplacementTransform(self.start.polygon, self.start.dot),
-                  ReplacementTransform(self.end.polygon, self.end.dot), run_time=2.0)
+        self.play(ReplacementTransform(start.polygon, start.dot),
+                  ReplacementTransform(end.polygon, end.dot), run_time=2.0)
 
 
-    def fade_in_opposite_face_edge(self) -> None:
+    def fade_in_opposite_face_edge(
+            self,
+            graph: OppositeFaceGraph,
+            cube_axis: CubeAxis,
+            start: FaceData,
+            end: FaceData) -> None:
         # connect the start-end dots with a graph edge
-        start_point: np.ndarray = self.start.dot.get_center()
-        end_point: np.ndarray = self.end.dot.get_center()
-        edge: LabelledEdge = self.graph.copy_edge_to(self.cube_axis, start_point, end_point)
+        start_point: np.ndarray = start.dot.get_center()
+        end_point: np.ndarray = end.dot.get_center()
+        edge: LabelledEdge = graph.copy_edge_to(cube_axis, start_point, end_point)
 
-        self.remove(self.start.dot, self.end.dot)
-        self.add(edge, self.start.dot, self.end.dot)
+        self.remove(start.dot, end.dot)
+        self.add(edge, start.dot, end.dot)
         self.play(FadeIn(edge))
-        self.remove(edge, self.start.dot, self.end.dot)
+        self.remove(edge, start.dot, end.dot)
 
-    def move_opposite_face_edge_to_graph(self) -> None:
+    def move_opposite_face_edge_to_graph(
+            self,
+            graph: OppositeFaceGraph,
+            cube_axis: CubeAxis,
+            start: FaceData,
+            end: FaceData) -> None:
 
         # move the dots to the graph and always redraw the moving edge to connect their centres
         moving_edge: Mobject = always_redraw(
-            lambda: self.graph.copy_edge_to(self.cube_axis,
-                                            self.start.dot.get_center(),
-                                            self.end.dot.get_center()
-                                            )
+            lambda:
+            graph.copy_edge_to(
+                cube_axis,
+                start.dot.get_center(),
+                end.dot.get_center()
+            )
         )
 
         # draw the dots on top of the moving edge
-        self.add(moving_edge, self.start.dot, self.end.dot)
+        self.add(moving_edge, start.dot, end.dot)
 
-        target_start_dot: Dot = self.graph.node_to_mobject[self.start.quadrant]
-        target_end_dot: Dot = self.graph.node_to_mobject[self.end.quadrant]
+        target_start_dot: Dot = graph.node_to_mobject[start.quadrant]
+        target_end_dot: Dot = graph.node_to_mobject[end.quadrant]
         self.play(
-            self.start.dot.animate.move_to(target_start_dot),
-            self.end.dot.animate.move_to(target_end_dot),
+            start.dot.animate.move_to(target_start_dot),
+            end.dot.animate.move_to(target_end_dot),
             run_time=2.0,
         )
-        self.remove(moving_edge, self.start.dot, self.end.dot)
+        self.remove(moving_edge, start.dot, end.dot)
 
-    def animate_construct_opposite_face_edge(self) -> None:
-        self.cube_axis = (self.cube_number, self.axis_label)
-
-        self.morph_opposite_faces_to_dots()
-        self.fade_in_opposite_face_edge()
-        self.move_opposite_face_edge_to_graph()
+    def animate_construct_opposite_face_edge(
+            self,
+            graph: OppositeFaceGraph,
+            cube_axis: CubeAxis,
+            start: FaceData,
+            end:FaceData) -> None:
+        self.morph_opposite_faces_to_dots(start, end)
+        self.fade_in_opposite_face_edge(graph, cube_axis, start, end)
+        self.move_opposite_face_edge_to_graph(graph, cube_axis, start, end)
 
         # add the edge to the subgraph
-        self.graph.set_subgraph_edge(self.cube_axis, True)
+        graph.set_subgraph_edge(cube_axis, True)
 
     def construct(self):
-        self.add_grid(False)
+        self.add_grid(True)
 
-        self.cube_number = PuzzleCubeNumber.ONE
-        self.add_cube()
-        self.wait()
+        puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        puzzle: Puzzle = Puzzle(puzzle_spec)
 
-        self.animate_explode_cube()
-        self.animate_shift_cube()
-        self.fade_in_graph()
+        # TODO: add the 3d puzzle to the scene
+        # TODO: the 3d should make all the cubes and expose them in an array of cubes
 
-        axis_label: AxisLabel
-        for axis_label in AxisLabel:
-            self.axis_label = axis_label
-            self.animate_construct_opposite_face_edge()
+        graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT)
+        self.play(FadeIn(graph))
+
+        cube_number: PuzzleCubeNumber
+        for cube_number in PuzzleCubeNumber:
+            if cube_number > PuzzleCubeNumber.ONE:
+                break
+            puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
+            cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
+            cube: ThreeDPuzzleCube = self.mk_cube(cube_spec)
+
+            self.add(cube)
+            self.wait()
+
+            self.animate_explode_cube(cube)
+            self.animate_shift_cube(cube)
+
+            axis_label: AxisLabel
+            cube_axis: CubeAxis
+            for axis_label in AxisLabel:
+                cube_axis = (cube_number, axis_label)
+                start: FaceData
+                end: FaceData
+                start, end = self.mk_start_end(graph, cube, axis_label)
+                self.animate_construct_opposite_face_edge(graph, cube_axis, start, end)
 
         self.wait(4.0)
 

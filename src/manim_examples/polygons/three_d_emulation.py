@@ -19,7 +19,7 @@ class ThreeDSceneEmulation(Scene):
         camera_z: float = 0
         #viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
         viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
-        projection: PerspectiveProjection = PerspectiveProjection(camera_z, viewpoint)
+        projection: PerspectiveProjection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         def mk_polygons(alpha: float) -> list[Polygon]:
             """Makes the triangle corresponding to the animation parameter alpha"""

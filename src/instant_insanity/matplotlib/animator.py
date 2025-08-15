@@ -84,7 +84,7 @@ class Animator(ABC):
     frames: list[float]
     animation: FuncAnimation
 
-    def __init__(self, video_spec: VideoSpec = None, mpeg_spec: MpegSpec = None):
+    def __init__(self, video_spec: VideoSpec | None = None, mpeg_spec: MpegSpec | None = None):
 
         if video_spec is None:
             video_spec = VideoSpec()

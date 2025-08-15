@@ -1,4 +1,4 @@
-from manim import *
+from manim import Scene, Square, UP, DOWN, LEFT, RIGHT, ORIGIN, VGroup, Create
 
 class CubeNet(Scene):
     def construct(self):

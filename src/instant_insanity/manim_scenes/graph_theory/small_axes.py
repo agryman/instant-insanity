@@ -1,4 +1,4 @@
-from manim import *
+from manim import ThreeDScene, ThreeDAxes, LEFT, DOWN, DEGREES
 
 class SmallAxesInCorner3D(ThreeDScene):
     def construct(self):

@@ -50,7 +50,7 @@ class FaceNumber(IntEnum):
     BOTTOM = 5
     LEFT = 6
 
-    def opposite(self) -> Self:
+    def opposite(self) -> 'FaceNumber':
         """Return the opposite face number."""
         return FaceNumber(7 - self.value)
 

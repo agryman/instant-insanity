@@ -1,5 +1,7 @@
 from typing import TypeAlias
-from manim import *
+import numpy as np
+
+from manim import tempconfig, Dot, VGroup, Scene, ORIGIN, LEFT, RIGHT, FadeIn
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName

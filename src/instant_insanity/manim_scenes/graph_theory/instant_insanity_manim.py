@@ -1,5 +1,8 @@
-from manim import *
 import numpy as np
+
+from manim import (Scene, ThreeDScene, DEGREES, RED, BLUE, GREEN, YELLOW, WHITE, LIGHT_GRAY, DARK_GRAY, BLACK, Text,
+                   UP, DOWN, LEFT, RIGHT, Write, FadeOut, Create, Rotate, Cube, Triangle, Rectangle, PI, Circle, VGroup,
+                   ArcBetweenPoints, Arrow)
 
 
 class InstantInsanityScene(ThreeDScene):
@@ -9,7 +12,6 @@ class InstantInsanityScene(ThreeDScene):
 
         # Define colors for the puzzle (Red, Blue, Green, Yellow)
         colors = [RED, BLUE, GREEN, YELLOW]
-        color_names = ["R", "B", "G", "Y"]
 
         # Define the 4 cubes with their face colors
         # Each cube has 6 faces: front, back, left, right, top, bottom

@@ -1,8 +1,10 @@
-from manim import *
+import numpy as np
+
+from manim import (config, WHITE, ThreeDScene, DEGREES, PI, RED, GREEN, BLUE, ORANGE, YELLOW, PURPLE, BLACK,
+                   OUT, IN, UP, DOWN, LEFT, RIGHT, Square, VGroup, Text, Rotate, FadeIn,
+                   rotation_matrix, normalize, angle_between_vectors)
 
 config.background_color = WHITE  # must be set before scene instantiation
-
-from manim import *
 
 class FaceLabelsOnPause(ThreeDScene):
     def construct(self):
@@ -23,7 +25,7 @@ class FaceLabelsOnPause(ThreeDScene):
         }
 
         # Face definitions: label → (normal, up_hint)
-        face_defs = {
+        face_to_directions = {
             "x":  (OUT,    UP),
             "x'": (IN,     UP),
             "y":  (RIGHT,  UP),
@@ -35,7 +37,7 @@ class FaceLabelsOnPause(ThreeDScene):
         # Store face: (mobject, normal)
         faces = {}
 
-        for name, (normal, up_dir) in face_defs.items():
+        for name, (normal, up_dir) in face_to_directions.items():
             face = Square(side_length=face_size, fill_color=face_color[name], fill_opacity=face_opacity)
             face.set_stroke(BLACK, width=2)
 
@@ -91,7 +93,8 @@ class FaceLabelsOnPause(ThreeDScene):
 
         return labels
 
-    def rotation_matrix_from_vectors(self, from_vec, to_vec, up_hint):
+    @staticmethod
+    def rotation_matrix_from_vectors(from_vec, to_vec, up_hint):
         from_vec = normalize(from_vec)
         to_vec = normalize(to_vec)
         axis = np.cross(from_vec, to_vec)

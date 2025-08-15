@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from instant_insanity.core.geometry_types import *
 from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
 

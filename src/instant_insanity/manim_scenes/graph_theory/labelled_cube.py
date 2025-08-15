@@ -1,4 +1,7 @@
-from manim import *
+import numpy as np
+
+from manim import (ThreeDScene, BLACK, WHITE, DEGREES, VGroup, Square, Text, OUT, UP, RIGHT, DOWN, LEFT, IN,
+                   RED, GREEN, BLUE, ORANGE, YELLOW, PURPLE, PI, Rotate, normalize, rotation_matrix, angle_between_vectors)
 
 
 class LabelledCube(ThreeDScene):
@@ -15,13 +18,13 @@ class LabelledCube(ThreeDScene):
             face.set_stroke(BLACK, width=2)
 
             # Orient the face
-            rotation_matrix = self.rotation_matrix_from_vectors(OUT, normal, up_direction)
-            face.apply_matrix(rotation_matrix)
+            face_rotation_matrix = self.rotation_matrix_from_vectors(OUT, normal, up_direction)
+            face.apply_matrix(face_rotation_matrix)
             face.shift(normal * face_size / 2)
 
             # Create and orient label in the same local frame
             label = Text(label_text, color=BLACK).scale(0.5)
-            label.apply_matrix(rotation_matrix)
+            label.apply_matrix(face_rotation_matrix)
             label.move_to(normal * (face_size / 2 - 0.01))  # embed just in front of the face
 
             # Attach label to face
@@ -42,7 +45,8 @@ class LabelledCube(ThreeDScene):
         self.wait()
 
     # Utility: construct a rotation matrix from source to target vector
-    def rotation_matrix_from_vectors(self, from_vec, to_vec, up_hint):
+    @staticmethod
+    def rotation_matrix_from_vectors(from_vec, to_vec, up_hint):
         from_vec = normalize(from_vec)
         to_vec = normalize(to_vec)
         axis = np.cross(from_vec, to_vec)

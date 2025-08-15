@@ -1,11 +1,11 @@
-from manim import *
+from manim import Scene, tempconfig, Dot, MathTex, NumberPlane, BLACK, GREY_B, ORIGIN, UP, LEFT, DEFAULT_DOT_RADIUS
 
 from instant_insanity.core.config import LINEN_CONFIG
 
 
 def add_coordinate_grid(scene: Scene) -> None:
-    fw = 12 #config.frame_width
-    fh = 6 #config.frame_height
+    fw = 12  # config.frame_width
+    fh = 6  # config.frame_height
 
     plane = NumberPlane(
         x_range=(-fw / 2, fw / 2, 1),  # integers every 1 scene unit
@@ -30,9 +30,15 @@ def add_coordinate_grid(scene: Scene) -> None:
     scene.add(plane, origin, x_label, y_label)
 
 
-class SceneCoordinateGrid(Scene):
+class GridMixin:
+    def add_grid(self, show: bool) -> None:
+        if show:
+            add_coordinate_grid(self)
+
+
+class SceneCoordinateGrid(GridMixin, Scene):
     def construct(self):
-        add_coordinate_grid(self)
+        self.add_grid(True)
 
 
 if __name__ == "__main__":

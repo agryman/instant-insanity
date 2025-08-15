@@ -2,8 +2,9 @@
 This module implements the LabelledEdge class which is used in the OppositeFaceGraph.
 """
 from typing import Self
+import numpy as np
 
-from manim import *
+from manim import CubicBezier, Text, VGroup, ManimColor, BLACK, OUT
 
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
 

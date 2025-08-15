@@ -113,7 +113,7 @@ class ConvexPlanarPolygon:
         nonplanar: np.ndarray = ~np.isclose(dot_products, 0.0)
 
         if np.any(nonplanar):
-            i: int = int(np.where(nonplanar)[0][0])
+            i = int(np.where(nonplanar)[0][0])
             raise ValueError(f'edge {i} is nonplanar')
 
         # compute the 2d coordinates of the polygon and check for convexity
