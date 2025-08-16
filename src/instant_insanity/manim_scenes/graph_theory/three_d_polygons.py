@@ -11,7 +11,7 @@ from instant_insanity.core.geometry_types import (Vertex, VertexPath, PolygonId,
                                                   as_vertex, as_vertex_path)
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.depth_sort import DepthSort
-from instant_insanity.core.transformation import transform_vertices
+from instant_insanity.core.transformation import transform_vertex_path
 from instant_insanity.manim_scenes.coordinate_grid import GridMixin
 
 
@@ -49,7 +49,7 @@ def mk_id_to_scene_polygon(id_to_scene_path: SortedPolygonIdToVertexPathMapping,
 
     return id_to_scene_polygon
 
-class ThreeDPolygons(TrackedVGroup, ABC):
+class ThreeDPolygons(TrackedVGroup):
     """
     This class animates a collection of 3D polygons.
 
@@ -193,7 +193,7 @@ class TestThreeDPolygons(GridMixin, Scene):
         rotation: np.ndarray = np.array(RIGHT * PI / 2.0, dtype=np.float64)
         translation: np.ndarray = np.array(LEFT * 4, dtype=np.float64)
         id_to_interpolated_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id : transform_vertices(rotation, translation, id_to_initial_model_path[polygon_id])
+            polygon_id : transform_vertex_path(rotation, translation, id_to_initial_model_path[polygon_id])
             for polygon_id in id_to_initial_model_path.keys()
         }
         polygons.update_polygons(id_to_interpolated_model_path, **polygon_defaults)

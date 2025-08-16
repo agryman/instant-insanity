@@ -1,22 +1,22 @@
 from typing import OrderedDict
 import numpy as np
 
-from manim import Polygon, ManimColor, BLACK, GREEN, BLUE, Scene, Animation, ORIGIN, LEFT, tempconfig
+from manim import Polygon, ManimColor, BLACK, GREEN, BLUE, Scene, Animation, ORIGIN, LEFT, tempconfig, Vector
 
 from instant_insanity.core.geometry_types import (Vertex, VertexPath, PolygonId, PolygonIdToVertexPathMapping,
                                                   SortedPolygonIdToVertexPathMapping, SortedPolygonIdToPolygonMapping)
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES
+from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
-from instant_insanity.core.transformation import transform_vertices
+from instant_insanity.core.transformation import transform_vertex_path
 from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC, MANIM_COLOUR_MAP
-from instant_insanity.manim_scenes.graph_theory.three_d_polygons import TrackedVGroup
+from instant_insanity.manim_scenes.graph_theory.three_d_polygons import TrackedVGroup, ThreeDPolygons
 from instant_insanity.manim_scenes.coordinate_grid import GridMixin
 
 
-class ThreeDPuzzleCube(TrackedVGroup):
+class ThreeDPuzzleCube(ThreeDPolygons):
     """
     This class is a VGroup that renders as a 3D puzzle cube in model space.
     The appearance of the cube is determined by a projection from model space to scene space.
@@ -25,12 +25,10 @@ class ThreeDPuzzleCube(TrackedVGroup):
     The faces are Polygons.
 
     """
-    projection: Projection
     cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
-    depth_sorter: DepthSort
-    initial_model_paths: dict[FaceName, VertexPath]
-    polygon_dict: OrderedDict[FaceName, Polygon]
+    name_to_initial_model_path: dict[FaceName, VertexPath]
+    name_to_scene_polygon: OrderedDict[FaceName, Polygon]
 
     def __init__(self,
                  projection: Projection,
@@ -41,14 +39,31 @@ class ThreeDPuzzleCube(TrackedVGroup):
             projection: the projection
             cube_spec: the puzzle cube specification
         """
-        super().__init__(**kwargs)
-        self.projection = projection
+        id_to_initial_model_path: PolygonIdToVertexPathMapping = ThreeDPuzzleCube.mk_id_to_initial_model_path()
+        super().__init__(projection, id_to_initial_model_path, **kwargs)
         self.cube_spec = cube_spec
-        self.depth_sorter = DepthSort(projection)
         self.puzzle_cube = PuzzleCube(cube_spec)
 
-        self.initial_model_paths = FACE_NAME_TO_VERTICES.copy()
-        self.mk_polygons(self.initial_model_paths)
+        self.name_to_initial_model_path = FACE_NAME_TO_VERTEX_PATH.copy()
+        self.mk_polygons(self.name_to_initial_model_path)
+
+    @staticmethod
+    def name_to_id(face_name: FaceName) -> PolygonId:
+        return PolygonId(face_name.value)
+
+    @staticmethod
+    def id_to_name(polygon_id: PolygonId) -> FaceName:
+        return FaceName(polygon_id)
+
+    @staticmethod
+    def mk_id_to_initial_model_path() -> PolygonIdToVertexPathMapping:
+        face_name: FaceName
+        vertex_path: VertexPath
+        id_to_initial_model_path: PolygonIdToVertexPathMapping = {
+            ThreeDPuzzleCube.name_to_id(face_name): vertex_path
+            for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items()
+        }
+        return id_to_initial_model_path
 
     def get_colour_name(self, name: FaceName) -> FaceColour:
         """
@@ -84,36 +99,32 @@ class ThreeDPuzzleCube(TrackedVGroup):
         The polygons are added to the VGroup in the depth-sorted order.
 
         Args:
-            name_to_model_path: the dict of model space vertices of the faces
+            name_to_model_path: the dict of model space vertex paths of the faces
         """
 
         # convert the FaceName keys of model_vertices to str.
         name: FaceName
         model_path: VertexPath
         id_to_model_path: PolygonIdToVertexPathMapping = {
-            PolygonId(name.value) : model_path for name, model_path in name_to_model_path.items()
+            ThreeDPuzzleCube.name_to_id(name) : model_path
+            for name, model_path in name_to_model_path.items()
         }
 
         # project the transformed vertices onto the scene and depth-sort them
-        #sorted_name_keys: list[str]
-        #scene_vertices_dict: dict[str, np.ndarray]
-        #sorted_name_keys, scene_vertices_dict = self.depth_sorter.depth_sort_old(vertices_dict)
         id_to_scene_path: SortedPolygonIdToVertexPathMapping = self.depth_sorter.depth_sort(id_to_model_path)
 
         # we are going to create new Polygons so remove any that are present in the group
         self.remove(*self.submobjects)
 
         # store the new Polygons in an OrderedDict
-        name_to_polygon: OrderedDict[FaceName, Polygon] = OrderedDict()
+        name_to_scene_polygon: OrderedDict[FaceName, Polygon] = OrderedDict()
 
         # create and add a new Manim Polygon for each projected face of the cube
-        name_key: str
-        for name_key in id_to_scene_path.keys():
+        polygon_id: PolygonId
+        for polygon_id in id_to_scene_path.keys():
             # create a Manim Polygon
-            name = FaceName(name_key)
+            name = ThreeDPuzzleCube.id_to_name(polygon_id)
             colour: ManimColor = self.get_manim_colour(name)
-            #scene_vertices: np.ndarray = scene_vertices_dict[name_key]
-            polygon_id: PolygonId = PolygonId(name_key)
             polygon: Polygon = Polygon(
                 *id_to_scene_path[polygon_id],
                 fill_color=colour,
@@ -122,9 +133,9 @@ class ThreeDPuzzleCube(TrackedVGroup):
                 stroke_width=1.0
             )
             self.add(polygon)
-            name_to_polygon[name] = polygon
+            name_to_scene_polygon[name] = polygon
 
-        self.polygon_dict = name_to_polygon
+        self.name_to_scene_polygon = name_to_scene_polygon
 
 
 class CubeRigidMotionAnimation(Animation):
@@ -136,28 +147,30 @@ class CubeRigidMotionAnimation(Animation):
         translation: the translation vector.
     """
 
-    rotation: np.ndarray
-    translation: np.ndarray
+    rotation: Vector
+    translation: Vector
 
     def __init__(self,
                  cube: ThreeDPuzzleCube,
-                 rotation: np.ndarray,
-                 translation: np.ndarray,
+                 rotation: Vector,
+                 translation: Vector,
                  **kwargs) -> None:
         super().__init__(cube, **kwargs)
         self.rotation = rotation
         self.translation = translation
 
     def interpolate_mobject(self, alpha: float) -> None:
-        alpha_rotation: np.ndarray = alpha * self.rotation
-        alpha_translation: np.ndarray = alpha * self.translation
-        model_vertices: dict[FaceName, np.ndarray] = {
-            name: transform_vertices(alpha_rotation,
-                                     alpha_translation,
-                                     self.mobject.initial_model_paths[name])
+        assert isinstance(self.mobject, ThreeDPuzzleCube)
+        cube: ThreeDPuzzleCube = self.mobject
+        alpha_rotation: Vector = alpha * self.rotation
+        alpha_translation: Vector = alpha * self.translation
+        name_to_model_vertex_path: dict[FaceName, VertexPath] = {
+            name: transform_vertex_path(alpha_rotation,
+                                        alpha_translation,
+                                        cube.name_to_initial_model_path[name])
             for name in FaceName
         }
-        self.mobject.mk_polygons(model_vertices)
+        cube.mk_polygons(name_to_model_vertex_path)
 
 
 class TestThreeDPuzzleCube(GridMixin, Scene):
@@ -195,31 +208,31 @@ class TestThreeDPuzzleCube(GridMixin, Scene):
         three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
         # grab the initial front and right faces
-        initial_front_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.FRONT]
+        initial_front_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.FRONT]
         initial_front_vertices: np.ndarray = initial_front_polygon.get_vertices()
         initial_front_polygon_outline: Polygon = Polygon(*initial_front_vertices, color=BLUE)
         self.add(initial_front_polygon_outline)
 
-        initial_right_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.RIGHT]
+        initial_right_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.RIGHT]
         initial_right_vertices: np.ndarray = initial_right_polygon.get_vertices()
         initial_right_polygon_outline: Polygon = Polygon(*initial_right_vertices, color=GREEN)
         self.add(initial_right_polygon_outline)
 
         # set up the rigid motion animation
-        rotation: np.ndarray = ORIGIN
-        translation: np.ndarray = 7 * LEFT  # + DOWN
+        rotation: Vector = ORIGIN
+        translation: Vector = 7 * LEFT  # + DOWN
         animation: CubeRigidMotionAnimation = CubeRigidMotionAnimation(three_d_puzzle_cube, rotation, translation)
 
         # move the cube to the animation midpoint
         animation.interpolate_mobject(0.5)
 
         # grab the midpoint front and right faces
-        mid_front_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.FRONT]
+        mid_front_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.FRONT]
         mid_front_vertices: np.ndarray = mid_front_polygon.get_vertices()
         mid_front_polygon_outline: Polygon = Polygon(*mid_front_vertices, color=BLUE)
         self.add(mid_front_polygon_outline)
 
-        mid_right_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.RIGHT]
+        mid_right_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.RIGHT]
         mid_right_vertices: np.ndarray = mid_right_polygon.get_vertices()
         mid_right_polygon_outline: Polygon = Polygon(*mid_right_vertices, color=GREEN)
         self.add(mid_right_polygon_outline)
@@ -228,12 +241,12 @@ class TestThreeDPuzzleCube(GridMixin, Scene):
         animation.interpolate_mobject(1.0)
 
         # grab the final front and right faces
-        final_front_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.FRONT]
+        final_front_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.FRONT]
         final_front_vertices: np.ndarray = final_front_polygon.get_vertices()
         final_front_polygon_outline: Polygon = Polygon(*final_front_vertices, color=BLUE)
         self.add(final_front_polygon_outline)
 
-        final_right_polygon: Polygon = three_d_puzzle_cube.polygon_dict[FaceName.RIGHT]
+        final_right_polygon: Polygon = three_d_puzzle_cube.name_to_scene_polygon[FaceName.RIGHT]
         final_right_vertices: np.ndarray = final_right_polygon.get_vertices()
         final_right_polygon_outline: Polygon = Polygon(*final_right_vertices, color=GREEN)
         self.add(final_right_polygon_outline)

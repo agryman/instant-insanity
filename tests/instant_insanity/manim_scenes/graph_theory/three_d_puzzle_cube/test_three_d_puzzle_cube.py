@@ -1,6 +1,6 @@
 from manim import *
 
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES
+from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
@@ -17,7 +17,7 @@ def test_three_d_puzzle_cube():
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
     three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
-    polygon_dict = three_d_puzzle_cube.polygon_dict
+    polygon_dict = three_d_puzzle_cube.name_to_scene_polygon
     sorted_faces = list(polygon_dict.keys())
 
     # the front, right, and top faces should be visible
@@ -42,11 +42,11 @@ def test_translation():
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
     three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
-    polygons_before = three_d_puzzle_cube.polygon_dict.copy()
+    polygons_before = three_d_puzzle_cube.name_to_scene_polygon.copy()
     right_before = polygons_before[FaceName.RIGHT]
     actual_vertices_before = right_before.get_vertices()
 
-    model_vertices_before = FACE_NAME_TO_VERTICES[FaceName.RIGHT]
+    model_vertices_before = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT]
     expected_vertices_before = projection.project_points(model_vertices_before)
     assert np.allclose(actual_vertices_before, expected_vertices_before)
 
@@ -56,12 +56,20 @@ def test_translation():
     animation: Animation = CubeRigidMotionAnimation(three_d_puzzle_cube, rotation, translation)
     animation.interpolate_mobject(1.0)
 
-    polygons_after = three_d_puzzle_cube.polygon_dict
+    polygons_after = three_d_puzzle_cube.name_to_scene_polygon
     right_after = polygons_after[FaceName.RIGHT]
     actual_vertices_after = right_after.get_vertices()
 
-    model_vertices_after = FACE_NAME_TO_VERTICES[FaceName.RIGHT] + translation
+    model_vertices_after = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT] + translation
     expected_vertices_after = projection.project_points(model_vertices_after)
     assert np.allclose(actual_vertices_after, expected_vertices_after)
 
     assert len(polygons_before) == len(polygons_after)
+
+def test_polygon_ids():
+    for face_name in FaceName:
+        polygon_id = ThreeDPuzzleCube.name_to_id(face_name)
+        face_name_2 = ThreeDPuzzleCube.id_to_name(polygon_id)
+        assert face_name_2 == face_name
+        polygon_id_2 = ThreeDPuzzleCube.name_to_id(face_name_2)
+        assert polygon_id_2 == polygon_id

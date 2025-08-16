@@ -90,8 +90,8 @@ LBB: np.ndarray = mk_point([-1.0, -1.0, -1.0])
 def mk_points(points: list[np.ndarray]) -> np.ndarray:
     return np.array(points, dtype=np.float64)
 
-# vertex lists of standard cube faces
-FACE_NAME_TO_VERTICES: dict[FaceName, np.ndarray] = {
+# vertex paths of standard cube faces
+FACE_NAME_TO_VERTEX_PATH: dict[FaceName, np.ndarray] = {
     FaceName.RIGHT: mk_points([RTF, RTB, RBB, RBF]),
     FaceName.LEFT: mk_points([LTF, LTB, LBB, LBF]),
     FaceName.TOP: mk_points([RTF, RTB, LTB, LTF]),

@@ -2,9 +2,10 @@ import numpy
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+from instant_insanity.core.geometry_types import Vector, Vertex, VertexPath
 from instant_insanity.core.type_check import check_array_float64
 
-def rotation_matrix_about_line(p: np.ndarray, u: np.ndarray, theta: float) -> np.ndarray:
+def rotation_matrix_about_line(p: Vertex, u: Vector, theta: float) -> np.ndarray:
     """Computes the rotation matrix around an arbitrary line in 3D.
 
     Args:
@@ -53,7 +54,7 @@ def rotation_matrix_about_line(p: np.ndarray, u: np.ndarray, theta: float) -> np
     return rotation_matrix
 
 
-def apply_linear_transform(mat: np.ndarray, v: np.ndarray) -> np.ndarray:
+def apply_linear_transform(mat: np.ndarray, v: VertexPath) -> np.ndarray:
     """Apply a 4×4 transformation matrix to an array of n 3D vectors.
 
     Args:
@@ -79,7 +80,7 @@ def apply_linear_transform(mat: np.ndarray, v: np.ndarray) -> np.ndarray:
     return v_transformed[:, :3]
 
 
-def transform_vertices(rotation, translation, vertices) -> np.ndarray:
+def transform_vertex_path(rotation: Vector, translation: Vector, vertex_path: VertexPath) -> np.ndarray:
     """
     Transform the vertices by applying a rotation followed by a translation.
 
@@ -89,10 +90,10 @@ def transform_vertices(rotation, translation, vertices) -> np.ndarray:
     Args:
         rotation: a rotation 3-vector.
         translation: a translation 3-vector.
-        vertices: a matrix of n 3-vectors.
+        vertex_path: a matrix of n 3-vectors.
 
     Returns:
         the matrix of n transformed 3-vectors.
     """
     rot = Rotation.from_rotvec(rotation)
-    return rot.apply(vertices) + translation
+    return rot.apply(vertex_path) + translation

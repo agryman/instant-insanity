@@ -24,6 +24,7 @@ from numpy.typing import NDArray
 from manim import Polygon
 
 __all__ = [
+    'Vector',
     'Vertex',
     'VertexPath',
     'PolygonId',
@@ -40,6 +41,7 @@ __all__ = [
 ]
 
 # --- Core data types ---
+Vector: TypeAlias = NDArray[np.float64]          # shape (3,)
 Vertex: TypeAlias = NDArray[np.float64]          # shape (3,)
 VertexPath: TypeAlias = NDArray[np.float64]      # shape (n, 3)
 

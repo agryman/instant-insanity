@@ -20,36 +20,31 @@ from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT,
                    always_redraw, DOWN)
 
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTICES, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
+from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
 from instant_insanity.core.force_ccw import force_ccw
+from instant_insanity.core.geometry_types import VertexPath, Vector, Vertex
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR)
-from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertices
+from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertex_path
 from instant_insanity.manim_scenes.coordinate_grid import GridMixin
 from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledEdge
 from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
 from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant
+from instant_insanity.manim_scenes.graph_theory.three_d_polygons import TrackedVGroup, ThreeDPolygons
 from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube
 
-Updater: TypeAlias = Callable[[Mobject], object]
+Updater: TypeAlias = Callable[[TrackedVGroup], TrackedVGroup]
 
+class TrackedVGroupAnimator(ABC):
+    tracked_vgroup: TrackedVGroup
 
-class CubeAnimator(ABC):
-    """
-    This is the abstract base class for cube animators.
+    def __init__(self, tracked_vgroup: Mobject) -> None:
+        if not isinstance(tracked_vgroup, TrackedVGroup):
+            raise TypeError(f'tracked_vgroup must be of type TrackedVGroup but got {type(tracked_vgroup)}')
 
-    Attributes:
-        cube: the cube to animate
-    """
-    cube: ThreeDPuzzleCube
-
-    def __init__(self, cube: ThreeDPuzzleCube):
-        self.cube = cube
-
-    @abstractmethod
-    def interpolate(self, alpha: float) -> None:
-        pass
+        assert isinstance(tracked_vgroup, TrackedVGroup)
+        self.tracked_vgroup = tracked_vgroup
 
     def mk_updater(self) -> Updater:
         """
@@ -59,26 +54,48 @@ class CubeAnimator(ABC):
             An updater for the animation.
         """
 
-        def updater(mobj: Mobject) -> object:
+        def updater(tracked_vgroup: TrackedVGroup) -> TrackedVGroup:
             """
-            Updates the cube to its current alpha parameter.
+            Updates the TrackedVGroup instance to its current alpha parameter.
 
             Args:
-                mobj: the cube that is being animated.
+                tracked_vgroup: the TrackedVGroup that is being animated.
 
             Returns:
-                the cube.
+                the TrackedVGroup.
             """
-            if not isinstance(mobj, ThreeDPuzzleCube):
-                raise ValueError('expected a ThreeDPuzzleCube')
-            cube: ThreeDPuzzleCube = mobj
-            cube.remove(*cube.submobjects)
-            tracker: ValueTracker = cube.tracker
+            tracked_vgroup.remove(*tracked_vgroup.submobjects)
+            tracker: ValueTracker = tracked_vgroup.tracker
             alpha: float = tracker.get_value()
             self.interpolate(alpha)
-            return cube
+            return tracked_vgroup
 
         return updater
+
+    @abstractmethod
+    def interpolate(self, alpha: float) -> None:
+        pass
+
+
+class ThreeDPolygonsAnimator(TrackedVGroupAnimator, ABC):
+    """
+    This is the abstract base class for `ThreeDPolygons` animators.
+    """
+    def __init__(self, three_d_polygons: Mobject) -> None:
+        if not isinstance(three_d_polygons, ThreeDPolygons):
+            raise TypeError(f'three_d_polygons must be of type ThreeDPolygons but got {type(three_d_polygons)}')
+        super().__init__(three_d_polygons)
+
+
+class CubeAnimator(TrackedVGroupAnimator, ABC):
+    """
+    This is the abstract base class for `ThreeDPuzzleCube` animators.
+    """
+
+    def __init__(self, cube: Mobject):
+        if not isinstance(cube, ThreeDPuzzleCube):
+            raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
+        super().__init__(cube)
 
 
 class CubeRigidMotionAnimator(CubeAnimator):
@@ -104,14 +121,16 @@ class CubeRigidMotionAnimator(CubeAnimator):
         self.translation = translation
 
     def interpolate(self, alpha: float) -> None:
+        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
+        cube: ThreeDPuzzleCube = self.tracked_vgroup
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
-        initial_vertices: dict[FaceName, np.ndarray] = self.cube.initial_model_paths
+        name_to_initial_model_path: dict[FaceName, VertexPath] = cube.name_to_initial_model_path
         transformed_vertices: dict[FaceName, np.ndarray] = {
-            name: transform_vertices(alpha_rotation, alpha_translation, initial_vertices[name])
+            name: transform_vertex_path(alpha_rotation, alpha_translation, name_to_initial_model_path[name])
             for name in FaceName
         }
-        self.cube.mk_polygons(transformed_vertices)
+        cube.mk_polygons(transformed_vertices)
 
 class CubeExplosionAnimator(CubeAnimator):
     def __init__(self, cube: ThreeDPuzzleCube, expansion_factor: float) -> None:
@@ -137,19 +156,19 @@ class CubeExplosionAnimator(CubeAnimator):
             the NumPy array of face vertices
         """
 
-        origin: np.ndarray = np.zeros(3, dtype=np.float64)
-        unit_i: np.ndarray = np.array([1, 0, 0], dtype=np.float64)
-        unit_j: np.ndarray = np.array([0, 1, 0], dtype=np.float64)
-        unit_k: np.ndarray = np.array([0, 0, 1], dtype=np.float64)
+        origin: Vertex = np.zeros(3, dtype=np.float64)
+        unit_i: Vector = np.array([1, 0, 0], dtype=np.float64)
+        unit_j: Vector = np.array([0, 1, 0], dtype=np.float64)
+        unit_k: Vector = np.array([0, 0, 1], dtype=np.float64)
         quarter_turn: float = np.pi / 2.0
 
         # compute the point p, unit vector u, and angle theta that define a rotation about a line
-        p: np.ndarray = origin
-        u: np.ndarray = unit_k
+        p: Vertex = origin
+        u: Vector = unit_k
         theta_max: float = 0.0
         z_max: float = -(3.0 + self.expansion_factor) / 2.0
-        face_normal: np.ndarray = FACE_NAME_TO_UNIT_NORMAL[name]
-        translation_max: np.ndarray = z_max * unit_k + (self.expansion_factor - 1.0) * face_normal
+        face_normal: Vector = FACE_NAME_TO_UNIT_NORMAL[name]
+        translation_max: Vector = z_max * unit_k + (self.expansion_factor - 1.0) * face_normal
 
         match name:
             case FaceName.RIGHT:
@@ -175,20 +194,24 @@ class CubeExplosionAnimator(CubeAnimator):
 
         theta: float = alpha * theta_max
         rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        model_vertices: np.ndarray = FACE_NAME_TO_VERTICES[name]
-        rotated_vertices: np.ndarray = apply_linear_transform(rot_mat, model_vertices)
+        model_vertex_path: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
+        rotated_vertex_path: VertexPath = apply_linear_transform(rot_mat, model_vertex_path)
 
-        translation: np.ndarray = alpha * translation_max
-        transformed_vertices: np.ndarray = rotated_vertices + translation
+        translation: Vector = alpha * translation_max
+        transformed_vertex_path: np.ndarray = rotated_vertex_path + translation
 
-        return transformed_vertices
+        return transformed_vertex_path
 
     def interpolate(self, alpha: float) -> None:
-        transformed_vertices = {
+        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
+        cube: ThreeDPuzzleCube = self.tracked_vgroup
+
+        name_to_transformed_vertex_path = {
             name: self.interpolate_face(name, alpha)
             for name in FaceName
         }
-        self.cube.mk_polygons(transformed_vertices)
+
+        cube.mk_polygons(name_to_transformed_vertex_path)
 
 @dataclass
 class FaceData:
@@ -200,7 +223,7 @@ class FaceData:
 def mk_face_data(graph: OppositeFaceGraph, cube: ThreeDPuzzleCube, name: FaceName) -> FaceData:
     colour: FaceColour = cube.get_colour_name(name)
     quadrant: Quadrant = graph.colour_to_node[colour]
-    polygon: Polygon = cube.polygon_dict[name]
+    polygon: Polygon = cube.name_to_scene_polygon[name]
     vertices: np.ndarray = polygon.get_vertices()
     centroid: np.ndarray = np.mean(vertices, axis=0)
     dot: Dot = graph.mk_node_at(quadrant, centroid)
@@ -233,7 +256,7 @@ class ConstructGraph(GridMixin, Scene):
         cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
         # find the scene coordinates of the centre of the front face
-        front_face: Polygon = cube.polygon_dict[FaceName.FRONT]
+        front_face: Polygon = cube.name_to_scene_polygon[FaceName.FRONT]
         centre: np.ndarray = front_face.get_center()
         scene_x: float = float(centre[0])
         scene_y: float = float(centre[1])
@@ -362,20 +385,20 @@ class ConstructGraph(GridMixin, Scene):
         puzzle: Puzzle = Puzzle(puzzle_spec)
 
         # TODO: add the 3d puzzle to the scene
-        # TODO: the 3d should make all the cubes and expose them in an array of cubes
+        # TODO: the 3d puzzle should make all the cubes and expose them in an array of cubes
 
         graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT)
         self.play(FadeIn(graph))
 
         cube_number: PuzzleCubeNumber
         for cube_number in PuzzleCubeNumber:
-            if cube_number > PuzzleCubeNumber.ONE:
-                break
+            # if cube_number > PuzzleCubeNumber.ONE:
+            #     break
             puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
             cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
             cube: ThreeDPuzzleCube = self.mk_cube(cube_spec)
 
-            self.add(cube)
+            self.play(FadeIn(cube))
             self.wait()
 
             self.animate_explode_cube(cube)
