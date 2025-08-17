@@ -8,7 +8,7 @@ from manim import VGroup
 
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, PuzzleCube, PuzzleCubeNumber
-from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
 CubeNumberToCubeMapping: TypeAlias = dict[PuzzleCubeNumber, ThreeDPuzzleCube]
 

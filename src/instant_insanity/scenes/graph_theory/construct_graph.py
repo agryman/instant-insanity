@@ -10,208 +10,27 @@ after those behind.
 Finally, the polygons are converted into Manim Polygons
 and added to the scene.
 """
-from typing import Callable, TypeAlias
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import numpy as np
 
 from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn, ReplacementTransform,
-                   always_redraw, DOWN)
+                   always_redraw)
 
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH, FACE_NAME_TO_UNIT_NORMAL, RBF, LTF, LBF
+from instant_insanity.core.cube import FaceName
 from instant_insanity.core.force_ccw import force_ccw
-from instant_insanity.core.geometry_types import VertexPath, Vector, Vertex
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR)
-from instant_insanity.core.transformation import rotation_matrix_about_line, apply_linear_transform, transform_vertex_path
-from instant_insanity.manim_scenes.coordinate_grid import GridMixin
-from instant_insanity.manim_scenes.graph_theory.labelled_edge import LabelledEdge
-from instant_insanity.manim_scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
-from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant
-from instant_insanity.manim_scenes.graph_theory.three_d_polygons import TrackedVGroup, ThreeDPolygons
-from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.animators.cube_animators import CubeAnimator, CubeExplosionAnimator
+from instant_insanity.animators.tracked_vgroup_animator import Updater
+from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.graph_theory.labelled_edge import LabelledEdge
+from instant_insanity.scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
+from instant_insanity.scenes.graph_theory.quadrant import Quadrant
+from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
-Updater: TypeAlias = Callable[[TrackedVGroup], TrackedVGroup]
-
-class TrackedVGroupAnimator(ABC):
-    tracked_vgroup: TrackedVGroup
-
-    def __init__(self, tracked_vgroup: Mobject) -> None:
-        if not isinstance(tracked_vgroup, TrackedVGroup):
-            raise TypeError(f'tracked_vgroup must be of type TrackedVGroup but got {type(tracked_vgroup)}')
-
-        assert isinstance(tracked_vgroup, TrackedVGroup)
-        self.tracked_vgroup = tracked_vgroup
-
-    def mk_updater(self) -> Updater:
-        """
-        Make a nontime-based updater function for the animation.
-
-        Returns:
-            An updater for the animation.
-        """
-
-        def updater(tracked_vgroup: TrackedVGroup) -> TrackedVGroup:
-            """
-            Updates the TrackedVGroup instance to its current alpha parameter.
-
-            Args:
-                tracked_vgroup: the TrackedVGroup that is being animated.
-
-            Returns:
-                the TrackedVGroup.
-            """
-            tracked_vgroup.remove(*tracked_vgroup.submobjects)
-            tracker: ValueTracker = tracked_vgroup.tracker
-            alpha: float = tracker.get_value()
-            self.interpolate(alpha)
-            return tracked_vgroup
-
-        return updater
-
-    @abstractmethod
-    def interpolate(self, alpha: float) -> None:
-        pass
-
-
-class ThreeDPolygonsAnimator(TrackedVGroupAnimator, ABC):
-    """
-    This is the abstract base class for `ThreeDPolygons` animators.
-    """
-    def __init__(self, three_d_polygons: Mobject) -> None:
-        if not isinstance(three_d_polygons, ThreeDPolygons):
-            raise TypeError(f'three_d_polygons must be of type ThreeDPolygons but got {type(three_d_polygons)}')
-        super().__init__(three_d_polygons)
-
-
-class CubeAnimator(TrackedVGroupAnimator, ABC):
-    """
-    This is the abstract base class for `ThreeDPuzzleCube` animators.
-    """
-
-    def __init__(self, cube: Mobject):
-        if not isinstance(cube, ThreeDPuzzleCube):
-            raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
-        super().__init__(cube)
-
-
-class CubeRigidMotionAnimator(CubeAnimator):
-    """
-    The class animates a rigid motion of a cube.
-    The rigid motion is defined by a rotation followed by a translation.
-
-    Attributes:
-        rotation: the rotation vector.
-        translation: the translation vector.
-    """
-
-    rotation: np.ndarray
-    translation: np.ndarray
-
-    def __init__(self,
-                 cube: ThreeDPuzzleCube,
-                 rotation: np.ndarray,
-                 translation: np.ndarray,
-                 ) -> None:
-        super().__init__(cube)
-        self.rotation = rotation
-        self.translation = translation
-
-    def interpolate(self, alpha: float) -> None:
-        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
-        cube: ThreeDPuzzleCube = self.tracked_vgroup
-        alpha_rotation: np.ndarray = alpha * self.rotation
-        alpha_translation: np.ndarray = alpha * self.translation
-        name_to_initial_model_path: dict[FaceName, VertexPath] = cube.name_to_initial_model_path
-        transformed_vertices: dict[FaceName, np.ndarray] = {
-            name: transform_vertex_path(alpha_rotation, alpha_translation, name_to_initial_model_path[name])
-            for name in FaceName
-        }
-        cube.mk_polygons(transformed_vertices)
-
-class CubeExplosionAnimator(CubeAnimator):
-    def __init__(self, cube: ThreeDPuzzleCube, expansion_factor: float) -> None:
-        super().__init__(cube)
-        self.expansion_factor = expansion_factor
-
-    def interpolate_face(self, name: FaceName, alpha: float = 0.0) -> np.ndarray:
-        """
-        Makes the NumPy array of face vertices corresponding to animation parameter alpha.
-
-        The faces rotate to become perpendicular to the z-axis.
-        Front/Back faces are already perpendicular to the z-axis so no rotation.
-        Right/Left faces rotate about the y-axis by plus/minus 90 degrees.
-        Top/Bottom faces rotate about the x-axis by plus/minus 90 degrees.
-
-        The faces move outward in the direction of their normals.
-
-        Args:
-            name: the face name
-            alpha: the animation parameter
-
-        Returns:
-            the NumPy array of face vertices
-        """
-
-        origin: Vertex = np.zeros(3, dtype=np.float64)
-        unit_i: Vector = np.array([1, 0, 0], dtype=np.float64)
-        unit_j: Vector = np.array([0, 1, 0], dtype=np.float64)
-        unit_k: Vector = np.array([0, 0, 1], dtype=np.float64)
-        quarter_turn: float = np.pi / 2.0
-
-        # compute the point p, unit vector u, and angle theta that define a rotation about a line
-        p: Vertex = origin
-        u: Vector = unit_k
-        theta_max: float = 0.0
-        z_max: float = -(3.0 + self.expansion_factor) / 2.0
-        face_normal: Vector = FACE_NAME_TO_UNIT_NORMAL[name]
-        translation_max: Vector = z_max * unit_k + (self.expansion_factor - 1.0) * face_normal
-
-        match name:
-            case FaceName.RIGHT:
-                p = RBF
-                u = unit_j
-                theta_max = -quarter_turn
-            case FaceName.LEFT:
-                p = LBF
-                u = unit_j
-                theta_max = quarter_turn
-            case FaceName.TOP:
-                p = LTF
-                u = unit_i
-                theta_max = quarter_turn
-            case FaceName.BOTTOM:
-                p = LBF
-                u = unit_i
-                theta_max = -quarter_turn
-            case FaceName.FRONT:
-                translation_max = origin
-            case FaceName.BACK:
-                translation_max = -(self.expansion_factor - 1.0) * unit_k
-
-        theta: float = alpha * theta_max
-        rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        model_vertex_path: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
-        rotated_vertex_path: VertexPath = apply_linear_transform(rot_mat, model_vertex_path)
-
-        translation: Vector = alpha * translation_max
-        transformed_vertex_path: np.ndarray = rotated_vertex_path + translation
-
-        return transformed_vertex_path
-
-    def interpolate(self, alpha: float) -> None:
-        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
-        cube: ThreeDPuzzleCube = self.tracked_vgroup
-
-        name_to_transformed_vertex_path = {
-            name: self.interpolate_face(name, alpha)
-            for name in FaceName
-        }
-
-        cube.mk_polygons(name_to_transformed_vertex_path)
 
 @dataclass
 class FaceData:

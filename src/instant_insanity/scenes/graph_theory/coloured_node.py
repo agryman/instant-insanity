@@ -3,7 +3,7 @@ import numpy as np
 from manim import Dot, ManimColor, DEFAULT_DOT_RADIUS, BLACK
 
 from instant_insanity.core.puzzle import FaceColour
-from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP
+from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
 
 DEFAULT_COLOURED_NODE_RADIUS: float = DEFAULT_DOT_RADIUS * 2.0
 

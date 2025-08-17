@@ -1,10 +1,19 @@
 from manim import *
 
+from instant_insanity.animators.cube_animators import CubeRigidMotionAnimator
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
+from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping, PolygonId
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
-from instant_insanity.manim_scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
-from instant_insanity.manim_scenes.graph_theory.three_d_puzzle_cube import ThreeDPuzzleCube, CubeRigidMotionAnimation
+from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
+from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+
+FRONT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
+BACK_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BACK)
+RIGHT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.RIGHT)
+LEFT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.LEFT)
+TOP_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.TOP)
+BOTTOM_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BOTTOM)
 
 
 def test_three_d_puzzle_cube():
@@ -17,21 +26,21 @@ def test_three_d_puzzle_cube():
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
     three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
-    polygon_dict = three_d_puzzle_cube.name_to_scene_polygon
-    sorted_faces = list(polygon_dict.keys())
+    id_to_scene_polygon: SortedPolygonIdToPolygonMapping = three_d_puzzle_cube.id_to_scene_polygon
+    sorted_ids: list[PolygonId] = list(id_to_scene_polygon.keys())
 
     # the front, right, and top faces should be visible
 
-    front = sorted_faces.index(FaceName.FRONT)
-    back = sorted_faces.index(FaceName.BACK)
+    front: int = sorted_ids.index(FRONT_ID)
+    back: int = sorted_ids.index(BACK_ID)
     assert back < front
 
-    right = sorted_faces.index(FaceName.RIGHT)
-    left = sorted_faces.index(FaceName.LEFT)
+    right: int = sorted_ids.index(RIGHT_ID)
+    left: int = sorted_ids.index(LEFT_ID)
     assert left < right
 
-    top = sorted_faces.index(FaceName.TOP)
-    bottom = sorted_faces.index(FaceName.BOTTOM)
+    top: int = sorted_ids.index(TOP_ID)
+    bottom: int = sorted_ids.index(BOTTOM_ID)
     assert bottom < top
 
 def test_translation():
@@ -41,10 +50,10 @@ def test_translation():
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-    three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
-    polygons_before = three_d_puzzle_cube.name_to_scene_polygon.copy()
-    right_before = polygons_before[FaceName.RIGHT]
-    actual_vertices_before = right_before.get_vertices()
+    cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+    id_to_scene_polygon_before = cube.id_to_scene_polygon.copy()
+    right_polygon_before = id_to_scene_polygon_before[RIGHT_ID]
+    actual_vertices_before = right_polygon_before.get_vertices()
 
     model_vertices_before = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT]
     expected_vertices_before = projection.project_points(model_vertices_before)
@@ -53,18 +62,18 @@ def test_translation():
     # move the cube to the left
     rotation: np.ndarray = ORIGIN
     translation: np.ndarray = 7 * LEFT
-    animation: Animation = CubeRigidMotionAnimation(three_d_puzzle_cube, rotation, translation)
-    animation.interpolate_mobject(1.0)
+    animator: CubeRigidMotionAnimator = CubeRigidMotionAnimator(cube, rotation, translation)
+    animator.interpolate(1.0)
 
-    polygons_after = three_d_puzzle_cube.name_to_scene_polygon
-    right_after = polygons_after[FaceName.RIGHT]
-    actual_vertices_after = right_after.get_vertices()
+    id_to_scene_polygon_after = cube.id_to_scene_polygon
+    right_polygon_after = id_to_scene_polygon_after[RIGHT_ID]
+    actual_vertices_after = right_polygon_after.get_vertices()
 
     model_vertices_after = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT] + translation
     expected_vertices_after = projection.project_points(model_vertices_after)
     assert np.allclose(actual_vertices_after, expected_vertices_after)
 
-    assert len(polygons_before) == len(polygons_after)
+    assert len(id_to_scene_polygon_before) == len(id_to_scene_polygon_after)
 
 def test_polygon_ids():
     for face_name in FaceName:

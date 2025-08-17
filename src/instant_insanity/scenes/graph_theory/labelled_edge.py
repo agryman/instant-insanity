@@ -6,7 +6,7 @@ import numpy as np
 
 from manim import CubicBezier, Text, VGroup, ManimColor, BLACK, OUT
 
-from instant_insanity.manim_scenes.graph_theory.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
+from instant_insanity.scenes.graph_theory.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
 
 DEFAULT_EDGE_FONT: str = 'sans-serif'
 DEFAULT_EDGE_FONT_SIZE: int = 15
