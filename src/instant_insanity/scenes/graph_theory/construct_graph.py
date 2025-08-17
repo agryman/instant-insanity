@@ -10,7 +10,6 @@ after those behind.
 Finally, the polygons are converted into Manim Polygons
 and added to the scene.
 """
-from dataclasses import dataclass
 
 import numpy as np
 
@@ -20,33 +19,16 @@ from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT,
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.force_ccw import force_ccw
+from instant_insanity.core.geometry_types import PolygonId
 from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, FaceColour, WINNING_MOVES_PUZZLE_SPEC,
+from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR)
 from instant_insanity.animators.cube_animators import CubeAnimator, CubeExplosionAnimator
 from instant_insanity.animators.tracked_vgroup_animator import Updater
-from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.scenes.graph_theory.labelled_edge import LabelledEdge
-from instant_insanity.scenes.graph_theory.opposite_face_graph import OppositeFaceGraph
-from instant_insanity.scenes.graph_theory.quadrant import Quadrant
+from instant_insanity.mobjects.labelled_edge import LabelledEdge
+from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data
 from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
-
-
-@dataclass
-class FaceData:
-    colour: FaceColour
-    quadrant: Quadrant
-    polygon: Polygon
-    dot: Dot
-
-def mk_face_data(graph: OppositeFaceGraph, cube: ThreeDPuzzleCube, name: FaceName) -> FaceData:
-    colour: FaceColour = cube.get_colour_name(name)
-    quadrant: Quadrant = graph.colour_to_node[colour]
-    polygon: Polygon = cube.name_to_scene_polygon[name]
-    vertices: np.ndarray = polygon.get_vertices()
-    centroid: np.ndarray = np.mean(vertices, axis=0)
-    dot: Dot = graph.mk_node_at(quadrant, centroid)
-    return FaceData(colour, quadrant, polygon, dot)
+from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
 class ConstructGraph(GridMixin, Scene):
@@ -75,7 +57,8 @@ class ConstructGraph(GridMixin, Scene):
         cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
         # find the scene coordinates of the centre of the front face
-        front_face: Polygon = cube.name_to_scene_polygon[FaceName.FRONT]
+        front_id: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
+        front_face: Polygon = cube.id_to_scene_polygon[front_id]
         centre: np.ndarray = front_face.get_center()
         scene_x: float = float(centre[0])
         scene_y: float = float(centre[1])
@@ -100,9 +83,6 @@ class ConstructGraph(GridMixin, Scene):
         else:
             return second, first
 
-    def play_cube_animation(self, cube: ThreeDPuzzleCube, animator: CubeAnimator, run_time=1.0) -> None:
-        pass
-
     def animate_explode_cube(self, cube: ThreeDPuzzleCube) -> None:
         # animate cube rigid motion
         # rotation: np.ndarray = ORIGIN
@@ -110,15 +90,10 @@ class ConstructGraph(GridMixin, Scene):
         # animator: CubeAnimator = CubeRigidMotionAnimator(cube, rotation, translation)
 
         # animate cube explosion
+        cube.remove(*cube.submobjects)
         expansion_factor: float = 2.0
         animator: CubeAnimator = CubeExplosionAnimator(cube, expansion_factor)
-
-        cube.remove(*cube.submobjects)
-        updater: Updater = animator.mk_updater()
-        cube.add_updater(updater)
-        tracker: ValueTracker = cube.tracker
-        self.play(tracker.animate.set_value(1.0), run_time=4.0)
-        cube.remove_updater(updater)
+        animator.play(self, alpha=1.0, run_time=4.0)
 
     def animate_shift_cube(self, cube: ThreeDPuzzleCube) -> None:
         # animate movement of exploded cube to the left
@@ -189,7 +164,7 @@ class ConstructGraph(GridMixin, Scene):
             graph: OppositeFaceGraph,
             cube_axis: CubeAxis,
             start: FaceData,
-            end:FaceData) -> None:
+            end: FaceData) -> None:
         self.morph_opposite_faces_to_dots(start, end)
         self.fade_in_opposite_face_edge(graph, cube_axis, start, end)
         self.move_opposite_face_edge_to_graph(graph, cube_axis, start, end)
