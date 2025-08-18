@@ -18,6 +18,45 @@ Run this command to force an update to the virtual environment:
 pip install -U -e .
 ```
 
+### Other Dependencies
+
+For generating videos:
+
+```shell
+brew install ffmpeg
+```
+Other Python dependencies:
+
+```shell
+pip install networkx shapely matplotlib scipy pytest mypy
+```
+For voiceovers:
+
+```shell
+pip install "manim-voiceover[azure,gtts]"
+```
+
+```shell
+brew install portaudio
+pip install pyaudio
+```
+
+```shell
+brew install sox
+```
+
+For translations of voiceovers:
+
+```shell
+brew install gettext
+```
+
+For Google Cloud Platform TTS:
+
+```shell
+pip install google-cloud-texttospeech
+```
+
 ## PyCharm
 
 Sometimes PyCharm loses the project configuration.
