@@ -9,7 +9,7 @@ from instant_insanity.core.projection import Projection
 from instant_insanity.mobjects.tracked_vgroup import TrackedVGroup
 
 
-class ThreeDPolygons(TrackedVGroup):
+class TrackedThreeDPolygons(TrackedVGroup):
     """
     This class animates a collection of 3D polygons.
 

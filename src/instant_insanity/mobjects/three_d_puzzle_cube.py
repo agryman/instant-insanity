@@ -6,10 +6,10 @@ from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, P
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
-from instant_insanity.mobjects.three_d_polygons import ThreeDPolygons
+from instant_insanity.mobjects.three_d_polygons import TrackedThreeDPolygons
 
 
-class ThreeDPuzzleCube(ThreeDPolygons):
+class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
     """
     This class is a VGroup that renders as a 3D puzzle cube in model space.
     The appearance of the cube is determined by a projection from model space to scene space.
@@ -30,7 +30,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
             projection: the projection
             cube_spec: the puzzle cube specification
         """
-        id_to_initial_model_path: PolygonIdToVertexPathMapping = ThreeDPuzzleCube.mk_id_to_initial_model_path()
+        id_to_initial_model_path: PolygonIdToVertexPathMapping = TrackedThreeDPuzzleCube.mk_id_to_initial_model_path()
         super().__init__(projection, id_to_initial_model_path, **kwargs)
 
         self.cube_spec = cube_spec
@@ -51,7 +51,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         face_name: FaceName
         vertex_path: VertexPath
         id_to_initial_model_path: PolygonIdToVertexPathMapping = {
-            ThreeDPuzzleCube.name_to_id(face_name): vertex_path
+            TrackedThreeDPuzzleCube.name_to_id(face_name): vertex_path
             for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items()
         }
         return id_to_initial_model_path
@@ -112,7 +112,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         polygon_id: PolygonId
         polygon: Polygon
         for polygon_id, polygon in id_to_scene_polygon.items():
-            name: FaceName = ThreeDPuzzleCube.id_to_name(polygon_id)
+            name: FaceName = TrackedThreeDPuzzleCube.id_to_name(polygon_id)
             colour: ManimColor = self.get_manim_colour(name)
             polygon.set_fill(colour)
             self.add(polygon)

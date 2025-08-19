@@ -15,15 +15,19 @@ classDiagram
     VGroup <|-- TrackedVGroup
     ValueTracker --* TrackedVGroup : tracker
     TrackedVGroup <|-- TrackedPolygon
-    TrackedVGroup <|-- ThreeDPolygons
-    ThreeDPolygons <|-- ThreeDPuzzleCube
+    TrackedVGroup <|-- TrackedThreeDPolygons
+
+    TrackedThreeDPolygons <|-- TrackedThreeDPuzzleCube
+
     TrackedVGroup --* TrackedVGroupAnimator : tracked_vgroup
     TrackedVGroupAnimator <|-- CubeAnimator
-    ThreeDPuzzleCube --* CubeAnimator : tracked_vgroup
+    TrackedThreeDPuzzleCube --* CubeAnimator : tracked_vgroup
     CubeAnimator <|-- CubeRigidMotionAnimator
     CubeAnimator <|-- CubeExplosionAnimator
     TrackedVGroupAnimator <|-- ThreeDPolygonsAnimator
+    TrackedThreeDPolygons --* ThreeDPolygonsAnimator : tracked_vgroup
     TrackedVGroupAnimator <|-- PolygonToDotAnimator
+    TrackedPolygon --* PolygonToDotAnimator : tracked_vgroup
     TrackedVGroupAnimator <|-- AnimorphAnimator
     
     class Animorph {

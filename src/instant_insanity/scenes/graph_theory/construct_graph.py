@@ -28,7 +28,7 @@ from instant_insanity.animators.cube_animators import CubeAnimator, CubeExplosio
 from instant_insanity.animators.tracked_vgroup_animator import Updater
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
 from instant_insanity.mobjects.tracked_polygon import TrackedPolygon
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
@@ -41,7 +41,7 @@ class ConstructGraph(GridMixin, Scene):
     """
 
     @staticmethod
-    def mk_cube(cube_spec: PuzzleCubeSpec) -> ThreeDPuzzleCube:
+    def mk_cube(cube_spec: PuzzleCubeSpec) -> TrackedThreeDPuzzleCube:
         """
         Makes a puzzle cube.
         """
@@ -56,10 +56,10 @@ class ConstructGraph(GridMixin, Scene):
         projection: Projection = PerspectiveProjection(viewpoint, scene_x=-1.0, scene_y=0.0, camera_z=camera_z)
 
         # create the cube object
-        cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+        cube: TrackedThreeDPuzzleCube = TrackedThreeDPuzzleCube(projection, cube_spec)
 
         # find the scene coordinates of the centre of the front face
-        front_id: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
+        front_id: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.FRONT)
         front_face: Polygon = cube.id_to_scene_polygon[front_id]
         centre: np.ndarray = front_face.get_center()
         scene_x: float = float(centre[0])
@@ -67,13 +67,13 @@ class ConstructGraph(GridMixin, Scene):
 
         # recreate the cube centered in the scene
         projection = PerspectiveProjection(viewpoint, scene_x=scene_x, scene_y=scene_y, camera_z=camera_z)
-        cube = ThreeDPuzzleCube(projection, cube_spec)
+        cube = TrackedThreeDPuzzleCube(projection, cube_spec)
 
         return cube
 
     @staticmethod
     def mk_start_end(graph: OppositeFaceGraph,
-                     cube: ThreeDPuzzleCube,
+                     cube: TrackedThreeDPuzzleCube,
                      axis_label: AxisLabel) -> tuple[FaceData, FaceData]:
         face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[axis_label]
         first: FaceData = mk_face_data(graph, cube, face_pair[0])
@@ -85,7 +85,7 @@ class ConstructGraph(GridMixin, Scene):
         else:
             return second, first
 
-    def animate_explode_cube(self, cube: ThreeDPuzzleCube) -> None:
+    def animate_explode_cube(self, cube: TrackedThreeDPuzzleCube) -> None:
         # animate cube rigid motion
         # rotation: np.ndarray = ORIGIN
         # translation: np.ndarray = 7 * LEFT #+ DOWN
@@ -97,7 +97,7 @@ class ConstructGraph(GridMixin, Scene):
         animator: CubeAnimator = CubeExplosionAnimator(cube, expansion_factor)
         animator.play(self, alpha=1.0, run_time=4.0)
 
-    def animate_shift_cube(self, cube: ThreeDPuzzleCube) -> None:
+    def animate_shift_cube(self, cube: TrackedThreeDPuzzleCube) -> None:
         # animate movement of exploded cube to the left
         cube_shift: np.ndarray = 3 * LEFT
         self.play(cube.animate.shift(cube_shift), run_time=1.0)
@@ -214,7 +214,7 @@ class ConstructGraph(GridMixin, Scene):
                 break
             puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
             cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
-            cube: ThreeDPuzzleCube = self.mk_cube(cube_spec)
+            cube: TrackedThreeDPuzzleCube = self.mk_cube(cube_spec)
 
             self.play(Create(cube), run_time=1.0)
             self.wait()

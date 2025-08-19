@@ -12,7 +12,7 @@ from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, Puz
 from instant_insanity.mobjects.coloured_node import mk_dot
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.quadrant import Quadrant, QUADRANT_TO_POSITION, NodePair, mk_standard_node_pair
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
 
 # each node is identified by its quadrant and has a unique colour
 # there is a one-to-one mapping between nodes and colours
@@ -339,10 +339,10 @@ class FaceData:
     dot: Dot
 
 
-def mk_face_data(graph: OppositeFaceGraph, cube: ThreeDPuzzleCube, name: FaceName) -> FaceData:
+def mk_face_data(graph: OppositeFaceGraph, cube: TrackedThreeDPuzzleCube, name: FaceName) -> FaceData:
     colour: FaceColour = cube.get_colour_name(name)
     quadrant: Quadrant = graph.colour_to_node[colour]
-    polygon_id: PolygonId = ThreeDPuzzleCube.name_to_id(name)
+    polygon_id: PolygonId = TrackedThreeDPuzzleCube.name_to_id(name)
     polygon: Polygon = cube.id_to_scene_polygon[polygon_id]
     vertices: np.ndarray = polygon.get_vertices()
     centroid: np.ndarray = np.mean(vertices, axis=0)

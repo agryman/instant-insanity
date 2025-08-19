@@ -8,9 +8,9 @@ from manim import VGroup
 
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, PuzzleCube, PuzzleCubeNumber
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
 
-CubeNumberToCubeMapping: TypeAlias = dict[PuzzleCubeNumber, ThreeDPuzzleCube]
+CubeNumberToCubeMapping: TypeAlias = dict[PuzzleCubeNumber, TrackedThreeDPuzzleCube]
 
 class ThreeDPuzzle(VGroup):
     """
@@ -37,5 +37,5 @@ class ThreeDPuzzle(VGroup):
         self.projection = projection
         self.puzzle_spec = puzzle_spec
         self.puzzle = Puzzle(puzzle_spec)
-        self.cube_to_mobject = {cube_number: ThreeDPuzzleCube(projection, puzzle_spec[cube_number])
+        self.cube_to_mobject = {cube_number: TrackedThreeDPuzzleCube(projection, puzzle_spec[cube_number])
                                 for cube_number in PuzzleCubeNumber}

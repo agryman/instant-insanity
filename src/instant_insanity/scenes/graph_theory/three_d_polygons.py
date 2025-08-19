@@ -8,7 +8,7 @@ from instant_insanity.core.geometry_types import (Vertex, VertexPath, PolygonId,
                                                   as_vertex, as_vertex_path)
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.transformation import transform_vertex_path
-from instant_insanity.mobjects.three_d_polygons import ThreeDPolygons
+from instant_insanity.mobjects.three_d_polygons import TrackedThreeDPolygons
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
@@ -56,9 +56,9 @@ class TestThreeDPolygons(GridMixin, Scene):
             'stroke_width': 1.0,
             'stroke_color': BLACK
         }
-        polygons: ThreeDPolygons = ThreeDPolygons(projection,
-                                                  id_to_initial_model_path,
-                                                  **polygon_defaults)
+        polygons: TrackedThreeDPolygons = TrackedThreeDPolygons(projection,
+                                                                id_to_initial_model_path,
+                                                                **polygon_defaults)
 
         self.add(*polygons.id_to_scene_polygon.values())
         self.wait()

@@ -9,7 +9,7 @@ from instant_insanity.core.transformation import transform_vertex_path, rotation
     apply_linear_transform
 
 from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnimator
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
 
 
 class CubeAnimator(TrackedVGroupAnimator):
@@ -18,7 +18,7 @@ class CubeAnimator(TrackedVGroupAnimator):
     """
 
     def __init__(self, cube: Mobject):
-        if not isinstance(cube, ThreeDPuzzleCube):
+        if not isinstance(cube, TrackedThreeDPuzzleCube):
             raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
         super().__init__(cube)
 
@@ -37,7 +37,7 @@ class CubeRigidMotionAnimator(CubeAnimator):
     translation: np.ndarray
 
     def __init__(self,
-                 cube: ThreeDPuzzleCube,
+                 cube: TrackedThreeDPuzzleCube,
                  rotation: np.ndarray,
                  translation: np.ndarray,
                  ) -> None:
@@ -47,8 +47,8 @@ class CubeRigidMotionAnimator(CubeAnimator):
 
     def interpolate(self, alpha: float) -> None:
         super().interpolate(alpha)
-        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
-        cube: ThreeDPuzzleCube = self.tracked_vgroup
+        assert isinstance(self.tracked_vgroup, TrackedThreeDPuzzleCube)
+        cube: TrackedThreeDPuzzleCube = self.tracked_vgroup
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
         id_to_initial_model_path: PolygonIdToVertexPathMapping = cube.id_to_initial_model_path
@@ -62,7 +62,7 @@ class CubeRigidMotionAnimator(CubeAnimator):
 
 
 class CubeExplosionAnimator(CubeAnimator):
-    def __init__(self, cube: ThreeDPuzzleCube, expansion_factor: float) -> None:
+    def __init__(self, cube: TrackedThreeDPuzzleCube, expansion_factor: float) -> None:
         super().__init__(cube)
         self.expansion_factor = expansion_factor
 
@@ -133,11 +133,11 @@ class CubeExplosionAnimator(CubeAnimator):
 
     def interpolate(self, alpha: float) -> None:
         super().interpolate(alpha)
-        assert isinstance(self.tracked_vgroup, ThreeDPuzzleCube)
-        cube: ThreeDPuzzleCube = self.tracked_vgroup
+        assert isinstance(self.tracked_vgroup, TrackedThreeDPuzzleCube)
+        cube: TrackedThreeDPuzzleCube = self.tracked_vgroup
 
         id_to_transformed_model_path: PolygonIdToVertexPathMapping = {
-            ThreeDPuzzleCube.name_to_id(name): self.interpolate_face(name, alpha)
+            TrackedThreeDPuzzleCube.name_to_id(name): self.interpolate_face(name, alpha)
             for name in FaceName
         }
 
