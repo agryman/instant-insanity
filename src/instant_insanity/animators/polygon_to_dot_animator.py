@@ -14,7 +14,7 @@ from instant_insanity.core.plane import xy_polar
 from instant_insanity.mobjects.tracked_polygon import TrackedPolygon
 from instant_insanity.mobjects.tracked_vgroup import TrackedVGroup
 
-DEFAULT_MINIMUM_SECTOR_COUNT: int = 12
+DEFAULT_MINIMUM_SECTOR_COUNT: int = 24
 
 class PolygonToDotAnimator(TrackedVGroupAnimator):
     """

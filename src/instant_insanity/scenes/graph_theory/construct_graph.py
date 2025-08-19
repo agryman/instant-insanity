@@ -14,8 +14,9 @@ and added to the scene.
 import numpy as np
 
 from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn, ReplacementTransform,
-                   always_redraw)
+                   always_redraw, Create)
 
+from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimator
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.force_ccw import force_ccw
@@ -28,6 +29,7 @@ from instant_insanity.animators.tracked_vgroup_animator import Updater
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data
 from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.tracked_polygon import TrackedPolygon
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
@@ -51,7 +53,7 @@ class ConstructGraph(GridMixin, Scene):
         # camera_z: float = 8.0
         # viewpoint: np.ndarray = np.array([5, 5, 20], dtype=np.float64)
 
-        projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
+        projection: Projection = PerspectiveProjection(viewpoint, scene_x=-1.0, scene_y=0.0, camera_z=camera_z)
 
         # create the cube object
         cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
@@ -106,12 +108,34 @@ class ConstructGraph(GridMixin, Scene):
         # morph the pair of opposite faces from polygons to dots
 
         # force the polygons to have ccw orientation so the morphing to dots is smooth
-        force_ccw(start.polygon)
-        force_ccw(end.polygon)
+        # force_ccw(start.polygon)
+        # force_ccw(end.polygon)
 
         # morph the polygons to dots
-        self.play(ReplacementTransform(start.polygon, start.dot),
-                  ReplacementTransform(end.polygon, end.dot), run_time=2.0)
+        # self.play(ReplacementTransform(start.polygon, start.dot),
+        #           ReplacementTransform(end.polygon, end.dot), run_time=2.0)
+
+        tracked_start_polygon: TrackedPolygon = TrackedPolygon(start.polygon)
+        self.add(tracked_start_polygon)
+        start_animator: PolygonToDotAnimator = PolygonToDotAnimator(tracked_start_polygon, start.dot)
+        start_animator.play(self, alpha=1.0, run_time=1.0)
+        # self.wait(3.0)
+        self.add(start.polygon)
+        self.wait(0.1)
+        # self.remove(tracked_start_polygon)
+        # self.add(tracked_start_polygon.polygon)
+
+        tracked_end_polygon: TrackedPolygon = TrackedPolygon(end.polygon)
+        self.add(tracked_end_polygon)
+        end_animator: PolygonToDotAnimator = PolygonToDotAnimator(tracked_end_polygon, end.dot)
+        end_animator.play(self, alpha=1.0, run_time=1.0)
+        # self.wait(3.0)
+        self.add(end.polygon)
+        self.wait(0.1)
+        # self.remove(tracked_end_polygon)
+        # self.add(tracked_end_polygon.polygon)
+        self.remove(start.polygon)
+        self.remove(end.polygon)
 
 
     def fade_in_opposite_face_edge(
@@ -173,7 +197,7 @@ class ConstructGraph(GridMixin, Scene):
         graph.set_subgraph_edge(cube_axis, True)
 
     def construct(self):
-        self.add_grid(True)
+        self.add_grid(False)
 
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
         puzzle: Puzzle = Puzzle(puzzle_spec)
@@ -182,17 +206,17 @@ class ConstructGraph(GridMixin, Scene):
         # TODO: the 3d puzzle should make all the cubes and expose them in an array of cubes
 
         graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT)
-        self.play(FadeIn(graph))
+        self.play(FadeIn(graph), run_time=1.0)
 
         cube_number: PuzzleCubeNumber
         for cube_number in PuzzleCubeNumber:
-            # if cube_number > PuzzleCubeNumber.ONE:
-            #     break
+            if cube_number > PuzzleCubeNumber.ONE:
+                break
             puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
             cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
             cube: ThreeDPuzzleCube = self.mk_cube(cube_spec)
 
-            self.play(FadeIn(cube))
+            self.play(Create(cube), run_time=1.0)
             self.wait()
 
             self.animate_explode_cube(cube)
