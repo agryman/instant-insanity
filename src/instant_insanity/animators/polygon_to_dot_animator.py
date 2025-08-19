@@ -7,6 +7,7 @@ import numpy as np
 from manim import Polygon, Dot, PI, RIGHT, UP
 from manim.typing import Point3D
 
+from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnimator
 from instant_insanity.core.force_ccw import force_ccw
 from instant_insanity.core.geometry_types import VertexPath
@@ -15,6 +16,9 @@ from instant_insanity.mobjects.tracked_polygon import TrackedPolygon
 from instant_insanity.mobjects.tracked_vgroup import TrackedVGroup
 
 DEFAULT_MINIMUM_SECTOR_COUNT: int = 24
+
+class PolygonToDotAnimorph(Animorph):
+    pass
 
 class PolygonToDotAnimator(TrackedVGroupAnimator):
     """

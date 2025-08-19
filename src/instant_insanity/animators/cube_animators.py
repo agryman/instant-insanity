@@ -12,7 +12,7 @@ from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnim
 from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
 
-class CubeAnimator(TrackedVGroupAnimator, ABC):
+class CubeAnimator(TrackedVGroupAnimator):
     """
     This is the abstract base class for `ThreeDPuzzleCube` animators.
     """
