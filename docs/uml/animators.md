@@ -7,8 +7,8 @@ classDiagram
     Animation <|-- AnimorphAnimation
     Mobject <|-- ValueTracker
     Animorph *-- Mobject  : mobject
+    Animorph <|-- MoveToAnimorph
     Animorph <|-- PolygonToDotAnimorph
-    ValueTracker --* Animorph : alpha_tracker
     Animorph --* AnimorphAnimation : animorph
     Mobject <|-- VMobject
     VMobject <|-- VGroup
@@ -31,11 +31,17 @@ classDiagram
     TrackedVGroupAnimator <|-- AnimorphAnimator
     
     class Animorph {
+        alpha: float
         mobject: Mobject
-        alpha_tracker: ValueTracker
         morph_to()*
+        play()
     }
     <<abstract>> Animorph
+    
+    class MoveToAnimorph {
+        start_point
+        end_point
+    }
 
     class TrackedVGroup {
         tracker: ValueTracker
