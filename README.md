@@ -36,6 +36,19 @@ For voiceovers:
 pip install "manim-voiceover[azure,gtts]"
 ```
 
+The following installs more stuff, but at the moment we need to avoid the transcription
+service which uses OpenAI Whisper. 
+Manim CE pins OpenAI Whisper to the downlevel
+wheel 20230314 which does not build under Python 3.13.
+Transcription is translating the voiceovers into other
+languages. 
+I don't plan to do transcription so avoid installing "manim-voiceover[all]".
+Limit the install as follows: 
+
+```shell
+pip install -U "manim-voiceover[azure,gtts,elevenlabs,deepl]"
+```
+
 ```shell
 brew install portaudio
 pip install pyaudio

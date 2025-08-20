@@ -4,23 +4,17 @@ The class morphs the outline of polygon into a dot.
 import math
 
 import numpy as np
-from manim import Polygon, Dot, PI, RIGHT, UP
+from manim import Polygon, Dot, PI, RIGHT, UP, Mobject
 from manim.typing import Point3D
 
 from instant_insanity.animators.animorph import Animorph
-from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnimator
 from instant_insanity.core.force_ccw import force_ccw
 from instant_insanity.core.geometry_types import VertexPath
 from instant_insanity.core.plane import xy_polar
-from instant_insanity.mobjects.tracked_polygon import TrackedPolygon
-from instant_insanity.mobjects.tracked_vgroup import TrackedVGroup
 
 DEFAULT_MINIMUM_SECTOR_COUNT: int = 24
 
 class PolygonToDotAnimorph(Animorph):
-    pass
-
-class PolygonToDotAnimator(TrackedVGroupAnimator):
     """
     Morphs the outline of polygon into a dot.
 
@@ -39,11 +33,10 @@ class PolygonToDotAnimator(TrackedVGroupAnimator):
     w0_theta: np.ndarray
     w0_radius: np.ndarray
 
-    def __init__(self, tracked_polygon: TrackedPolygon, dot: Dot, minimum_sector_count=DEFAULT_MINIMUM_SECTOR_COUNT) :
-        assert isinstance(tracked_polygon, TrackedPolygon)
-        super().__init__(tracked_polygon)
+    def __init__(self, polygon: Polygon, dot: Dot, minimum_sector_count=DEFAULT_MINIMUM_SECTOR_COUNT) :
+        assert isinstance(polygon, Polygon)
+        super().__init__(polygon)
 
-        polygon: Polygon = tracked_polygon.polygon
         force_ccw(polygon)
 
         polygon_centre: Point3D = polygon.get_center() # (3,)
@@ -93,7 +86,7 @@ class PolygonToDotAnimator(TrackedVGroupAnimator):
         w: np.ndarray = w0 + polygon_centre
 
         # update the polygon
-        PolygonToDotAnimator.update_polygon(polygon, w)
+        PolygonToDotAnimorph.update_polygon(polygon, w)
 
         # set the object attributes
         self.polygon_centre = polygon_centre
@@ -108,13 +101,12 @@ class PolygonToDotAnimator(TrackedVGroupAnimator):
         polygon.set_points_as_corners(w)
         polygon.close_path()
 
-    def interpolate(self, alpha: float) -> None:
-        super().interpolate(alpha)
+    def morph_to(self, alpha: float) -> None:
+        super().morph_to(alpha)
 
-        tracked_vgroup: TrackedVGroup = self.tracked_vgroup
-        assert isinstance(tracked_vgroup, TrackedPolygon)
-        tracked_polygon: TrackedPolygon = tracked_vgroup
-        polygon: Polygon = tracked_polygon.polygon
+        mobject: Mobject = self.mobject
+        assert isinstance(mobject, Polygon)
+        polygon: Polygon = mobject
 
         w0_radius_alpha: np.ndarray = (1.0 - alpha) * self.w0_radius +  alpha * self.dot_radius # (m,)
         w0_x_alpha: np.ndarray = w0_radius_alpha * np.cos(self.w0_theta) # (m,)
@@ -124,4 +116,4 @@ class PolygonToDotAnimator(TrackedVGroupAnimator):
         centre_alpha: np.ndarray = (1.0 - alpha) * self.polygon_centre + alpha * self.dot_centre # (3,)
         w_alpha: np.ndarray = w0_alpha + centre_alpha # (m,3)
 
-        PolygonToDotAnimator.update_polygon(polygon, w_alpha)
+        PolygonToDotAnimorph.update_polygon(polygon, w_alpha)

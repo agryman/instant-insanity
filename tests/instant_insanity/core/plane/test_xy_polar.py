@@ -8,11 +8,11 @@ def test_xy_polar_basic() -> None:
         [1.0, 0.0, 2.0],   # angle 0,   r=1
         [0.0, 1.0, -1.0],  # angle pi/2,r=1
         [-1.0, 0.0, 0.0],  # angle pi,  r=1
-        [0.0, -1.0, 5.0],  # angle -pi/2,r=1
+        [0.0, -1.0, 5.0],  # angle 3pi/2,r=1
         [0.0, 0.0, 7.0],   # origin -> angle 0, r=0
     ], dtype=np.float64)
 
-    theta, r = xy_polar(v0)
+    r, theta = xy_polar(v0)
 
     assert theta.shape == (5,)
     assert r.shape == (5,)
@@ -20,13 +20,13 @@ def test_xy_polar_basic() -> None:
     assert r.dtype == np.float64
 
     # radii
-    np.testing.assert_allclose(r, np.array([1.0, 1.0, 1.0, 1.0, 0.0], dtype=np.float64))
+    np.testing.assert_allclose(r, np.array([1, 1, 1, 1, 0], dtype=np.float64))
 
     # angles (check a few key values)
     np.testing.assert_allclose(theta[0], 0.0)
     np.testing.assert_allclose(theta[1], np.pi / 2)
     np.testing.assert_allclose(theta[2], np.pi)
-    np.testing.assert_allclose(theta[3], -np.pi / 2)
+    np.testing.assert_allclose(theta[3], 3 * np.pi / 2)
     np.testing.assert_allclose(theta[4], 0.0)
 
 def test_xy_polar_validation() -> None:

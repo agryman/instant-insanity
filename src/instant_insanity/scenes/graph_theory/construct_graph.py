@@ -16,7 +16,7 @@ import numpy as np
 from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn, ReplacementTransform,
                    always_redraw, Create)
 
-from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimator
+from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.force_ccw import force_ccw
@@ -107,36 +107,15 @@ class ConstructGraph(GridMixin, Scene):
                                      end: FaceData) -> None:
         # morph the pair of opposite faces from polygons to dots
 
-        # force the polygons to have ccw orientation so the morphing to dots is smooth
-        # force_ccw(start.polygon)
-        # force_ccw(end.polygon)
+        start_animorph: PolygonToDotAnimorph = PolygonToDotAnimorph(start.polygon, start.dot)
+        end_animorph: PolygonToDotAnimorph = PolygonToDotAnimorph(end.polygon, end.dot)
 
-        # morph the polygons to dots
-        # self.play(ReplacementTransform(start.polygon, start.dot),
-        #           ReplacementTransform(end.polygon, end.dot), run_time=2.0)
+        alpha_tracker: ValueTracker = ValueTracker(0.0)
+        start.polygon.add_updater(lambda m: start_animorph.morph_to(alpha_tracker.get_value()))
+        end.polygon.add_updater(lambda m: end_animorph.morph_to(alpha_tracker.get_value()))
+        self.play(alpha_tracker.animate.set_value(1.0))
 
-        tracked_start_polygon: TrackedPolygon = TrackedPolygon(start.polygon)
-        self.add(tracked_start_polygon)
-        start_animator: PolygonToDotAnimator = PolygonToDotAnimator(tracked_start_polygon, start.dot)
-        start_animator.play(self, alpha=1.0, run_time=1.0)
-        # self.wait(3.0)
-        self.add(start.polygon)
-        self.wait(0.1)
-        # self.remove(tracked_start_polygon)
-        # self.add(tracked_start_polygon.polygon)
-
-        tracked_end_polygon: TrackedPolygon = TrackedPolygon(end.polygon)
-        self.add(tracked_end_polygon)
-        end_animator: PolygonToDotAnimator = PolygonToDotAnimator(tracked_end_polygon, end.dot)
-        end_animator.play(self, alpha=1.0, run_time=1.0)
-        # self.wait(3.0)
-        self.add(end.polygon)
-        self.wait(0.1)
-        # self.remove(tracked_end_polygon)
-        # self.add(tracked_end_polygon.polygon)
-        self.remove(start.polygon)
-        self.remove(end.polygon)
-
+        self.remove(start.polygon, end.polygon)
 
     def fade_in_opposite_face_edge(
             self,

@@ -6,16 +6,16 @@ def xy_polar(v0: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     Given an array of 3D vectors (x, y, z) shaped (n, 3), projects each
     vector to (x, y) and returns the polar angle and radius for each point.
 
-    Angles are in radians, computed with arctan2(y, x).
     The radius is sqrt(x^2 + y^2). For (x, y) = (0, 0), angle is 0.0.
+    Angles are in radians, computed with arctan2(y, x) and then normalized to the interval [0, 2*pi).
 
     Args:
         v0: Array of shape (n, 3) with dtype float64.
 
     Returns:
-        A tuple (theta, r):
-          - theta: ndarray shape (n,), dtype float64, angles in radians in the range [0, 2*pi].
+        A tuple (r, theta):
           - r: ndarray shape (n,), dtype float64, radii.
+          - theta: ndarray shape (n,), dtype float64, angles in radians in the range [0, 2*pi).
 
     Raises:
         TypeError: If v0 is not a NumPy ndarray or dtype is not float64.
