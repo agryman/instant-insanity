@@ -44,7 +44,7 @@ class LabelledEdge(VGroup):
     It is a composite Manim object which consists of a label and an edge.
     The label is a Text object.
     The edge is a CubicBezier object.
-    The edge may be either a link that connect two nodes or a loop that connects a
+    The edge may be either a link that connects  two nodes or a loop that connects a
     node to itself.
 
     Attributes:

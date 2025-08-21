@@ -3,10 +3,26 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, TypeAlias
 
+import numpy as np
 from manim import Mobject, Animation, ValueTracker, Scene
 from manim.typing import Point3D
 
 Updater: TypeAlias = Callable[[Any], object]
+
+
+def lerp(a_0: np.ndarray, a_1: np.ndarray, alpha: float) -> np.ndarray:
+    """
+    Compute the linear interpolation between two arrays.
+    Args:
+        a_0: the array at alpha = 0
+        a_1: the array at alpha = 1
+        alpha: the interpolation parameter, usually between 0 and 1.
+
+    Returns:
+        the interpolated array.
+    """
+    return (1.0 - alpha) * a_0 + alpha * a_1
+
 
 class Animorph(ABC):
     """A visual object that interpolates between two states.
