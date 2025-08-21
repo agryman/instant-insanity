@@ -23,15 +23,15 @@ class PolygonToDotAnimorph(Animorph):
         dot_centre: the center of the dot.
         dot_radius: the radius of the dot.
         polygon_centre: the center of the initial polygon.
-        w0_theta: the angles of w0, the refined vertices relative to polygon_centre.
         w0_radius: the radii of w0.
+        w0_theta: the angles of w0, the refined vertices relative to polygon_centre.
     """
+    polygon_centre: Point3D
+    w0_radius: np.ndarray
+    w0_theta: np.ndarray
     dot: Dot
     dot_centre: Point3D
     dot_radius: float
-    polygon_centre: Point3D
-    w0_theta: np.ndarray
-    w0_radius: np.ndarray
 
     def __init__(self, polygon: Polygon, dot: Dot, minimum_sector_count=DEFAULT_MINIMUM_SECTOR_COUNT) :
         assert isinstance(polygon, Polygon)
@@ -90,11 +90,11 @@ class PolygonToDotAnimorph(Animorph):
 
         # set the object attributes
         self.polygon_centre = polygon_centre
-        self.dot = dot
-        self.dot_centre = dot.get_center()
         self.dot_radius = dot.radius
         self.w0_radius = w0_radius
         self.w0_theta = w0_theta
+        self.dot = dot
+        self.dot_centre = dot.get_center()
 
     @staticmethod
     def update_polygon(polygon, w):

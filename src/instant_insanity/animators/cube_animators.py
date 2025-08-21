@@ -3,27 +3,34 @@ from abc import ABC
 import numpy as np
 from manim import Mobject
 
+from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_NAME_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath, Vertex, Vector
 from instant_insanity.core.transformation import transform_vertex_path, rotation_matrix_about_line, \
     apply_linear_transform
 
-from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnimator
-from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
 
-class CubeAnimator(TrackedVGroupAnimator):
+class CubeAnimorph(Animorph):
     """
-    This is the abstract base class for `ThreeDPuzzleCube` animators.
+    This is the abstract base class for `ThreeDPuzzleCube` animorphs.
     """
 
-    def __init__(self, cube: Mobject):
-        if not isinstance(cube, TrackedThreeDPuzzleCube):
+    def __init__(self, cube: ThreeDPuzzleCube):
+        if not isinstance(cube, ThreeDPuzzleCube):
             raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
         super().__init__(cube)
 
+    def get_cube(self) -> ThreeDPuzzleCube:
+        mobject: Mobject = self.mobject
+        assert isinstance(mobject, ThreeDPuzzleCube)
+        cube: ThreeDPuzzleCube = mobject
+        return cube
 
-class CubeRigidMotionAnimator(CubeAnimator):
+
+
+class CubeRigidMotionAnimorph(CubeAnimorph):
     """
     The class animates a rigid motion of a cube.
     The rigid motion is defined by a rotation followed by a translation.
@@ -37,7 +44,7 @@ class CubeRigidMotionAnimator(CubeAnimator):
     translation: np.ndarray
 
     def __init__(self,
-                 cube: TrackedThreeDPuzzleCube,
+                 cube: ThreeDPuzzleCube,
                  rotation: np.ndarray,
                  translation: np.ndarray,
                  ) -> None:
@@ -45,10 +52,13 @@ class CubeRigidMotionAnimator(CubeAnimator):
         self.rotation = rotation
         self.translation = translation
 
-    def interpolate(self, alpha: float) -> None:
-        super().interpolate(alpha)
-        assert isinstance(self.tracked_vgroup, TrackedThreeDPuzzleCube)
-        cube: TrackedThreeDPuzzleCube = self.tracked_vgroup
+    def morph_to(self, alpha: float) -> None:
+        super().morph_to(alpha)
+        cube: ThreeDPuzzleCube = self.get_cube()
+
+        # does this fix the ghost problem?
+        cube.remove(*cube.submobjects)
+
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
         id_to_initial_model_path: PolygonIdToVertexPathMapping = cube.id_to_initial_model_path
@@ -61,14 +71,22 @@ class CubeRigidMotionAnimator(CubeAnimator):
         cube.mk_polygons(id_to_transformed_model_path)
 
 
-class CubeExplosionAnimator(CubeAnimator):
-    def __init__(self, cube: TrackedThreeDPuzzleCube, expansion_factor: float) -> None:
+class CubeExplosionAnimorph(CubeAnimorph):
+    """
+    This animorph explodes the cube by an expansion factor.
+
+    Attributes:
+        expansion_factor: the expansion factor.
+    """
+    expansion_factor: float
+
+    def __init__(self, cube: ThreeDPuzzleCube, expansion_factor: float) -> None:
         super().__init__(cube)
         self.expansion_factor = expansion_factor
 
-    def interpolate_face(self, name: FaceName, alpha: float = 0.0) -> np.ndarray:
+    def morph_face_to(self, name: FaceName, alpha: float = 0.0) -> np.ndarray:
         """
-        Makes the NumPy array of face vertices corresponding to animation parameter alpha.
+        Makes the NumPy array of face vertices corresponding to the animation parameter alpha.
 
         The faces rotate to become perpendicular to the z-axis.
         Front/Back faces are already perpendicular to the z-axis so no rotation.
@@ -131,14 +149,12 @@ class CubeExplosionAnimator(CubeAnimator):
 
         return transformed_vertex_path
 
-    def interpolate(self, alpha: float) -> None:
-        super().interpolate(alpha)
-        assert isinstance(self.tracked_vgroup, TrackedThreeDPuzzleCube)
-        cube: TrackedThreeDPuzzleCube = self.tracked_vgroup
+    def morph_to(self, alpha: float) -> None:
+        super().morph_to(alpha)
+        cube: ThreeDPuzzleCube = self.get_cube()
 
         id_to_transformed_model_path: PolygonIdToVertexPathMapping = {
-            TrackedThreeDPuzzleCube.name_to_id(name): self.interpolate_face(name, alpha)
+            ThreeDPuzzleCube.name_to_id(name): self.morph_face_to(name, alpha)
             for name in FaceName
         }
-
         cube.mk_polygons(id_to_transformed_model_path)

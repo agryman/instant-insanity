@@ -5,30 +5,28 @@
 ```mermaid
 classDiagram
     Animation <|-- AnimorphAnimation
-    Mobject <|-- ValueTracker
     Animorph *-- Mobject  : mobject
     Animorph <|-- MoveToAnimorph
     Animorph <|-- PolygonToDotAnimorph
+    Animorph <|-- CubeAnimorph
+    ThreeDPuzzleCube --* CubeAnimorph : mobject
+    CubeAnimorph <|-- CubeRigidMotionAnimorph
+    CubeAnimorph <|-- CubeExplosionAnimorph
     Animorph --* AnimorphAnimation : animorph
     Mobject <|-- VMobject
+    VMobject <|-- Polygon
+    VMobject <|-- Dot
+    Polygon --* PolygonToDotAnimorph : mobject
+    Dot --* PolygonToDotAnimorph : dot
     VMobject <|-- VGroup
-    VGroup <|-- TrackedVGroup
-    ValueTracker --* TrackedVGroup : tracker
-    TrackedVGroup <|-- TrackedPolygon
-    TrackedVGroup <|-- TrackedThreeDPolygons
-
-    TrackedThreeDPolygons <|-- TrackedThreeDPuzzleCube
-
-    TrackedVGroup --* TrackedVGroupAnimator : tracked_vgroup
-    TrackedVGroupAnimator <|-- CubeAnimator
-    TrackedThreeDPuzzleCube --* CubeAnimator : tracked_vgroup
-    CubeAnimator <|-- CubeRigidMotionAnimator
-    CubeAnimator <|-- CubeExplosionAnimator
-    TrackedVGroupAnimator <|-- ThreeDPolygonsAnimator
-    TrackedThreeDPolygons --* ThreeDPolygonsAnimator : tracked_vgroup
-    TrackedVGroupAnimator <|-- PolygonToDotAnimator
-    TrackedPolygon --* PolygonToDotAnimator : tracked_vgroup
-    TrackedVGroupAnimator <|-- AnimorphAnimator
+    VGroup <|-- ThreeDPolygons
+    ThreeDPolygons <|-- ThreeDPuzzleCube
+    
+    <<manin>> Mobject
+    <<manim>> VMobject
+    <<manim>> VGroup
+    <<manim>> Dot
+    <<manin>> Polygon
     
     class Animorph {
         alpha: float
@@ -42,21 +40,18 @@ classDiagram
         start_point
         end_point
     }
-
-    class TrackedVGroup {
-        tracker: ValueTracker
-    }
     
+    class PolygonToDotAnimorph {
+        polygon_centre
+        w0_radius
+        w0_theta
+        dot
+        doc_centre
+        dot_radius
+    }
+ 
     class AnimorphAnimation {
         animorph: Animorph
         interpolate_mobject()
     }
-    class TrackedVGroupAnimator {
-        tracked_vgroup: TrackedVGroup
-        mk_updater(self) Updater 
-        play()
-        interpolate()*
-    }
-    <<abstract>> TrackedVGroupAnimator
-    <<abstract>> CubeAnimator
 ```

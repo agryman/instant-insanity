@@ -1,19 +1,19 @@
 from manim import *
 
-from instant_insanity.animators.cube_animators import CubeRigidMotionAnimator
+from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping, PolygonId
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
-from instant_insanity.mobjects.three_d_puzzle_cube import TrackedThreeDPuzzleCube
+from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
-FRONT_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.FRONT)
-BACK_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.BACK)
-RIGHT_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.RIGHT)
-LEFT_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.LEFT)
-TOP_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.TOP)
-BOTTOM_ID: PolygonId = TrackedThreeDPuzzleCube.name_to_id(FaceName.BOTTOM)
+FRONT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
+BACK_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BACK)
+RIGHT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.RIGHT)
+LEFT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.LEFT)
+TOP_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.TOP)
+BOTTOM_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BOTTOM)
 
 
 def test_three_d_puzzle_cube():
@@ -24,7 +24,7 @@ def test_three_d_puzzle_cube():
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-    three_d_puzzle_cube: TrackedThreeDPuzzleCube = TrackedThreeDPuzzleCube(projection, cube_spec)
+    three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
 
     id_to_scene_polygon: SortedPolygonIdToPolygonMapping = three_d_puzzle_cube.id_to_scene_polygon
     sorted_ids: list[PolygonId] = list(id_to_scene_polygon.keys())
@@ -50,7 +50,7 @@ def test_translation():
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-    cube: TrackedThreeDPuzzleCube = TrackedThreeDPuzzleCube(projection, cube_spec)
+    cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
     id_to_scene_polygon_before = cube.id_to_scene_polygon.copy()
     right_polygon_before = id_to_scene_polygon_before[RIGHT_ID]
     actual_vertices_before = right_polygon_before.get_vertices()
@@ -62,8 +62,8 @@ def test_translation():
     # move the cube to the left
     rotation: np.ndarray = ORIGIN
     translation: np.ndarray = 7 * LEFT
-    animator: CubeRigidMotionAnimator = CubeRigidMotionAnimator(cube, rotation, translation)
-    animator.interpolate(1.0)
+    animorph: CubeRigidMotionAnimorph = CubeRigidMotionAnimorph(cube, rotation, translation)
+    animorph.morph_to(1.0)
 
     id_to_scene_polygon_after = cube.id_to_scene_polygon
     right_polygon_after = id_to_scene_polygon_after[RIGHT_ID]
@@ -77,8 +77,8 @@ def test_translation():
 
 def test_polygon_ids():
     for face_name in FaceName:
-        polygon_id = TrackedThreeDPuzzleCube.name_to_id(face_name)
-        face_name_2 = TrackedThreeDPuzzleCube.id_to_name(polygon_id)
+        polygon_id = ThreeDPuzzleCube.name_to_id(face_name)
+        face_name_2 = ThreeDPuzzleCube.id_to_name(polygon_id)
         assert face_name_2 == face_name
-        polygon_id_2 = TrackedThreeDPuzzleCube.name_to_id(face_name_2)
+        polygon_id_2 = ThreeDPuzzleCube.name_to_id(face_name_2)
         assert polygon_id_2 == polygon_id

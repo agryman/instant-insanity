@@ -6,18 +6,10 @@ from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, P
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
-from instant_insanity.mobjects.three_d_polygons import TrackedThreeDPolygons
+from instant_insanity.mobjects.three_d_polygons import ThreeDPolygons
 
 
-class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
-    """
-    This class is a VGroup that renders as a 3D puzzle cube in model space.
-    The appearance of the cube is determined by a projection from model space to scene space.
-    Its submobjects are mobjects that render as the faces of the cube.
-    The submobjects are depth-sorted to produce the correct 3D appearance.
-    The faces are Polygons.
-
-    """
+class ThreeDPuzzleCube(ThreeDPolygons):
     cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
 
@@ -27,10 +19,10 @@ class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
                  **kwargs) -> None:
         """
         Args:
-            projection: the projection
-            cube_spec: the puzzle cube specification
+            projection: the projection.
+            cube_spec: the puzzle cube specification.
         """
-        id_to_initial_model_path: PolygonIdToVertexPathMapping = TrackedThreeDPuzzleCube.mk_id_to_initial_model_path()
+        id_to_initial_model_path: PolygonIdToVertexPathMapping = ThreeDPuzzleCube.mk_id_to_initial_model_path()
         super().__init__(projection, id_to_initial_model_path, **kwargs)
 
         self.cube_spec = cube_spec
@@ -51,7 +43,7 @@ class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
         face_name: FaceName
         vertex_path: VertexPath
         id_to_initial_model_path: PolygonIdToVertexPathMapping = {
-            TrackedThreeDPuzzleCube.name_to_id(face_name): vertex_path
+            ThreeDPuzzleCube.name_to_id(face_name): vertex_path
             for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items()
         }
         return id_to_initial_model_path
@@ -85,12 +77,12 @@ class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
         """
         Makes the scene space polygons from the model space vertices and adds them to the group.
 
-        The model space vertices are projected onto scene space and then depth-sorted.
-        The projected vertices are converted to Polygon objects and stored in a new OrderedDict.
-        The polygons are added to the VGroup in the depth-sorted order.
+        Project the model space vertices onto scene space and then depth-sort them.
+        Convert the projected vertices to Polygon objects and store them in a new OrderedDict.
+        Add the polygons to the base VGroup in the depth-sorted order.
 
         Args:
-            id_to_model_path: the dict of model space vertex paths of the faces
+            id_to_model_path: the dict of model space vertex paths of the faces.
         """
 
         # remove any existing polygons because we are going to create new ones
@@ -112,7 +104,7 @@ class TrackedThreeDPuzzleCube(TrackedThreeDPolygons):
         polygon_id: PolygonId
         polygon: Polygon
         for polygon_id, polygon in id_to_scene_polygon.items():
-            name: FaceName = TrackedThreeDPuzzleCube.id_to_name(polygon_id)
+            name: FaceName = ThreeDPuzzleCube.id_to_name(polygon_id)
             colour: ManimColor = self.get_manim_colour(name)
             polygon.set_fill(colour)
             self.add(polygon)

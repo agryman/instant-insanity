@@ -1,13 +1,12 @@
 """This module defines Animorph."""
 
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Any, Callable, TypeAlias
 
 from manim import Mobject, Animation, ValueTracker, Scene
 from manim.typing import Point3D
 
-from instant_insanity.animators.tracked_vgroup_animator import TrackedVGroupAnimator, Updater
-
+Updater: TypeAlias = Callable[[Any], object]
 
 class Animorph(ABC):
     """A visual object that interpolates between two states.
@@ -59,7 +58,6 @@ class Animorph(ABC):
         assert 0.0 <= start_alpha <= 1.0
         assert 0.0 <= end_alpha <= 1.0
         assert run_time > 0.0
-        self.morph_to(start_alpha)
         alpha_tracker = ValueTracker(start_alpha)
         updater: Updater = lambda mobject: self.morph_to(alpha_tracker.get_value())
         self.mobject.add_updater(updater)
@@ -102,7 +100,3 @@ class AnimorphAnimation(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         self.animorph.morph_to(alpha)
-
-
-class AnimorphAnimator(TrackedVGroupAnimator):
-    pass
