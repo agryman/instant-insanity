@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import TypeAlias
 
 import numpy as np
+
 from manim import Dot, VGroup, Polygon
 
 from instant_insanity.core.cube import FaceName
@@ -10,7 +11,7 @@ from instant_insanity.core.object_count import ObjectToCountMapping
 from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, PuzzleCube, AXIS_TO_FACE_NAME_PAIR, \
     CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE, CubeAxis, PuzzleCubeNumber, AxisLabel
 from instant_insanity.mobjects.coloured_node import mk_dot
-from instant_insanity.mobjects.labelled_edge import LabelledEdge
+from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.quadrant import Quadrant, QUADRANT_TO_POSITION, NodePair, mk_standard_node_pair
 from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 
@@ -255,28 +256,22 @@ class OppositeFaceGraph(VGroup):
             sequence_number: int = self.node_pair_to_count.post_increment(node_pair)
             start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
             end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
+            point_pair: PointPair = (start_point, end_point)
             self.edge_to_mobject[cube_axis] = LabelledEdge(node_pair,
                                                            text,
                                                            sequence_number,
-                                                           start_point,
-                                                           end_point)
+                                                           point_pair,
+                                                           point_pair,
+                                                           point_pair,
+                                                           moving=False)
 
-    def copy_edge_to(self,
-                     cube_axis: CubeAxis,
-                     start_point: np.ndarray,
-                     end_point: np.ndarray) -> LabelledEdge:
-        """
-        Copies the given labelled edge to a new start point and end point.
-        Args:
-            cube_axis: the cube axis of LabelledEdge to copy.
-            start_point: the new start point.
-            end_point: the new end point.
-
-        Returns:
-            the new labelled edge.
-        """
+    def copy_edge_from_to(self,
+                          cube_axis: CubeAxis,
+                          point_pair_0: PointPair,
+                          point_pair_1: PointPair,
+                          point_pair_alpha: PointPair) -> LabelledEdge:
         edge: LabelledEdge = self.edge_to_mobject[cube_axis]
-        return edge.copy_to(start_point, end_point)
+        return edge.copy_from_to(point_pair_0, point_pair_1, point_pair_alpha)
 
 
     def set_subgraph(self, subgraph: EdgeToSubgraphMapping) -> None:

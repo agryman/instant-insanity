@@ -5,9 +5,10 @@ TO DO: remove dependency on manim. Use pure NumPy instead.
 """
 
 import numpy as np
-from manim.typing import Vector3D
+from typing import TypeAlias
+from manim.typing import Point3D
 
-Triangle = list[Vector3D]
+Triangle: TypeAlias = list[Point3D]
 
 def check_triangle(triangle: Triangle) -> None:
     """Check that the triangle contains 3 vertices."""
@@ -18,6 +19,7 @@ def check_triangle(triangle: Triangle) -> None:
 def triangle_area(triangle: Triangle) -> float:
     """Return the area of the triangle."""
     check_triangle(triangle)
+
     return 0.0
 
 def overlap(triangle1, triangle2) -> int:

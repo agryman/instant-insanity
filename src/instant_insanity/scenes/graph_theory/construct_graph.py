@@ -13,7 +13,7 @@ and added to the scene.
 
 import numpy as np
 
-from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn, ReplacementTransform,
+from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, Scene, LEFT, RIGHT, FadeIn,
                    always_redraw, Create)
 
 from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
@@ -24,7 +24,7 @@ from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR)
 from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
-from instant_insanity.mobjects.labelled_edge import LabelledEdge
+from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data
 from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -72,6 +72,18 @@ class ConstructGraph(GridMixin, Scene):
     def mk_start_end(graph: OppositeFaceGraph,
                      cube: ThreeDPuzzleCube,
                      axis_label: AxisLabel) -> tuple[FaceData, FaceData]:
+        """
+        Makes the (start, end) FaceData pair for the given graph, cube, and axis label.
+        The (start, end) pair of ordered so that the start quadrant <= the end quadrant.
+
+        Args:
+            graph: the opposite-face graph.
+            cube: the puzzle cube.
+            axis_label: the axis label.
+
+        Returns:
+            the properly ordered (start, end) face data pair.
+        """
         face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[axis_label]
         first: FaceData = mk_face_data(graph, cube, face_pair[0])
         second: FaceData = mk_face_data(graph, cube, face_pair[1])
@@ -121,9 +133,18 @@ class ConstructGraph(GridMixin, Scene):
             start: FaceData,
             end: FaceData) -> None:
         # connect the start-end dots with a graph edge
-        start_point: np.ndarray = start.dot.get_center()
-        end_point: np.ndarray = end.dot.get_center()
-        edge: LabelledEdge = graph.copy_edge_to(cube_axis, start_point, end_point)
+        start_point_0: np.ndarray = start.dot.get_center()
+        end_point_0: np.ndarray = end.dot.get_center()
+        point_pair_0: PointPair = (start_point_0, end_point_0)
+
+        start_dot_1: Dot = graph.node_to_mobject[start.quadrant]
+        end_dot_1: Dot = graph.node_to_mobject[end.quadrant]
+
+        start_point_1: np.ndarray = start_dot_1.get_center()
+        end_point_1: np.ndarray = end_dot_1.get_center()
+        point_pair_1: PointPair = (start_point_1, end_point_1)
+
+        edge: LabelledEdge = graph.copy_edge_from_to(cube_axis, point_pair_0, point_pair_1, point_pair_0)
 
         self.remove(start.dot, end.dot)
         self.add(edge, start.dot, end.dot)
@@ -137,24 +158,33 @@ class ConstructGraph(GridMixin, Scene):
             start: FaceData,
             end: FaceData) -> None:
 
+        start_point_0: np.ndarray = start.dot.get_center().copy()
+        end_point_0: np.ndarray = end.dot.get_center().copy()
+        point_pair_0: PointPair = (start_point_0, end_point_0)
+
+        start_dot_1: Dot = graph.node_to_mobject[start.quadrant]
+        end_dot_1: Dot = graph.node_to_mobject[end.quadrant]
+
+        start_point_1: np.ndarray = start_dot_1.get_center()
+        end_point_1: np.ndarray = end_dot_1.get_center()
+        point_pair_1: PointPair = (start_point_1, end_point_1)
+
         # move the dots to the graph and always redraw the moving edge to connect their centres
         moving_edge: Mobject = always_redraw(
             lambda:
-            graph.copy_edge_to(
+            graph.copy_edge_from_to(
                 cube_axis,
-                start.dot.get_center(),
-                end.dot.get_center()
+                point_pair_0,
+                point_pair_1,
+                (start.dot.get_center(), end.dot.get_center()))
             )
-        )
 
         # draw the dots on top of the moving edge
         self.add(moving_edge, start.dot, end.dot)
 
-        target_start_dot: Dot = graph.node_to_mobject[start.quadrant]
-        target_end_dot: Dot = graph.node_to_mobject[end.quadrant]
         self.play(
-            start.dot.animate.move_to(target_start_dot),
-            end.dot.animate.move_to(target_end_dot),
+            start.dot.animate.move_to(start_dot_1),
+            end.dot.animate.move_to(end_dot_1),
             run_time=2.0,
         )
         self.remove(moving_edge, start.dot, end.dot)
