@@ -1,7 +1,7 @@
 import numpy as np
 
 from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempconfig, RIGHT, PI, LineJointType, FadeIn, \
-    FadeOut, ValueTracker, UpdateFromAlphaFunc
+    FadeOut, ValueTracker
 
 from instant_insanity.animators.animorph import Updater
 from instant_insanity.core.geometry_types import Vector, PolygonId, SortedPolygonIdToPolygonMapping
@@ -37,17 +37,17 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         alpha: float
         for alpha in [0.0, 0.5, 1.0]:
             animorph.morph_to(alpha)
-            alpha_id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube.id_to_scene_polygon
+            id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube.id_to_scene_polygon
             name: FaceName
             colour: ManimColor
             for name, colour in zip(names, colours):
                 polygon_id: PolygonId = ThreeDPuzzleCube.name_to_id(name)
-                alpha_polygon: Polygon = alpha_id_to_scene_polygon[polygon_id]
-                alpha_vertices: np.ndarray = alpha_polygon.get_vertices()
-                alpha_polygon_outline: Polygon = Polygon(*alpha_vertices,
+                polygon: Polygon = id_to_scene_polygon[polygon_id]
+                vertices: np.ndarray = polygon.get_vertices()
+                polygon_outline: Polygon = Polygon(*vertices,
                                                          stroke_color=colour,
                                                          joint_type=LineJointType.ROUND)
-                self.add(alpha_polygon_outline)
+                self.add(polygon_outline)
         self.wait()
 
         # move the cube to the animation start

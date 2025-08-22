@@ -45,10 +45,10 @@ classDiagram
         puzzle_cube: PuzzleCube
         name_to_id(face_name)$
         id_to_name(polygon_id)$
-        mk_id_to_initial_model_path()$
+        mk_id_to_model_path_0()$
         get_colour_name(face_name)
         get_manim_colour(face_name)
-        mk_polygons(id_to_model_path)
+        update_polygons(id_to_model_path, **polygon_settings)
         
     }
     

@@ -56,19 +56,16 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
         super().morph_to(alpha)
         cube: ThreeDPuzzleCube = self.get_cube()
 
-        # does this fix the ghost problem?
-        cube.remove(*cube.submobjects)
-
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
-        id_to_initial_model_path: PolygonIdToVertexPathMapping = cube.id_to_model_path_0
+        id_to_model_path_0: PolygonIdToVertexPathMapping = cube.id_to_model_path_0
         polygon_id: PolygonId
-        model_path: VertexPath
-        id_to_transformed_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id: transform_vertex_path(alpha_rotation, alpha_translation, model_path)
-            for polygon_id, model_path in id_to_initial_model_path.items()
+        model_path_0: VertexPath
+        id_to_model_path: PolygonIdToVertexPathMapping = {
+            polygon_id: transform_vertex_path(alpha_rotation, alpha_translation, model_path_0)
+            for polygon_id, model_path_0 in id_to_model_path_0.items()
         }
-        cube.mk_polygons(id_to_transformed_model_path)
+        cube.update_polygons(id_to_model_path, **ThreeDPuzzleCube.polygon_settings)
 
 
 class CubeExplosionAnimorph(CubeAnimorph):
@@ -141,20 +138,20 @@ class CubeExplosionAnimorph(CubeAnimorph):
 
         theta: float = alpha * theta_max
         rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        model_vertex_path: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
-        rotated_vertex_path: VertexPath = apply_linear_transform(rot_mat, model_vertex_path)
+        model_path_0: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
+        rotated_model_path: VertexPath = apply_linear_transform(rot_mat, model_path_0)
 
         translation: Vector = alpha * translation_max
-        transformed_vertex_path: np.ndarray = rotated_vertex_path + translation
+        model_path: np.ndarray = rotated_model_path + translation
 
-        return transformed_vertex_path
+        return model_path
 
     def morph_to(self, alpha: float) -> None:
         super().morph_to(alpha)
         cube: ThreeDPuzzleCube = self.get_cube()
 
-        id_to_transformed_model_path: PolygonIdToVertexPathMapping = {
+        id_to_model_path: PolygonIdToVertexPathMapping = {
             ThreeDPuzzleCube.name_to_id(name): self.morph_face_to(name, alpha)
             for name in FaceName
         }
-        cube.mk_polygons(id_to_transformed_model_path)
+        cube.update_polygons(id_to_model_path, **ThreeDPuzzleCube.polygon_settings)
