@@ -61,7 +61,7 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
 
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
-        id_to_initial_model_path: PolygonIdToVertexPathMapping = cube.id_to_initial_model_path
+        id_to_initial_model_path: PolygonIdToVertexPathMapping = cube.id_to_model_path_0
         polygon_id: PolygonId
         model_path: VertexPath
         id_to_transformed_model_path: PolygonIdToVertexPathMapping = {

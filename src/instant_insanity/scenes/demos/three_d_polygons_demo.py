@@ -1,7 +1,7 @@
 import numpy as np
 
 from manim import (Scene, tempconfig, ORIGIN, RIGHT, LEFT, UP, OUT,
-                   RED, GREEN, BLUE, YELLOW, BLACK, PI, ManimColor)
+                   RED, GREEN, BLUE, YELLOW, BLACK, PI, ManimColor, PURPLE)
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.geometry_types import (Vertex, VertexPath, PolygonId, PolygonIdToVertexPathMapping,
@@ -12,7 +12,7 @@ from instant_insanity.mobjects.three_d_polygons import ThreeDPolygons
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
-class TestThreeDPolygons(GridMixin, Scene):
+class ThreeDPolygonsDemo(GridMixin, Scene):
     def construct(self):
         self.add_grid(True)
 
@@ -37,17 +37,18 @@ class TestThreeDPolygons(GridMixin, Scene):
         oyz_id: PolygonId = PolygonId('oyz')
         xyz_id: PolygonId = PolygonId('xyz')
 
-        id_to_initial_model_path: PolygonIdToVertexPathMapping = {
+        id_to_model_path_0: PolygonIdToVertexPathMapping = {
             oxy_id: oxy,
             oxz_id: oxz,
             oyz_id: oyz,
             xyz_id: xyz,
         }
 
-        polygon_to_colour: dict[PolygonId, ManimColor] = {
+        id_to_colour: dict[PolygonId, ManimColor] = {
             oxy_id: RED,
             oxz_id: GREEN,
-            oyz_id: BLUE
+            oyz_id: BLUE,
+            xyz_id: PURPLE,
         }
 
         polygon_defaults: dict = {
@@ -56,34 +57,38 @@ class TestThreeDPolygons(GridMixin, Scene):
             'stroke_width': 1.0,
             'stroke_color': BLACK
         }
-        polygons: ThreeDPolygons = ThreeDPolygons(projection,
-                                                                id_to_initial_model_path,
-                                                                **polygon_defaults)
+        tetrahedron: ThreeDPolygons = ThreeDPolygons(projection,
+                                                  id_to_model_path_0,
+                                                  **polygon_defaults)
 
-        self.add(*polygons.id_to_scene_polygon.values())
+        def set_fill_color():
+            for polygon_id, colour in id_to_colour.items():
+                tetrahedron.id_to_scene_polygon[polygon_id].set_fill(colour)
+
+        set_fill_color()
+
+        # Have the faces been added to the tetrahedron? - NO!
+        # TODO: the ThreeDPolygons constructor should add the Polygon objects to the VGroup
+        self.add(*tetrahedron.id_to_scene_polygon.values())
         self.wait()
 
-        self.remove(*polygons.id_to_scene_polygon.values())
+        self.remove(*tetrahedron.id_to_scene_polygon.values())
         self.wait()
 
         # transform the model paths and update the polygons object
         rotation: np.ndarray = np.array(RIGHT * PI / 2.0, dtype=np.float64)
         translation: np.ndarray = np.array(LEFT * 4, dtype=np.float64)
-        id_to_interpolated_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id : transform_vertex_path(rotation, translation, id_to_initial_model_path[polygon_id])
-            for polygon_id in id_to_initial_model_path.keys()
+        id_to_model_path: PolygonIdToVertexPathMapping = {
+            polygon_id : transform_vertex_path(rotation, translation, id_to_model_path_0[polygon_id])
+            for polygon_id in id_to_model_path_0.keys()
         }
-        polygons.update_polygons(id_to_interpolated_model_path, **polygon_defaults)
+        tetrahedron.update_polygons(id_to_model_path, **polygon_defaults)
+        set_fill_color()
 
-        for polygon_id in polygon_to_colour.keys():
-            polygons.id_to_scene_polygon[polygon_id].set_fill(polygon_to_colour[polygon_id])
-
-        self.add(*polygons.id_to_scene_polygon.values())
-        self.wait()
-
+        self.add(*tetrahedron.id_to_scene_polygon.values())
         self.wait()
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = TestThreeDPolygons()
+        scene = ThreeDPolygonsDemo()
         scene.render()

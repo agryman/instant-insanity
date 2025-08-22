@@ -48,28 +48,28 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         }
         return id_to_initial_model_path
 
-    def get_colour_name(self, name: FaceName) -> FaceColour:
+    def get_colour_name(self, face_name: FaceName) -> FaceColour:
         """
         Returns the colour name for the given face colour.
         Args:
-            name: the face name.
+            face_name: the face name.
 
         Returns:
             the colour name for the given face name.
         """
-        colour_name: FaceColour = self.puzzle_cube.name_to_colour[name]
+        colour_name: FaceColour = self.puzzle_cube.name_to_colour[face_name]
         return colour_name
 
-    def get_manim_colour(self, name: FaceName) -> ManimColor:
+    def get_manim_colour(self, face_name: FaceName) -> ManimColor:
         """
         Returns the colour of the given face.
         Args:
-            name: The name of the face.
+            face_name: The name of the face.
 
         Returns:
             The Manim colour of the given face.
         """
-        colour_name: FaceColour = self.get_colour_name(name)
+        colour_name: FaceColour = self.get_colour_name(face_name)
         colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
         return colour
 
@@ -104,7 +104,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         polygon_id: PolygonId
         polygon: Polygon
         for polygon_id, polygon in id_to_scene_polygon.items():
-            name: FaceName = ThreeDPuzzleCube.id_to_name(polygon_id)
-            colour: ManimColor = self.get_manim_colour(name)
+            face_name: FaceName = ThreeDPuzzleCube.id_to_name(polygon_id)
+            colour: ManimColor = self.get_manim_colour(face_name)
             polygon.set_fill(colour)
             self.add(polygon)

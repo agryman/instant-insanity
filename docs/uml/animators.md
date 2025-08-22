@@ -28,6 +28,29 @@ classDiagram
     <<manim>> Dot
     <<manin>> Polygon
     
+    class ThreeDPolygons {
+        projection: Projection
+        depth_sorter: DepthSort
+        id_to_initial_model_path: dict
+        id_to_interpolated_model_path: dict
+        id_to_scene_path: OrderedDict
+        id_to_scene_polygon: OrderedDict
+        mk_id_to_scene_polygon()$
+        update_polygons(id_to_interpolated_model_path, **kwargs)
+    }
+    
+    class ThreeDPuzzleCube {
+        cube_spec: PuzzleCubeSpec
+        puzzle_cube: PuzzleCube
+        name_to_id(face_name)$
+        id_to_name(polygon_id)$
+        mk_id_to_initial_model_path()$
+        get_colour_name(face_name)
+        get_manim_colour(face_name)
+        mk_polygons(id_to_model_path)
+        
+    }
+    
     class Animorph {
         alpha: float
         mobject: Mobject
