@@ -31,12 +31,13 @@ classDiagram
     class ThreeDPolygons {
         projection: Projection
         depth_sorter: DepthSort
-        id_to_initial_model_path: dict
-        id_to_interpolated_model_path: dict
+        id_to_model_path_0: dict
+        id_to_model_path: dict
         id_to_scene_path: OrderedDict
         id_to_scene_polygon: OrderedDict
-        mk_id_to_scene_polygon()$
-        update_polygons(id_to_interpolated_model_path, **kwargs)
+        update_polygons(id_to_model_path, **polygon_settings)
+        conceal_polygons()
+        remove_polygons()
     }
     
     class ThreeDPuzzleCube {

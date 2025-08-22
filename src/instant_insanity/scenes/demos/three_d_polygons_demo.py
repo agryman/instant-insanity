@@ -57,36 +57,35 @@ class ThreeDPolygonsDemo(GridMixin, Scene):
             'stroke_width': 1.0,
             'stroke_color': BLACK
         }
+
         tetrahedron: ThreeDPolygons = ThreeDPolygons(projection,
-                                                  id_to_model_path_0,
-                                                  **polygon_defaults)
+                                                     id_to_model_path_0,
+                                                     **polygon_defaults)
 
         def set_fill_color():
             for polygon_id, colour in id_to_colour.items():
                 tetrahedron.id_to_scene_polygon[polygon_id].set_fill(colour)
 
-        set_fill_color()
-
-        # Have the faces been added to the tetrahedron? - NO!
-        # TODO: the ThreeDPolygons constructor should add the Polygon objects to the VGroup
-        self.add(*tetrahedron.id_to_scene_polygon.values())
+        # set_fill_color()
+        self.add(tetrahedron)
         self.wait()
 
-        self.remove(*tetrahedron.id_to_scene_polygon.values())
+        self.remove(tetrahedron)
         self.wait()
 
         # transform the model paths and update the polygons object
         rotation: np.ndarray = np.array(RIGHT * PI / 2.0, dtype=np.float64)
         translation: np.ndarray = np.array(LEFT * 4, dtype=np.float64)
         id_to_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id : transform_vertex_path(rotation, translation, id_to_model_path_0[polygon_id])
-            for polygon_id in id_to_model_path_0.keys()
+            polygon_id: transform_vertex_path(rotation, translation, model_path)
+            for polygon_id, model_path in id_to_model_path_0.items()
         }
         tetrahedron.update_polygons(id_to_model_path, **polygon_defaults)
         set_fill_color()
 
-        self.add(*tetrahedron.id_to_scene_polygon.values())
+        self.add(tetrahedron)
         self.wait()
+
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

@@ -59,7 +59,7 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         updater: Updater = lambda m: animorph.morph_to(alpha_tracker.get_value())
         cube.add_updater(updater)
         for end_alpha in [0.75, 0.25, 0.0]:
-            cube.remove(*cube.submobjects) # Why do I need to do this?
+            cube.conceal_polygons()
             self.play(alpha_tracker.animate.set_value(end_alpha))
             self.wait()
         cube.remove_updater(updater)
@@ -72,7 +72,7 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         rotation = RIGHT * 2 * PI
         translation = ORIGIN
         animorph = CubeRigidMotionAnimorph(cube, rotation, translation)
-        cube.remove(*cube.submobjects) # Why do I need to do this?
+        cube.conceal_polygons()
         animorph.play(self, run_time=2.0)
 
         self.play(FadeOut(cube))

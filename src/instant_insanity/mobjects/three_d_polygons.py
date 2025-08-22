@@ -58,62 +58,68 @@ class ThreeDPolygons(VGroup):
     id_to_scene_path: SortedPolygonIdToVertexPathMapping
     id_to_scene_polygon: SortedPolygonIdToPolygonMapping
 
-    @staticmethod
-    def mk_id_to_scene_polygon(id_to_scene_path: SortedPolygonIdToVertexPathMapping,
-                               **kwargs) -> SortedPolygonIdToPolygonMapping:
-        """
-        Makes an `OrderedDict` that maps `PolygonId` to `Polygon` from their vertex paths in scene space.
-
-        Args:
-            id_to_scene_path: the `OrderedDict` of vertex paths in scene space.
-            **kwargs: optional arguments passed to `Polygon`.
-
-        Returns:
-            the `OrderedDict` of `Polygon` instances.
-        """
-        id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
-        polygon_id: PolygonId
-        scene_path: VertexPath
-        for polygon_id, scene_path in id_to_scene_path.items():
-            scene_polygon: Polygon = Polygon(*scene_path, **kwargs)
-            id_to_scene_polygon[polygon_id] = scene_polygon
-
-        return id_to_scene_polygon
-
     def __init__(self,
                  projection: Projection,
-                 id_to_initial_model_path: PolygonIdToVertexPathMapping,
-                 **kwargs: Any) -> None:
+                 id_to_model_path_0: PolygonIdToVertexPathMapping,
+                 **polygon_settings: Any) -> None:
         """
 
         Args:
             projection: the projection from model space onto scene space.
-            id_to_initial_model_path: the dict of initial model paths.
-            **kwargs: additional arguments passed to `Polygon`.
+            id_to_model_path_0: the dict of initial model paths.
+            **polygon_settings: additional keyword arguments passed to `Polygon`.
         """
-        super().__init__(**kwargs)
-
-        depth_sorter: DepthSort = DepthSort(projection)
-        id_to_scene_path: SortedPolygonIdToVertexPathMapping = depth_sorter.depth_sort(id_to_initial_model_path)
-        id_to_scene_polygon: SortedPolygonIdToPolygonMapping = ThreeDPolygons.mk_id_to_scene_polygon(id_to_scene_path, **kwargs)
+        super().__init__()
 
         self.projection = projection
-        self.depth_sorter = depth_sorter
-        self.id_to_model_path_0 = id_to_initial_model_path
-        self.id_to_model_path = id_to_initial_model_path
-        self.id_to_scene_path = id_to_scene_path
-        self.id_to_scene_polygon = id_to_scene_polygon
+        self.depth_sorter = DepthSort(projection)
+        self.id_to_model_path_0 = id_to_model_path_0
+        self.update_polygons(id_to_model_path_0, **polygon_settings)
 
-    def update_polygons(self, id_to_model_path: PolygonIdToVertexPathMapping, **kwargs) -> None:
+    def update_polygons(self, id_to_model_path: PolygonIdToVertexPathMapping, **polygon_settings) -> None:
         """
-        Updates the polygons from the given interpolated model paths.
+        Updates the polygons from the given model paths.
 
         Args:
-            id_to_model_path: the interpolated model vertex paths for each polygon
+            id_to_model_path: the updated model vertex paths for each polygon
                 corresponding the current tracker alpha value.
-            **kwargs: additional keyword arguments passed to mk_polygon.
+            **polygon_settings: additional keyword arguments passed to Polygon, e.g. to set the fill colour.
         """
 
         self.id_to_model_path = id_to_model_path
         self.id_to_scene_path = self.depth_sorter.depth_sort(id_to_model_path)
-        self.id_to_scene_polygon = ThreeDPolygons.mk_id_to_scene_polygon(self.id_to_scene_path, **kwargs)
+
+        # make the Polygon mobjects
+        polygon: Polygon
+        polygon_id: PolygonId
+        scene_path: VertexPath
+        self.id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
+        for polygon_id, scene_path in self.id_to_scene_path.items():
+            polygon = Polygon(*scene_path, **polygon_settings)
+            self.id_to_scene_polygon[polygon_id] = polygon
+
+        # remove the submobjects of this group and add the updated polygons in depth-sorted order
+        self.remove_polygons()
+        for polygon in self.id_to_scene_polygon.values():
+            self.add(polygon)
+
+    def conceal_polygons(self) -> None:
+        """
+        Conceals all the polygons.
+        Call this before running an animation to avoid ghosts.
+        Apparently, Manim takes a snapshot image of all the nonmoving mobjects before running an animation.
+        It then uses the snapshot as a fixed background over which it animates the scene.
+        For some reason, Manim may fail to mark a mobject as moving even though it has an updater attached to it.
+        Concealing the polygons works around this quirk (bug?).
+
+        """
+        self.remove_polygons()
+
+    def remove_polygons(self) -> None:
+        """
+        Removes all the polygons from the group.
+        Do this whenever the z-order changes.
+        Then add the polygons back in the correct z-order.
+        """
+        self.remove(*self.submobjects)
+
