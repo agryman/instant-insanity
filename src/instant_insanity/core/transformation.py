@@ -1,5 +1,3 @@
-from typing import Self
-
 import numpy as np
 from manim.typing import Vector3D
 from scipy.spatial.transform import Rotation
@@ -115,7 +113,7 @@ class RigidMotion:
                                                  path_0)
         return path
 
-    def mk_at(self, alpha: float) -> Self:
+    def mk_at(self, alpha: float) -> 'RigidMotion':
         """
         Makes a copy of the rigid motion at the given alpha.
 

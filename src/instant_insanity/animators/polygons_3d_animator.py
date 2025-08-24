@@ -69,7 +69,3 @@ class RigidMotionPolygons3DAnimorph(Polygons3DAnimorph):
             id_to_model_path[polygon_id] = model_path
 
         polygons.set_id_to_model_path(id_to_model_path)
-
-        # TODO test this as a replacement for CubeRigidMotionAnimorph
-        # TODO we can use this in the construct graph scene where we move one cube from the puzzle
-        # to the left side of the scene
