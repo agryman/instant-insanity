@@ -7,7 +7,8 @@ from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, P
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
-from instant_insanity.mobjects.polygons_3d import Polygons3D
+from instant_insanity.mobjects.polygons_3d import Polygons3D, DEFAULT_POLYGON_SETTINGS
+
 
 class PuzzleCube3D(Polygons3D):
     """
@@ -101,25 +102,10 @@ class PuzzleCube3D(Polygons3D):
         colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
         return colour
 
-    def update_polygons(self,
-                        id_to_model_path: PolygonIdToVertexPathMapping,
-                        **polygon_settings) -> None:
-        """
-        Makes the scene space polygons from the model space vertices and adds them to the group.
+    def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
+        polygon_settings: dict = DEFAULT_POLYGON_SETTINGS.copy()
+        face_name: FaceName = self.id_to_name(polygon_id)
+        colour: ManimColor = self.get_manim_colour(face_name)
+        polygon_settings['fill_color'] = colour
+        return polygon_settings
 
-        Project the model space vertices onto scene space and then depth-sort them.
-        Convert the projected vertices to Polygon objects and store them in a new OrderedDict.
-        Add the polygons to the base VGroup in the depth-sorted order.
-
-        Args:
-            id_to_model_path: the dict of model space vertex paths of the faces.
-        """
-        super().update_polygons(id_to_model_path)
-
-        # update the fill colour for each face
-        polygon_id: PolygonId
-        polygon: Polygon
-        for polygon_id, polygon in self.id_to_scene_polygon.items():
-            face_name: FaceName = self.id_to_name(polygon_id)
-            colour: ManimColor = self.get_manim_colour(face_name)
-            polygon.set_fill(colour)

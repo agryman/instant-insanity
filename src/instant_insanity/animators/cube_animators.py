@@ -65,7 +65,7 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
             polygon_id: transform_vertex_path(alpha_rotation, alpha_translation, model_path_0)
             for polygon_id, model_path_0 in id_to_model_path_0.items()
         }
-        cube.update_polygons(id_to_model_path)
+        cube.set_id_to_model_path(id_to_model_path)
 
 
 class CubeExplosionAnimorph(CubeAnimorph):
@@ -154,4 +154,4 @@ class CubeExplosionAnimorph(CubeAnimorph):
             PuzzleCube3D.name_to_id(name): self.morph_face_to(name, alpha)
             for name in FaceName
         }
-        cube.update_polygons(id_to_model_path, **PuzzleCube3D.polygon_settings)
+        cube.set_id_to_model_path(id_to_model_path)

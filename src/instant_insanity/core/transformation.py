@@ -1,5 +1,7 @@
-import numpy
+from typing import Self
+
 import numpy as np
+from manim.typing import Vector3D
 from scipy.spatial.transform import Rotation
 
 from instant_insanity.core.geometry_types import Vector, Vertex, VertexPath
@@ -97,3 +99,33 @@ def transform_vertex_path(rotation: Vector, translation: Vector, vertex_path: Ve
     """
     rot = Rotation.from_rotvec(rotation)
     return rot.apply(vertex_path) + translation
+
+
+class RigidMotion:
+    rotation: Vector3D
+    translation: Vector3D
+
+    def __init__(self, rotation: Vector3D, translation: Vector3D):
+        self.rotation = rotation
+        self.translation = translation
+
+    def transform_path(self, path_0: VertexPath) -> VertexPath:
+        path: VertexPath = transform_vertex_path(self.rotation,
+                                                 self.translation,
+                                                 path_0)
+        return path
+
+    def mk_at(self, alpha: float) -> Self:
+        """
+        Makes a copy of the rigid motion at the given alpha.
+
+        Args:
+            alpha: the interpolation parameter.
+
+        Returns:
+            the new rigid motion at the given alpha.
+        """
+        alpha_rotation: Vector3D = alpha * self.rotation
+        alpha_translation: Vector3D = alpha * self.translation
+
+        return RigidMotion(alpha_rotation, alpha_translation)

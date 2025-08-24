@@ -1,9 +1,10 @@
 import numpy as np
 
 from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempconfig, RIGHT, PI, LineJointType, FadeIn, \
-    FadeOut, ValueTracker
+    FadeOut, ValueTracker, UP
 
 from instant_insanity.animators.animorph import Updater
+from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
 from instant_insanity.core.geometry_types import Vector, PolygonId, SortedPolygonIdToPolygonMapping
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName
@@ -74,6 +75,18 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         animorph = CubeRigidMotionAnimorph(cube, rotation, translation)
         cube.conceal_polygons()
         animorph.play(self, run_time=2.0)
+
+        # rotate again using a different animorph
+        rotation = UP * 2 * PI
+        translation = ORIGIN
+        moveable_polygon_ids: set[PolygonId] = set(cube.id_to_scene_polygon.keys())
+        p3danimorph: Polygons3DAnimorph
+        p3danimorph = RigidMotionPolygons3DAnimorph(cube,
+                                                 rotation,
+                                                 translation,
+                                                 moveable_polygon_ids)
+        cube.conceal_polygons()
+        p3danimorph.play(self, run_time=2.0)
 
         self.play(FadeOut(cube))
         self.wait()

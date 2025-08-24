@@ -56,6 +56,7 @@ class Polygons3D(VGroup):
     Attributes:
         projection: the `Projection` from model space onto scene space.
         depth_sorter: the depth sorter used to depth-sort polygons.
+        visible_polygon_ids: the subset of visible polygons
         id_to_model_path_0: the initial model paths of each polygon.
         id_to_model_path: the interpolated model paths of each polygon.
         id_to_scene_path: the `OrderedDict` of scene paths of each scene polygon.
@@ -63,6 +64,7 @@ class Polygons3D(VGroup):
     """
     projection: Projection
     depth_sorter: DepthSort
+    visible_polygon_ids: set[PolygonId]
     id_to_model_path_0: PolygonIdToVertexPathMapping
     id_to_model_path: PolygonIdToVertexPathMapping
     id_to_scene_path: SortedPolygonIdToVertexPathMapping
@@ -81,10 +83,45 @@ class Polygons3D(VGroup):
 
         self.projection = projection
         self.depth_sorter = DepthSort(projection)
-        self.id_to_model_path_0 = id_to_model_path_0
-        self.update_polygons(id_to_model_path_0)
 
-    def update_polygons(self, id_to_model_path: PolygonIdToVertexPathMapping) -> None:
+        self.id_to_model_path_0 = id_to_model_path_0
+        self.id_to_model_path = id_to_model_path_0
+        self.visible_polygon_ids = set(id_to_model_path_0.keys())
+
+        self.update_scene_polygons()
+
+    def update_scene_polygons(self) -> None:
+        """
+        Updates the scene polygons by projecting and depth-sorting the visible model paths.
+        This method should be called whenever either the model paths or the visible polygon ids are changed.
+        """
+
+        # depth sort only the visible polygons
+        polygon_id: PolygonId
+        visible_id_to_model_path: PolygonIdToVertexPathMapping = {
+            polygon_id: self.id_to_model_path[polygon_id] for polygon_id in self.visible_polygon_ids
+        }
+        self.id_to_scene_path = self.depth_sorter.depth_sort(visible_id_to_model_path)
+
+        # make the Polygon mobjects
+        polygon: Polygon
+        scene_path: VertexPath
+        self.id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
+        for polygon_id, scene_path in self.id_to_scene_path.items():
+            polygon_settings: dict = self.get_polygon_settings(polygon_id)
+            polygon = Polygon(*scene_path, **polygon_settings)
+            self.id_to_scene_polygon[polygon_id] = polygon
+
+        # remove the submobjects of this group and add the updated polygons in depth-sorted order
+        self.remove_polygons()
+        for polygon in self.id_to_scene_polygon.values():
+            self.add(polygon)
+
+    def set_visible_polygon_ids(self, visible_polygon_ids: set[PolygonId]) -> None:
+        self.visible_polygon_ids = visible_polygon_ids
+        self.update_scene_polygons()
+
+    def set_id_to_model_path(self, id_to_model_path: PolygonIdToVertexPathMapping) -> None:
         """
         Updates the polygons from the given model paths.
 
@@ -94,22 +131,7 @@ class Polygons3D(VGroup):
         """
 
         self.id_to_model_path = id_to_model_path
-        self.id_to_scene_path = self.depth_sorter.depth_sort(id_to_model_path)
-
-        # make the Polygon mobjects
-        polygon: Polygon
-        polygon_id: PolygonId
-        scene_path: VertexPath
-        self.id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
-        for polygon_id, scene_path in self.id_to_scene_path.items():
-            polygon_settings: dict =self.get_polygon_settings(polygon_id)
-            polygon = Polygon(*scene_path, **polygon_settings)
-            self.id_to_scene_polygon[polygon_id] = polygon
-
-        # remove the submobjects of this group and add the updated polygons in depth-sorted order
-        self.remove_polygons()
-        for polygon in self.id_to_scene_polygon.values():
-            self.add(polygon)
+        self.update_scene_polygons()
 
     def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
         return DEFAULT_POLYGON_SETTINGS

@@ -1,4 +1,5 @@
 import numpy as np
+from isosurfaces.isosurface import TETRAHEDRON_TABLE
 
 from manim import (Scene, tempconfig, ORIGIN, RIGHT, LEFT, UP, OUT,
                    RED, GREEN, BLUE, YELLOW, BLACK, PI, ManimColor, PURPLE)
@@ -27,21 +28,21 @@ OXZ_ID: PolygonId = PolygonId('oxz')
 OYZ_ID: PolygonId = PolygonId('oyz')
 XYZ_ID: PolygonId = PolygonId('xyz')
 
-ID_TO_MODEL_PATH_0: PolygonIdToVertexPathMapping = {
+TETRAHEDRON_ID_TO_MODEL_PATH_0: PolygonIdToVertexPathMapping = {
     OXY_ID: OXY,
     OXZ_ID: OXZ,
     OYZ_ID: OYZ,
     XYZ_ID: XYZ,
 }
 
-ID_TO_COLOUR: dict[PolygonId, ManimColor] = {
+TETRAHEDRON_ID_TO_COLOUR: dict[PolygonId, ManimColor] = {
     OXY_ID: RED,
     OXZ_ID: GREEN,
     OYZ_ID: BLUE,
     XYZ_ID: PURPLE,
 }
 
-DEFAULT_POLYGON_SETTINGS: dict = {
+DEFAULT_TETRAHEDRON_SETTINGS: dict = {
     'fill_opacity': 1.0,
     'fill_color': YELLOW,
     'stroke_width': 1.0,
@@ -56,8 +57,8 @@ class Tetrahedron3D(Polygons3D):
         super().__init__(projection, id_to_model_path_0)
 
     def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
-        polygon_settings: dict = DEFAULT_POLYGON_SETTINGS.copy()
-        colour: ManimColor = ID_TO_COLOUR[polygon_id]
+        polygon_settings: dict = DEFAULT_TETRAHEDRON_SETTINGS.copy()
+        colour: ManimColor = TETRAHEDRON_ID_TO_COLOUR[polygon_id]
         polygon_settings['fill_color'] = colour
 
         return polygon_settings
@@ -72,7 +73,7 @@ class Polygons3DDemo(GridMixin, Scene):
         viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
         projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
-        tetrahedron: Tetrahedron3D = Tetrahedron3D(projection, ID_TO_MODEL_PATH_0)
+        tetrahedron: Tetrahedron3D = Tetrahedron3D(projection, TETRAHEDRON_ID_TO_MODEL_PATH_0)
 
         self.add(tetrahedron)
         self.wait()
@@ -88,7 +89,7 @@ class Polygons3DDemo(GridMixin, Scene):
             polygon_id: transform_vertex_path(rotation, translation, model_path)
             for polygon_id, model_path in tetrahedron.id_to_model_path_0.items()
         }
-        tetrahedron.update_polygons(id_to_model_path)
+        tetrahedron.set_id_to_model_path(id_to_model_path)
 
         self.add(tetrahedron)
         self.wait()
