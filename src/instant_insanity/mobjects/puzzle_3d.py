@@ -18,6 +18,12 @@ type CubeNumberToCubeMapping = dict[PuzzleCubeNumber, PuzzleCube3D]
 # A polygon in this group is uniquely identified by the pair (cube_number, face_name).
 type Puzzle3DPolygonName = tuple[PuzzleCubeNumber, FaceName]
 
+DEFAULT_CUBE_SIDE_LENGTH: float = 2.0  # the side length of the standard cube
+DEFAULT_BUFF: float = 0.1  # the horizontal space between cubes, MUST be positive to avoid collisions
+DEFAULT_CUBE_ONE_CENTRE: Point3D = 1.5 * DEFAULT_CUBE_SIDE_LENGTH * LEFT
+DEFAULT_CUBE_CENTRE_DELTA: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + DEFAULT_BUFF) * RIGHT
+
+
 class Puzzle3D(Polygons3D):
     """
     This class implements a 3D puzzle.
@@ -30,14 +36,24 @@ class Puzzle3D(Polygons3D):
     Attributes:
         puzzle_spec: the puzzle specification which gives the colours of all faces.
         puzzle: the Puzzle object defined by the puzzle specification.
+        cube_one_centre: the centre of cube one.
+        cube_centre_delta: the change in centres between cubes.
     """
     puzzle_spec: PuzzleSpec
     puzzle: Puzzle
+    cube_one_centre: Point3D
+    cube_one_centre_delta: Vector3D
 
-    def __init__(self, projection: Projection, puzzle_spec: PuzzleSpec) -> None:
+    def __init__(self, projection: Projection,
+                 puzzle_spec: PuzzleSpec,
+                 cube_one_centre: Point3D = DEFAULT_CUBE_ONE_CENTRE,
+                 cube_centre_delta: Vector3D = DEFAULT_CUBE_CENTRE_DELTA) -> None:
         self.puzzle_spec = puzzle_spec
         self.puzzle = Puzzle(puzzle_spec)
-        id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0()
+        self.cube_one_centre = cube_one_centre
+        self.cube_centre_delta = cube_centre_delta
+        id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0(cube_one_centre,
+                                                                                          cube_centre_delta)
 
         super().__init__(projection, id_to_model_path_0)
 
@@ -84,23 +100,20 @@ class Puzzle3D(Polygons3D):
         return cube_number, face_name
 
     @staticmethod
-    def mk_id_to_model_path_0() -> PolygonIdToVertexPathMapping:
+    def mk_id_to_model_path_0(cube_one_centre: Point3D,
+                              cube_centre_delta: Vector3D) -> PolygonIdToVertexPathMapping:
         """
         Makes the initial model space vertex paths.
         Returns:
             the initial model space vertex paths.
         """
         # arrange the cubes horizontally from left to right with centres laying on the x-axis
-        cube_side_length: float = 2.0 # the side length of the standard cube
-        buff: float = 0.1 # the horizontal space between cubes, MUST be positive to avoid collisions
-        cube_1_origin: Point3D = 1.5 * cube_side_length * LEFT
-        delta_origin: Vector3D = (cube_side_length + buff) * RIGHT
 
         id_to_model_path_0: PolygonIdToVertexPathMapping = dict()
         i: int
         cube_number: PuzzleCubeNumber
         for i, cube_number in enumerate(PuzzleCubeNumber):
-            cube_origin_i: Point3D = cube_1_origin + delta_origin * i
+            cube_origin_i: Point3D = cube_one_centre + cube_centre_delta * i
             face_name: FaceName
             vertex_path: VertexPath
             for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items():
