@@ -2,7 +2,7 @@ from typing import Self
 
 import numpy as np
 
-from manim import (BLACK, WHITE, ORANGE, PURE_BLUE, PURE_GREEN, PURE_RED, PURPLE, YELLOW, 
+from manim import (BLACK, WHITE, ORANGE, BLUE, GREEN, RED, PURPLE, YELLOW,
                    IN,  OUT, DOWN, LEFT, RIGHT, UP, ORIGIN, 
                    PI, Square, Text, VGroup, ManimColor)
 from manim.typing import Point3D
@@ -13,11 +13,11 @@ from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 TEST_PUZZLE_CUBE_SPEC: PuzzleCubeSpec = 'RBOGYP' # Red, Blue, Orange, Green, Yellow, Purple
 
 MANIM_COLOUR_MAP: dict[FaceColour, ManimColor] = {
-    FaceColour.BLUE: PURE_BLUE,
-    FaceColour.GREEN: PURE_GREEN,
+    FaceColour.BLUE: BLUE,
+    FaceColour.GREEN: GREEN,
     FaceColour.ORANGE: ORANGE,
     FaceColour.PURPLE: PURPLE,
-    FaceColour.RED: PURE_RED,
+    FaceColour.RED: RED,
     FaceColour.WHITE: WHITE,
     FaceColour.YELLOW: YELLOW
 }

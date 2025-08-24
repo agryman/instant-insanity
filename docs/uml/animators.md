@@ -1,5 +1,5 @@
 # Animators Class Diagram
-*Arthur Ryman, last updated 2025-08-19*
+*Arthur Ryman, last updated 2025-08-23*
 
 
 ```mermaid
@@ -19,8 +19,10 @@ classDiagram
     Polygon --* PolygonToDotAnimorph : mobject
     Dot --* PolygonToDotAnimorph : dot
     VMobject <|-- VGroup
-    VGroup <|-- ThreeDPolygons
-    ThreeDPolygons <|-- ThreeDPuzzleCube
+    VGroup <|-- Polygons3D
+    Polygons3D <|-- PuzzleCube3D
+    Polygons3D <|-- Puzzle3D
+    PuzzleCube3D --* Puzzle3D
     
     <<manin>> Mobject
     <<manim>> VMobject
@@ -28,7 +30,7 @@ classDiagram
     <<manim>> Dot
     <<manin>> Polygon
     
-    class ThreeDPolygons {
+    class Polygons3D {
         projection: Projection
         depth_sorter: DepthSort
         id_to_model_path_0: dict
@@ -40,7 +42,7 @@ classDiagram
         remove_polygons()
     }
     
-    class ThreeDPuzzleCube {
+    class PuzzleCube3D {
         cube_spec: PuzzleCubeSpec
         puzzle_cube: PuzzleCube
         name_to_id(face_name)$
@@ -50,6 +52,11 @@ classDiagram
         get_manim_colour(face_name)
         update_polygons(id_to_model_path, **polygon_settings)
         
+    }
+    
+    class Puzzle3D {
+        puzzle_spec: PuzzleSpec
+        cubes: dict[CubeNumber, PuzzleCube3D]
     }
     
     class Animorph {

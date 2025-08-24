@@ -22,6 +22,8 @@ from enum import IntEnum, StrEnum
 from typing import Self
 import numpy as np
 
+from instant_insanity.core.geometry_types import VertexPath
+
 
 class FaceName(StrEnum):
     """
@@ -91,7 +93,7 @@ def mk_points(points: list[np.ndarray]) -> np.ndarray:
     return np.array(points, dtype=np.float64)
 
 # vertex paths of standard cube faces
-FACE_NAME_TO_VERTEX_PATH: dict[FaceName, np.ndarray] = {
+FACE_NAME_TO_VERTEX_PATH: dict[FaceName, VertexPath] = {
     FaceName.RIGHT: mk_points([RTF, RTB, RBB, RBF]),
     FaceName.LEFT: mk_points([LTF, LTB, LBB, LBF]),
     FaceName.TOP: mk_points([RTF, RTB, LTB, LTF]),

@@ -1,3 +1,5 @@
+from typing import Any
+
 from manim import ManimColor, WHITE, BLACK, Polygon, LineJointType
 
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
@@ -5,24 +7,23 @@ from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, P
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
-from instant_insanity.mobjects.three_d_polygons import ThreeDPolygons
+from instant_insanity.mobjects.polygons_3d import Polygons3D
 
-class ThreeDPuzzleCube(ThreeDPolygons):
-    polygon_settings: dict = {
-        'fill_color': WHITE,
-        'fill_opacity': 1.0,
-        'stroke_color': BLACK,
-        'stroke_opacity': 1.0,
-        'stroke_width': 2.0,
-        'joint_type': LineJointType.ROUND,
-    }
+class PuzzleCube3D(Polygons3D):
+    """
+    This class draws a puzzle cube in 3D space.
+
+    Attributes:
+        cube_spec: the puzzle cube specification which gives the colours of all faces.
+        puzzle_cube: the PuzzleCube object which provides the colours of all faces.
+    """
     cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
 
     def __init__(self,
                  projection: Projection,
                  cube_spec: PuzzleCubeSpec,
-                 **kwargs) -> None:
+                 **polygon_settings: Any) -> None:
         """
         Args:
             projection: the projection.
@@ -30,9 +31,9 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         """
         self.cube_spec = cube_spec
         self.puzzle_cube = PuzzleCube(cube_spec)
-        id_to_model_path_0: PolygonIdToVertexPathMapping = ThreeDPuzzleCube.mk_id_to_model_path_0()
+        id_to_model_path_0: PolygonIdToVertexPathMapping = PuzzleCube3D.mk_id_to_model_path_0()
 
-        super().__init__(projection, id_to_model_path_0, **kwargs)
+        super().__init__(projection, id_to_model_path_0, **polygon_settings)
 
     @staticmethod
     def name_to_id(face_name: FaceName) -> PolygonId:
@@ -70,7 +71,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         face_name: FaceName
         vertex_path: VertexPath
         id_to_model_path_0: PolygonIdToVertexPathMapping = {
-            ThreeDPuzzleCube.name_to_id(face_name): vertex_path
+            PuzzleCube3D.name_to_id(face_name): vertex_path
             for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items()
         }
         return id_to_model_path_0
@@ -113,7 +114,7 @@ class ThreeDPuzzleCube(ThreeDPolygons):
         Args:
             id_to_model_path: the dict of model space vertex paths of the faces.
         """
-        super().update_polygons(id_to_model_path, **self.polygon_settings)
+        super().update_polygons(id_to_model_path)
 
         # update the fill colour for each face
         polygon_id: PolygonId

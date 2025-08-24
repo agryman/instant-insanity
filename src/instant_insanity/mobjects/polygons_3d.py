@@ -1,13 +1,23 @@
 from typing import Any, OrderedDict
 
-from manim import Polygon, VGroup
+from manim import Polygon, VGroup, WHITE, BLACK, LineJointType
 
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, SortedPolygonIdToVertexPathMapping, \
     SortedPolygonIdToPolygonMapping, PolygonId, VertexPath
 from instant_insanity.core.projection import Projection
 
-class ThreeDPolygons(VGroup):
+DEFAULT_POLYGON_SETTINGS: dict = {
+    'fill_color': WHITE,
+    'fill_opacity': 1.0,
+    'stroke_color': BLACK,
+    'stroke_opacity': 1.0,
+    'stroke_width': 2.0,
+    'joint_type': LineJointType.ROUND,
+}
+
+
+class Polygons3D(VGroup):
     """
     This class manages a set of 3D polygons in model space and their depth-sorted projections onto scene space.
 
@@ -60,30 +70,27 @@ class ThreeDPolygons(VGroup):
 
     def __init__(self,
                  projection: Projection,
-                 id_to_model_path_0: PolygonIdToVertexPathMapping,
-                 **polygon_settings: Any) -> None:
+                 id_to_model_path_0: PolygonIdToVertexPathMapping) -> None:
         """
 
         Args:
             projection: the projection from model space onto scene space.
             id_to_model_path_0: the dict of initial model paths.
-            **polygon_settings: additional keyword arguments passed to `Polygon`.
         """
         super().__init__()
 
         self.projection = projection
         self.depth_sorter = DepthSort(projection)
         self.id_to_model_path_0 = id_to_model_path_0
-        self.update_polygons(id_to_model_path_0, **polygon_settings)
+        self.update_polygons(id_to_model_path_0)
 
-    def update_polygons(self, id_to_model_path: PolygonIdToVertexPathMapping, **polygon_settings) -> None:
+    def update_polygons(self, id_to_model_path: PolygonIdToVertexPathMapping) -> None:
         """
         Updates the polygons from the given model paths.
 
         Args:
             id_to_model_path: the updated model vertex paths for each polygon
                 corresponding the current tracker alpha value.
-            **polygon_settings: additional keyword arguments passed to Polygon, e.g. to set the fill colour.
         """
 
         self.id_to_model_path = id_to_model_path
@@ -95,6 +102,7 @@ class ThreeDPolygons(VGroup):
         scene_path: VertexPath
         self.id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
         for polygon_id, scene_path in self.id_to_scene_path.items():
+            polygon_settings: dict =self.get_polygon_settings(polygon_id)
             polygon = Polygon(*scene_path, **polygon_settings)
             self.id_to_scene_polygon[polygon_id] = polygon
 
@@ -102,6 +110,9 @@ class ThreeDPolygons(VGroup):
         self.remove_polygons()
         for polygon in self.id_to_scene_polygon.values():
             self.add(polygon)
+
+    def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
+        return DEFAULT_POLYGON_SETTINGS
 
     def conceal_polygons(self) -> None:
         """

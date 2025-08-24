@@ -6,14 +6,14 @@ from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
-FRONT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
-BACK_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BACK)
-RIGHT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.RIGHT)
-LEFT_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.LEFT)
-TOP_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.TOP)
-BOTTOM_ID: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.BOTTOM)
+FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.FRONT)
+BACK_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.BACK)
+RIGHT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.RIGHT)
+LEFT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.LEFT)
+TOP_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.TOP)
+BOTTOM_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.BOTTOM)
 
 
 def test_three_d_puzzle_cube():
@@ -24,7 +24,7 @@ def test_three_d_puzzle_cube():
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-    three_d_puzzle_cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+    three_d_puzzle_cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
 
     id_to_scene_polygon: SortedPolygonIdToPolygonMapping = three_d_puzzle_cube.id_to_scene_polygon
     sorted_ids: list[PolygonId] = list(id_to_scene_polygon.keys())
@@ -50,7 +50,7 @@ def test_translation():
 
     # use the colours from the test cube
     cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-    cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+    cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
     id_to_scene_polygon_before = cube.id_to_scene_polygon.copy()
     right_polygon_before = id_to_scene_polygon_before[RIGHT_ID]
     actual_vertices_before = right_polygon_before.get_vertices()
@@ -77,8 +77,8 @@ def test_translation():
 
 def test_polygon_ids():
     for face_name in FaceName:
-        polygon_id = ThreeDPuzzleCube.name_to_id(face_name)
-        face_name_2 = ThreeDPuzzleCube.id_to_name(polygon_id)
+        polygon_id = PuzzleCube3D.name_to_id(face_name)
+        face_name_2 = PuzzleCube3D.id_to_name(polygon_id)
         assert face_name_2 == face_name
-        polygon_id_2 = ThreeDPuzzleCube.name_to_id(face_name_2)
+        polygon_id_2 = PuzzleCube3D.name_to_id(face_name_2)
         assert polygon_id_2 == polygon_id

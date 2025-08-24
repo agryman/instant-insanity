@@ -26,7 +26,7 @@ from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WI
 from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
@@ -38,7 +38,7 @@ class ConstructGraph(GridMixin, Scene):
     """
 
     @staticmethod
-    def mk_cube(cube_spec: PuzzleCubeSpec) -> ThreeDPuzzleCube:
+    def mk_cube(cube_spec: PuzzleCubeSpec) -> PuzzleCube3D:
         """
         Makes a puzzle cube.
         """
@@ -53,10 +53,10 @@ class ConstructGraph(GridMixin, Scene):
         projection: Projection = PerspectiveProjection(viewpoint, scene_x=-1.0, scene_y=0.0, camera_z=camera_z)
 
         # create the cube object
-        cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+        cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
 
         # find the scene coordinates of the centre of the front face
-        front_id: PolygonId = ThreeDPuzzleCube.name_to_id(FaceName.FRONT)
+        front_id: PolygonId = PuzzleCube3D.name_to_id(FaceName.FRONT)
         front_face: Polygon = cube.id_to_scene_polygon[front_id]
         centre: np.ndarray = front_face.get_center()
         scene_x: float = float(centre[0])
@@ -64,13 +64,13 @@ class ConstructGraph(GridMixin, Scene):
 
         # recreate the cube centered in the scene
         projection = PerspectiveProjection(viewpoint, scene_x=scene_x, scene_y=scene_y, camera_z=camera_z)
-        cube = ThreeDPuzzleCube(projection, cube_spec)
+        cube = PuzzleCube3D(projection, cube_spec)
 
         return cube
 
     @staticmethod
     def mk_start_end(graph: OppositeFaceGraph,
-                     cube: ThreeDPuzzleCube,
+                     cube: PuzzleCube3D,
                      axis_label: AxisLabel) -> tuple[FaceData, FaceData]:
         """
         Makes the (start, end) FaceData pair for the given graph, cube, and axis label.
@@ -94,7 +94,7 @@ class ConstructGraph(GridMixin, Scene):
         else:
             return second, first
 
-    def animate_explode_cube(self, cube: ThreeDPuzzleCube) -> None:
+    def animate_explode_cube(self, cube: PuzzleCube3D) -> None:
         # animate cube rigid motion
         # rotation: np.ndarray = ORIGIN
         # translation: np.ndarray = 7 * LEFT #+ DOWN
@@ -106,7 +106,7 @@ class ConstructGraph(GridMixin, Scene):
         animorph: CubeAnimorph = CubeExplosionAnimorph(cube, expansion_factor)
         animorph.play(self, alpha=1.0, run_time=4.0)
 
-    def animate_shift_cube(self, cube: ThreeDPuzzleCube) -> None:
+    def animate_shift_cube(self, cube: PuzzleCube3D) -> None:
         # animate movement of exploded cube to the left
         cube_shift: np.ndarray = 3 * LEFT
         self.play(cube.animate.shift(cube_shift), run_time=1.0)
@@ -220,7 +220,7 @@ class ConstructGraph(GridMixin, Scene):
                 break
             puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
             cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
-            cube: ThreeDPuzzleCube = self.mk_cube(cube_spec)
+            cube: PuzzleCube3D = self.mk_cube(cube_spec)
 
             self.play(Create(cube), run_time=1.0)
             self.wait()

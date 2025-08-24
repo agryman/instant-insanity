@@ -9,7 +9,7 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
-from instant_insanity.mobjects.three_d_puzzle_cube import ThreeDPuzzleCube
+from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -24,7 +24,7 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
-        cube: ThreeDPuzzleCube = ThreeDPuzzleCube(projection, cube_spec)
+        cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
 
         # set up the rigid motion animation
         rotation: Vector = ORIGIN
@@ -41,13 +41,13 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
             name: FaceName
             colour: ManimColor
             for name, colour in zip(names, colours):
-                polygon_id: PolygonId = ThreeDPuzzleCube.name_to_id(name)
+                polygon_id: PolygonId = PuzzleCube3D.name_to_id(name)
                 polygon: Polygon = id_to_scene_polygon[polygon_id]
                 vertices: np.ndarray = polygon.get_vertices()
-                polygon_outline: Polygon = Polygon(*vertices,
+                alpha_polygon_outline: Polygon = Polygon(*vertices,
                                                          stroke_color=colour,
                                                          joint_type=LineJointType.ROUND)
-                self.add(polygon_outline)
+                self.add(alpha_polygon_outline)
         self.wait()
 
         # move the cube to the animation start
