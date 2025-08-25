@@ -1,6 +1,5 @@
-from typing import Any
-
-from manim import ManimColor, WHITE, BLACK, Polygon, LineJointType
+from manim import ManimColor, ORIGIN
+from manim.typing import Point3D
 
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
@@ -24,7 +23,7 @@ class PuzzleCube3D(Polygons3D):
     def __init__(self,
                  projection: Projection,
                  cube_spec: PuzzleCubeSpec,
-                 **polygon_settings: Any) -> None:
+                 cube_centre: Point3D = ORIGIN) -> None:
         """
         Args:
             projection: the projection.
@@ -32,9 +31,10 @@ class PuzzleCube3D(Polygons3D):
         """
         self.cube_spec = cube_spec
         self.puzzle_cube = PuzzleCube(cube_spec)
-        id_to_model_path_0: PolygonIdToVertexPathMapping = PuzzleCube3D.mk_id_to_model_path_0()
+        self.cube_centre = cube_centre
+        id_to_model_path_0: PolygonIdToVertexPathMapping = PuzzleCube3D.mk_id_to_model_path_0(cube_centre)
 
-        super().__init__(projection, id_to_model_path_0, **polygon_settings)
+        super().__init__(projection, id_to_model_path_0)
 
     @staticmethod
     def name_to_id(face_name: FaceName) -> PolygonId:
@@ -63,7 +63,7 @@ class PuzzleCube3D(Polygons3D):
         return FaceName(polygon_id)
 
     @staticmethod
-    def mk_id_to_model_path_0() -> PolygonIdToVertexPathMapping:
+    def mk_id_to_model_path_0(cube_centre: Point3D = ORIGIN) -> PolygonIdToVertexPathMapping:
         """
         Makes the initial model space vertex paths.
         Returns:
@@ -72,7 +72,7 @@ class PuzzleCube3D(Polygons3D):
         face_name: FaceName
         vertex_path: VertexPath
         id_to_model_path_0: PolygonIdToVertexPathMapping = {
-            PuzzleCube3D.name_to_id(face_name): vertex_path
+            PuzzleCube3D.name_to_id(face_name): vertex_path + cube_centre
             for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items()
         }
         return id_to_model_path_0

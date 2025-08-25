@@ -9,7 +9,6 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from instant_insanity.core.geometry_types import *
 from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
 
@@ -22,15 +21,17 @@ class Projection(ABC):
         scene_x: The x-offset to subtract from the projection onto the camera plane.
         scene_y: The y-offset to subtract from the projection onto the camera plane.
         camera_z: The z coordinate c of the camera plane.
+        scale: the scale factor to convert model coordinates to camera coordinates.
 
     """
 
     camera_z: float
 
-    def __init__(self, scene_x: float = 0.0, scene_y: float = 0.0, camera_z: float = 2.0) -> None:
+    def __init__(self, scene_x: float = 0.0, scene_y: float = 0.0, camera_z: float = 2.0, scale: float = 1.0) -> None:
         self.scene_x = scene_x
         self.scene_y = scene_y
         self.camera_z = camera_z
+        self.scale = scale
 
     @abstractmethod
     def compute_u(self, model_point: np.ndarray) -> np.ndarray:
@@ -97,7 +98,7 @@ class Projection(ABC):
         x: float = m_x - t * u_x - self.scene_x
         y: float = m_y - t * u_y - self.scene_y
 
-        return np.array((x, y, t), dtype=np.float64)
+        return  self.scale * np.array((x, y, t), dtype=np.float64)
 
     def polygon_t(self, polygon: ConvexPlanarPolygon, x: float, y: float) -> float:
         """
@@ -126,7 +127,11 @@ class Projection(ABC):
         Therefore (P + t * u - v0) @ k = 0. We can solve for t as follows:
         t = (v0 - P) @ k / u @ k
         """
-        p: np.ndarray = np.array([x + self.scene_x, y + self.scene_y, self.camera_z], dtype=np.float64)
+        p: np.ndarray = np.array([
+            x / self.scale + self.scene_x,
+            y / self.scale + self.scene_y,
+            self.camera_z
+        ], dtype=np.float64)
         unit_u: np.ndarray = self.compute_u(p)
         v0: np.ndarray = polygon.vertices[0]
         unit_k: np.ndarray = polygon.unit_k

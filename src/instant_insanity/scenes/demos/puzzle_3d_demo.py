@@ -5,7 +5,7 @@ from manim import Scene, tempconfig, LEFT, RIGHT, UP, DOWN, IN, OUT
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC
+from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_ONE_CENTRE, DEFAULT_CUBE_CENTRE_DELTA, \
     DEFAULT_CUBE_SIDE_LENGTH
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -26,11 +26,12 @@ class Puzzle3DDemo(GridMixin, Scene):
                                                        camera_z=camera_z)
 
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        puzzle: Puzzle = Puzzle(puzzle_spec)
 
         buff: float = DEFAULT_CUBE_SIDE_LENGTH / 4
         cube_one_centre: Point3D = 1.5 * (DEFAULT_CUBE_SIDE_LENGTH + buff) * LEFT + 2 * IN
         cube_centre_delta: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + buff) * RIGHT
-        puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle_spec, cube_one_centre, cube_centre_delta)
+        puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle, cube_one_centre, cube_centre_delta)
 
         self.add(puzzle3d)
 

@@ -1,4 +1,4 @@
-from typing import Any, OrderedDict
+from typing import OrderedDict
 
 from manim import Polygon, VGroup, WHITE, BLACK, LineJointType
 
@@ -85,7 +85,7 @@ class Polygons3D(VGroup):
         self.depth_sorter = DepthSort(projection)
 
         self.id_to_model_path_0 = id_to_model_path_0
-        self.id_to_model_path = id_to_model_path_0
+        self.id_to_model_path = id_to_model_path_0.copy()
         self.visible_polygon_ids = set(id_to_model_path_0.keys())
 
         self.update_scene_polygons()
@@ -118,7 +118,9 @@ class Polygons3D(VGroup):
             self.add(polygon)
 
     def set_visible_polygon_ids(self, visible_polygon_ids: set[PolygonId]) -> None:
-        self.visible_polygon_ids = visible_polygon_ids
+        assert visible_polygon_ids <= set(self.id_to_model_path_0.keys())
+
+        self.visible_polygon_ids = visible_polygon_ids.copy()
         self.update_scene_polygons()
 
     def set_id_to_model_path(self, id_to_model_path: PolygonIdToVertexPathMapping) -> None:
@@ -129,6 +131,7 @@ class Polygons3D(VGroup):
             id_to_model_path: the updated model vertex paths for each polygon
                 corresponding the current tracker alpha value.
         """
+        assert set(id_to_model_path.keys()) == set(self.id_to_model_path_0.keys())
 
         self.id_to_model_path = id_to_model_path
         self.update_scene_polygons()
@@ -156,3 +159,23 @@ class Polygons3D(VGroup):
         """
         self.remove(*self.submobjects)
 
+    def checkpoint(self) -> None:
+        """
+        Sets the initial model paths to be the current model paths.
+        """
+        self.id_to_model_path_0 = self.id_to_model_path.copy()
+
+    def detach_polygon(self, polygon_id: PolygonId) -> Polygon:
+        """
+        Detaches a polygon from the group so that it can be separately animated.
+
+        Args:
+            polygon_id: the polygon id.
+
+        Returns:
+            the polygon that was detached.
+        """
+        polygon: Polygon = self.id_to_scene_polygon[polygon_id]
+        visible_polygon_ids: set[PolygonId] = self.visible_polygon_ids - {polygon_id}
+        self.set_visible_polygon_ids(visible_polygon_ids)
+        return polygon

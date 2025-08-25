@@ -1,12 +1,10 @@
 """
 This module contains functions for the geometry of convex polygons in 2 and 3 dimensions.
-
-TO DO: remove dependency on manim. Use pure NumPy instead.
 """
 
 import numpy as np
 from typing import TypeAlias
-from manim.typing import Point3D
+from manim.typing import Point3D, Vector3D
 
 Triangle: TypeAlias = list[Point3D]
 
@@ -33,3 +31,28 @@ def overlap(triangle1, triangle2) -> int:
     """
 
     return 0
+
+def get_translation(v1: np.ndarray, v2: np.ndarray) -> Vector3D:
+    """Check if v2 is a translation of v1 by some vector t.
+
+    Args:
+        v1 (np.ndarray): A (4, 3) array of floats.
+        v2 (np.ndarray): A (4, 3) array of floats.
+
+    Returns:
+        np.ndarray: A (3,) translation vector t such that v2 ≈ v1 + t.
+
+    Raises:
+        ValueError: If no such translation vector exists.
+    """
+    if v1.shape != (4, 3) or v2.shape != (4, 3):
+        raise ValueError('Both v1 and v2 must have shape (4, 3)')
+
+    # Candidate translation vector: difference of first row
+    t: Vector3D = v2[0] - v1[0]
+
+    # Check if all differences match t (within floating point tolerance)
+    if np.allclose(v2, v1 + t):
+        return t
+
+    raise ValueError('v2 is not a translation of v1')

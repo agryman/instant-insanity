@@ -12,6 +12,7 @@ from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, Puz
     CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE, CubeAxis, PuzzleCubeNumber, AxisLabel
 from instant_insanity.mobjects.coloured_node import mk_dot
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D
 from instant_insanity.mobjects.quadrant import Quadrant, QUADRANT_TO_POSITION, NodePair, mk_standard_node_pair
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
@@ -333,12 +334,23 @@ class FaceData:
     polygon: Polygon
     dot: Dot
 
-
-def mk_face_data(graph: OppositeFaceGraph, cube: PuzzleCube3D, name: FaceName) -> FaceData:
+def mk_face_data_from_cube(graph: OppositeFaceGraph,
+                           cube: PuzzleCube3D,
+                           name: FaceName,
+                           polygon: Polygon) -> FaceData:
     colour: FaceColour = cube.get_colour_name(name)
+    return mk_face_data(graph, colour, polygon)
+
+def mk_face_data_from_puzzle(graph: OppositeFaceGraph,
+                             puzzle3d: Puzzle3D,
+                             cube_number: PuzzleCubeNumber,
+                             name: FaceName,
+                             polygon: Polygon) -> FaceData:
+    colour: FaceColour = puzzle3d.get_colour_name(cube_number, name)
+    return mk_face_data(graph, colour, polygon)
+
+def mk_face_data(graph: OppositeFaceGraph, colour: FaceColour, polygon: Polygon) -> FaceData:
     quadrant: Quadrant = graph.colour_to_node[colour]
-    polygon_id: PolygonId = PuzzleCube3D.name_to_id(name)
-    polygon: Polygon = cube.id_to_scene_polygon[polygon_id]
     vertices: np.ndarray = polygon.get_vertices()
     centroid: np.ndarray = np.mean(vertices, axis=0)
     dot: Dot = graph.mk_node_at(quadrant, centroid)

@@ -2,6 +2,7 @@ from abc import ABC
 
 import numpy as np
 from manim import Mobject
+from manim.typing import Vector3D
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.cube import FaceName, FACE_NAME_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_NAME_TO_VERTEX_PATH
@@ -22,11 +23,11 @@ class CubeAnimorph(Animorph):
             raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
         super().__init__(cube)
 
-    def get_cube(self) -> PuzzleCube3D:
+    def get_cube3d(self) -> PuzzleCube3D:
         mobject: Mobject = self.mobject
         assert isinstance(mobject, PuzzleCube3D)
-        cube: PuzzleCube3D = mobject
-        return cube
+        cube3d: PuzzleCube3D = mobject
+        return cube3d
 
 
 
@@ -54,7 +55,7 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
 
     def morph_to(self, alpha: float) -> None:
         super().morph_to(alpha)
-        cube: PuzzleCube3D = self.get_cube()
+        cube: PuzzleCube3D = self.get_cube3d()
 
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
@@ -81,9 +82,30 @@ class CubeExplosionAnimorph(CubeAnimorph):
         super().__init__(cube)
         self.expansion_factor = expansion_factor
 
-    def morph_face_to(self, name: FaceName, alpha: float = 0.0) -> np.ndarray:
+    def morph_to(self, alpha: float) -> None:
+        super().morph_to(alpha)
+        cube3d: PuzzleCube3D = self.get_cube3d()
+
+        id_to_model_path: PolygonIdToVertexPathMapping = {}
+        face_name: FaceName
+        for face_name in FaceName:
+            polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_name)
+            standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_name,
+                                                                                  self.expansion_factor,
+                                                                                  alpha)
+            model_path_0: VertexPath = cube3d.id_to_model_path_0[polygon_id]
+            translation: Vector3D = model_path_0[0] - FACE_NAME_TO_VERTEX_PATH[face_name][0]
+            id_to_model_path[polygon_id] = standard_model_path + translation
+
+        cube3d.set_id_to_model_path(id_to_model_path)
+
+    @staticmethod
+    def morph_standard_face_to(name: FaceName,
+                               expansion_factor: float,
+                               alpha: float) -> np.ndarray:
         """
-        Makes the NumPy array of face vertices corresponding to the animation parameter alpha.
+        Makes the NumPy array of face vertices corresponding to the animation parameter alpha
+        applied to the standard cube, namely the unrotated cube centered at the origin.
 
         The faces rotate to become perpendicular to the z-axis.
         Front/Back faces are already perpendicular to the z-axis so no rotation.
@@ -93,11 +115,12 @@ class CubeExplosionAnimorph(CubeAnimorph):
         The faces move outward in the direction of their normals.
 
         Args:
-            name: the face name
+            name: the face name.
+            expansion_factor: the expansion factor.
             alpha: the animation parameter
 
         Returns:
-            the NumPy array of face vertices
+            the model path corresponding to alpha.
         """
 
         origin: Vertex = np.zeros(3, dtype=np.float64)
@@ -110,9 +133,9 @@ class CubeExplosionAnimorph(CubeAnimorph):
         p: Vertex = origin
         u: Vector = unit_k
         theta_max: float = 0.0
-        z_max: float = -(3.0 + self.expansion_factor) / 2.0
+        z_max: float = -(3.0 + expansion_factor) / 2.0
         face_normal: Vector = FACE_NAME_TO_UNIT_NORMAL[name]
-        translation_max: Vector = z_max * unit_k + (self.expansion_factor - 1.0) * face_normal
+        translation_max: Vector = z_max * unit_k + (expansion_factor - 1.0) * face_normal
 
         match name:
             case FaceName.RIGHT:
@@ -134,24 +157,14 @@ class CubeExplosionAnimorph(CubeAnimorph):
             case FaceName.FRONT:
                 translation_max = origin
             case FaceName.BACK:
-                translation_max = -(self.expansion_factor - 1.0) * unit_k
+                translation_max = -(expansion_factor - 1.0) * unit_k
 
         theta: float = alpha * theta_max
         rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        model_path_0: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
-        rotated_model_path: VertexPath = apply_linear_transform(rot_mat, model_path_0)
+        standard_model_path_0: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
+        rotated_model_path: VertexPath = apply_linear_transform(rot_mat, standard_model_path_0)
 
         translation: Vector = alpha * translation_max
         model_path: np.ndarray = rotated_model_path + translation
 
         return model_path
-
-    def morph_to(self, alpha: float) -> None:
-        super().morph_to(alpha)
-        cube: PuzzleCube3D = self.get_cube()
-
-        id_to_model_path: PolygonIdToVertexPathMapping = {
-            PuzzleCube3D.name_to_id(name): self.morph_face_to(name, alpha)
-            for name in FaceName
-        }
-        cube.set_id_to_model_path(id_to_model_path)

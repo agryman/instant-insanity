@@ -34,22 +34,19 @@ class Puzzle3D(Polygons3D):
     must be depth-sorted as a whole.
 
     Attributes:
-        puzzle_spec: the puzzle specification which gives the colours of all faces.
-        puzzle: the Puzzle object defined by the puzzle specification.
+        puzzle: the Puzzle object.
         cube_one_centre: the centre of cube one.
         cube_centre_delta: the change in centres between cubes.
     """
-    puzzle_spec: PuzzleSpec
     puzzle: Puzzle
     cube_one_centre: Point3D
     cube_one_centre_delta: Vector3D
 
     def __init__(self, projection: Projection,
-                 puzzle_spec: PuzzleSpec,
+                 puzzle: Puzzle,
                  cube_one_centre: Point3D = DEFAULT_CUBE_ONE_CENTRE,
                  cube_centre_delta: Vector3D = DEFAULT_CUBE_CENTRE_DELTA) -> None:
-        self.puzzle_spec = puzzle_spec
-        self.puzzle = Puzzle(puzzle_spec)
+        self.puzzle = puzzle
         self.cube_one_centre = cube_one_centre
         self.cube_centre_delta = cube_centre_delta
         id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0(cube_one_centre,
@@ -142,3 +139,15 @@ class Puzzle3D(Polygons3D):
         polygon_settings['fill_color'] = colour
 
         return polygon_settings
+
+    def get_colour_name(self, cube_number: PuzzleCubeNumber, face_name: FaceName) -> FaceColour:
+        puzzle: Puzzle = self.puzzle
+        cube: PuzzleCube = puzzle.number_to_cube[cube_number]
+        colour_name: FaceColour = cube.name_to_colour[face_name]
+        return colour_name
+
+    def hide_cube(self, cube_number: PuzzleCubeNumber) -> None:
+        cube_ids: set[PolygonId] = {Puzzle3D.name_to_id((cube_number, face_name))
+                                    for face_name in FaceName}
+        visible_polygon_ids: set[PolygonId] = self.visible_polygon_ids - cube_ids
+        self.set_visible_polygon_ids(visible_polygon_ids)
