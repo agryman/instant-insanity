@@ -2,6 +2,7 @@ from manim import *
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
+from instant_insanity.core.config import PREVIEW_CONFIG
 
 # Simply inherit from VoiceoverScene instead of Scene to get all the
 # voiceover functionality.
@@ -22,3 +23,9 @@ class RecorderExample(VoiceoverScene):
         # This part will not start playing until the previous voiceover is finished.
         with self.voiceover(text="Let's shift it to the left 2 units.") as tracker:
             self.play(circle.animate.shift(2 * LEFT), run_time=tracker.duration)
+
+if __name__ == "__main__":
+    with tempconfig(PREVIEW_CONFIG):
+        scene = RecorderExample()
+        scene.render()
+    print("OK")

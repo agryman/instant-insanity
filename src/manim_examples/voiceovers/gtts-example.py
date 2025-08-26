@@ -2,6 +2,7 @@ from manim import *
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.gtts import GTTSService
 
+from instant_insanity.core.config import PREVIEW_CONFIG
 
 class GTTSExample(VoiceoverScene):
     def construct(self):
@@ -49,3 +50,8 @@ class GTTSExampleVietnamese(VoiceoverScene):
             self.play(Uncreate(circle))
 
         self.wait()
+
+if __name__ == "__main__":
+    with tempconfig(PREVIEW_CONFIG):
+        scene = GTTSExample()
+        scene.render()

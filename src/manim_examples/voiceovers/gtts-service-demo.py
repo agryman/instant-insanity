@@ -2,9 +2,9 @@ from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.gtts import GTTSService
 from manim import Text, WHITE, tempconfig
 
-from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.core.config import PREVIEW_CONFIG
 
-class Demo(VoiceoverScene):
+class GTTSServiceDemo(VoiceoverScene):
     def construct(self):
         self.set_speech_service(GTTSService(lang="en"), create_subcaption=False)
         with self.voiceover(text="Hello from Manim Voiceover without Whisper.") as tracker:
@@ -13,7 +13,7 @@ class Demo(VoiceoverScene):
         self.wait(4)
 
 if __name__ == "__main__":
-    with tempconfig(LINEN_CONFIG):
-        scene = Demo()
+    with tempconfig(PREVIEW_CONFIG):
+        scene = GTTSServiceDemo()
         scene.render()
     print("OK")

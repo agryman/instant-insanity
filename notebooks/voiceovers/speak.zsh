@@ -34,7 +34,7 @@ cat > "$REQUEST_FILE" <<EOF
   },
   "audioConfig": {
     "audioEncoding": "MP3",
-    "volumeGainDb": -10.0
+    "volumeGainDb": 0.0
   }
 }
 EOF
