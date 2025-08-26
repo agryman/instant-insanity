@@ -173,6 +173,9 @@ class PuzzleCube:
 
         return axis_to_face_colour_pair
 
+    def get_colours(self) -> list[FaceColour]:
+        return list(set(self.name_to_colour.values()))
+
 class PuzzleCubeNumber(IntEnum):
     """ The numbers of the cubes in an Instant Insanity puzzle. """
     ONE = 1
@@ -253,6 +256,16 @@ class Puzzle:
             for axis, face_colour_pair in axis_to_face_colour_pair.items():
                 cube_axis_to_face_colour_pair[(number, axis)] = face_colour_pair
         return cube_axis_to_face_colour_pair
+
+    def get_colours(self) -> list[FaceColour]:
+        cube_colour_lists: list[list[FaceColour]] = [cube.get_colours()
+                                               for cube in self.number_to_cube.values()]
+        cube_colour_list: list[FaceColour]
+        colour: FaceColour
+        puzzle_colours: set[FaceColour] = {colour
+                                           for cube_colour_list in cube_colour_lists
+                                           for colour in cube_colour_list}
+        return list(puzzle_colours)
 
 WINNING_MOVES_PUZZLE: Puzzle = Puzzle(WINNING_MOVES_PUZZLE_SPEC)
 WINNING_MOVES_COLOURS: set[FaceColour] = WINNING_MOVES_PUZZLE.mk_colours()
