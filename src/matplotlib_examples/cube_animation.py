@@ -36,7 +36,7 @@ class Cube:
     vertices: np.ndarray
     faces: list[list[int]]
 
-    def __init__(self, length: float = None, colours: list[str] = None):
+    def __init__(self, length: float | None = None, colours: list[str] | None = None):
 
         if length is None:
             length = DEFAULT_CUBE_LENGTH
@@ -66,7 +66,7 @@ class Cube:
             [0, 1, 2, 3],  # Bottom face
         ]
 
-    def mk_poly_verts(self, rotation: R = None, translation: np.ndarray = None) -> list[np.ndarray]:
+    def mk_poly_verts(self, rotation: R | None = None, translation: np.ndarray | None = None) -> list[np.ndarray]:
         """
         Make a list of the cube's polygons from the rotated and translated vertices.
 
@@ -89,7 +89,7 @@ class Cube:
 
         return poly_verts
 
-    def mk_poly_collection(self, rotation: R = None, translation: np.ndarray = None) -> Poly3DCollection:
+    def mk_poly_collection(self, rotation: R | None = None, translation: np.ndarray | None = None) -> Poly3DCollection:
         """Make a Poly3DCollection of the cube's rotated and translated faces.
         Args:
             rotation: A 3x3 SciPy rotation matrix.
@@ -111,8 +111,8 @@ class CubeAnimator(Animator):
     cube_poly: Poly3DCollection # the artist that draws the cube
     duration: int               # the duration of the animation in seconds
 
-    def __init__(self, video_spec: VideoSpec = None, mpeg_spec: MpegSpec = None,
-                 length: float = None, colours: list[str] = None):
+    def __init__(self, video_spec: VideoSpec | None = None, mpeg_spec: MpegSpec | None = None,
+                 length: float | None = None, colours: list[str] | None = None):
 
         super().__init__(video_spec=video_spec, mpeg_spec=mpeg_spec)
 

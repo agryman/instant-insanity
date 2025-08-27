@@ -1,3 +1,4 @@
+from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -13,10 +14,9 @@ zs = [-3, -2, -1]
 x = np.append(x, x[0])
 y = np.append(y, y[0])
 
-verts = []
+verts: list[list[tuple[Any, Any, Any]]] = []
 for z in zs:
     verts.append(list(zip(x*z, y*z, np.full_like(x, z))))
-verts = np.array(verts)
 
 ax = plt.figure().add_subplot(projection='3d')
 

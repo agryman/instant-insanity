@@ -1,0 +1,1 @@
+"""Utility scripts for the instant_insanity project."""

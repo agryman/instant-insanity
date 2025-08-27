@@ -22,7 +22,7 @@ class SineAnimator(Animator):
         self.ydata.append(np.sin(frame))
         self.ln.set_data(self.xdata, self.ydata)
 
-        return self.artists
+        return [self.ln]  # Return list[Line2D] as list[Artist] - Line2D inherits from Artist
 
     def animate(self) -> None:
         """Create the animation figure, axes, data, and artists."""

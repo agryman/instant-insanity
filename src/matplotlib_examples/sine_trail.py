@@ -12,7 +12,7 @@ class SineTrailAnimator(Animator):
     ln: Line2D          # the artist that draws the sine curve
     N: int              # the number of points to keep in the trail of the sine curve
 
-    def __init__(self, video_spec: VideoSpec = None, mpeg_spec: MpegSpec = None):
+    def __init__(self, video_spec: VideoSpec | None = None, mpeg_spec: MpegSpec | None = None):
 
         super().__init__(video_spec=video_spec, mpeg_spec=mpeg_spec)
 
@@ -23,7 +23,7 @@ class SineTrailAnimator(Animator):
         self.ydata.append(np.sin(frame))
         self.ln.set_data(self.xdata[-self.N:], self.ydata[-self.N:])
 
-        return self.artists
+        return [self.ln]  # Return list[Line2D] as list[Artist] - Line2D inherits from Artist
 
     def animate(self) -> None:
         """Create the animation figure, axes, data, and artists."""
