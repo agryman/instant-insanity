@@ -442,11 +442,19 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             voiceover_6: str = f'Transform cube {cube_number}.'
             if cube_number == PuzzleCubeNumber.ONE:
                 voiceover_6 = f'''Next, transform each pair of opposite faces in cube {cube_number} into an edge.
-                We'll label each edge with its cube number and axis.
+                We need to keep track of where the edges came from so
+                we'll label each one with its cube number and axis.
                 For example, the x-axis of cube 1 will be labelled 1x.
                 '''
             with self.voiceover(text=voiceover_6) as tracker:
                 self.wait(tracker.duration)
+
+            if cube_number == PuzzleCubeNumber.ONE:
+                voiceover_7b: str = '''We'll be using Carteblanche's 1947 labelling scheme:
+                x for front-to-back, y for right-to-left, and z for top-to-bottom.
+                '''
+                with self.voiceover(text=voiceover_7b) as tracker:
+                    self.wait(tracker.duration)
 
             for axis_label in AxisLabel:
                 fair_name_pair: FaceNamePair = AXIS_TO_FACE_NAME_PAIR[axis_label]
@@ -464,15 +472,6 @@ class ConstructGraph(GridMixin, VoiceoverScene):
                 cube_axis = (cube_number, axis_label)
                 start, end = self.detach_axis_from_puzzle(puzzle3d, cube_axis, graph)
                 self.animate_construct_opposite_face_edge(graph, cube_axis, start, end)
-
-            if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_7b: str = '''Recall that we are using the axes labels 
-                used by Carteblanche in his 1947 paper:
-                x labels front-to-back, y labels right-to-left, and z labels top-to-bottom.
-                '''
-                with self.voiceover(text=voiceover_7b) as tracker:
-                    self.wait(tracker.duration)
-
 
             puzzle3d.hide_cube(cube_number)
 

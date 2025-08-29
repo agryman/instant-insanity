@@ -6,7 +6,6 @@ We use quadrants to identify the nodes of an opposite-face graph.
 """
 
 from enum import StrEnum
-from typing import TypeAlias
 import numpy as np
 from manim import RIGHT, UP, LEFT, DOWN
 
@@ -31,7 +30,7 @@ QUADRANT_TO_BASIS: dict[Quadrant, tuple[np.ndarray, np.ndarray]] = {
     Quadrant.IV: (DOWN, RIGHT)
 }
 
-NodePair: TypeAlias = tuple[Quadrant, Quadrant]
+type NodePair = tuple[Quadrant, Quadrant]
 
 
 def mk_standard_node_pair(quadrant_1: Quadrant, quadrant_2: Quadrant) -> NodePair:

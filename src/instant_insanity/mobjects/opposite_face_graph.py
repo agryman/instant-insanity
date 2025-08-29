@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import TypeAlias
 
 import numpy as np
 
 from manim import Dot, VGroup, Polygon
+from manim.typing import Point3D
 
 from instant_insanity.core.cube import FaceName
-from instant_insanity.core.geometry_types import PolygonId
 from instant_insanity.core.object_count import ObjectToCountMapping
 from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, PuzzleCube, AXIS_TO_FACE_NAME_PAIR, \
     CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE, CubeAxis, PuzzleCubeNumber, AxisLabel
@@ -18,8 +17,8 @@ from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
 # each node is identified by its quadrant and has a unique colour
 # there is a one-to-one mapping between nodes and colours
-ColourToNodeMapping: TypeAlias = dict[FaceColour, Quadrant]
-NodeToColourMapping: TypeAlias = dict[Quadrant, FaceColour]
+type ColourToNodeMapping = dict[FaceColour, Quadrant]
+type NodeToColourMapping = dict[Quadrant, FaceColour]
 
 
 def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
@@ -120,9 +119,9 @@ def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
 
 CARTEBLANCHE_NODE_MAPPING: ColourToNodeMapping = mk_colour_to_node(CARTEBLANCHE_PUZZLE)
 WINNING_MOVES_NODE_MAPPING: ColourToNodeMapping = mk_colour_to_node(WINNING_MOVES_PUZZLE)
-NodeToMobjectMapping: TypeAlias = dict[Quadrant, Dot]
-EdgeToMobjectMapping: TypeAlias = dict[CubeAxis, LabelledEdge]
-EdgeToSubgraphMapping: TypeAlias = dict[CubeAxis, bool]
+type NodeToMobjectMapping = dict[Quadrant, Dot]
+type EdgeToMobjectMapping = dict[CubeAxis, LabelledEdge]
+type EdgeToSubgraphMapping = dict[CubeAxis, bool]
 
 
 class OppositeFaceGraph(VGroup):
@@ -164,7 +163,7 @@ class OppositeFaceGraph(VGroup):
         edge_to_mobject: the mapping of edge keys to mobjects that draw the edges.
         edge_to_subgraph: the mapping of edge keys to subgraph membership values
     """
-    centre: np.ndarray
+    centre: Point3D
     puzzle: Puzzle
     colours: set[FaceColour]
     colour_to_node: ColourToNodeMapping
@@ -174,7 +173,7 @@ class OppositeFaceGraph(VGroup):
     edge_to_mobject: EdgeToMobjectMapping
     edge_to_subgraph: EdgeToSubgraphMapping
 
-    def __init__(self, puzzle: Puzzle, centre: np.ndarray) -> None:
+    def __init__(self, puzzle: Puzzle, centre: Point3D) -> None:
         """
         Creates a new opposite face graph with no edges.
         """
