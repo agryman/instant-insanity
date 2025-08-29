@@ -10,7 +10,7 @@ from instant_insanity.core.projection import PerspectiveProjection, Orthographic
         (0.0, [0, 0, 1], [0, 0, -1], [0, 0, -1]),
         (0.0, [0, 0, 1], [0, 0, -0.5], [0, 0, -0.5]),
         (0.0, [0, 0, 1], [0, 0, -0.25], [0, 0, -0.25]),
-        (0.0, [0, 0, 1], [-1, 0, -1], [-0.5, 0, -math.sqrt(5) / 2]),
+        (0.0, [0, 0, 1], [-1, 0, -1], [-0.5, 0, -1]),
     ]
 )
 def test_perspective_projection(camera_z, viewpoint, model_point, expected):
@@ -32,9 +32,9 @@ SQRT_10 = math.sqrt(10)
         (0.0, [0, 0, 1], [0, 0, -0.5], [0, 0, -0.5]),
         (0.0, [0, 0, 1], [0, 0, -0.25], [0, 0, -0.25]),
         (0.0, [0, 0, 1], [-1, 0, -1], [-1, 0, -1]),
-        (0.0, [1 / SQRT_2, 0, 1 / SQRT_2], [0, 0, -1], [1, 0, -SQRT_2]),
-        (0.0, [2 / SQRT_5, 0, 1 / SQRT_5], [0, 0, -1], [2, 0, -SQRT_5]),
-        (0.0, [3 / SQRT_10, 0, 1 / SQRT_10], [0, 0, -1], [3, 0, -SQRT_10]),
+        (0.0, [1 / SQRT_2, 0, 1 / SQRT_2], [0, 0, -1], [1, 0, -1]),
+        (0.0, [2 / SQRT_5, 0, 1 / SQRT_5], [0, 0, -1], [2, 0, -1]),
+        (0.0, [3 / SQRT_10, 0, 1 / SQRT_10], [0, 0, -1], [3, 0, -1]),
     ]
 )
 def test_orthographic_projection(camera_z, u, model_point, expected):

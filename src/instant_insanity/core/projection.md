@@ -255,7 +255,7 @@ $$
 Therefore, an orthographic projection is like a perspective projection except that
 rather than compute the unit vector $\hat{u}(v;m)$ we use the given constant unit vector $\hat{u}$.
 
-## Mapping from Model Space to Scene Scape
+## Mapping from Model Space to Scene Space
 
 In practice, it is useful to not regard the camera as being embedded in scene space.
 For example, the puzzle cubes have side length 2 which may be too big for the scene.
@@ -268,13 +268,23 @@ we apply after the 3d projection. Let $o$ be a point in model space that will ma
 the origin in scene space. The $\alpha$ be a real number scaling factor. The mapping $g$
 from model space to space if given by:
 $$
-g(o,\alpha;m) = \alpha (m - o)
+g(o,\alpha;m) = \alpha \cdot (m - o)
 $$
 
 The inverse is:
 $$
 g^{-1}(s) = o + s / \alpha
 $$
+
+## The Relation Between the Camera Plane, Scaling, and Translation
+
+The projection depends on the viewpoint $v$, the camera plane $c$,
+the scene origin $o$, and the model-to-scene scaling factor $\alpha$.
+This scene origin includes $c$ as its $z$-component. Altogether, we
+have 3 ($v$) + 3 ($o$) + 1 ($c$) + 1 ($\alpha$) parameters
+for a grand total of 8 parameters. Are these independent or can we
+canconicalize them, say by finding an equivalent set of parameters
+with $c = 0$?
 
 
 

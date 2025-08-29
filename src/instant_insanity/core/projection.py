@@ -5,12 +5,52 @@ the camera plane.
 Refer to projection.md for the math.
 """
 
+from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
 import numpy as np
+from manim import RIGHT, UP, OUT
+from manim.typing import Point3D
 
 from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
+
+@dataclass
+class ModelToSceneConversion():
+    """
+    This class converts between model space and scene space.
+
+    Attributes
+        scene_origin: the model space point that maps to ORIGIN in scene space.
+        scene_per_model: the conversion factor from model to scene distances.
+
+    For example, the standard cube in model space has side length = 2.0.
+    To make it look like a cube in scene space with side length = 1.0 use scene_per_model = 0.5.
+    """
+    scene_origin: Point3D
+    scene_per_model: float
+
+    def convert_model_to_scene(self, model_point: Point3D) -> Point3D:
+        """
+        Converts a point in model space to a point in scene space.
+        Args:
+            model_point: the point in model space to convert.
+
+        Returns:
+            the point in scene space.
+        """
+        return (model_point - self.scene_origin) * self.scene_per_model
+
+    def convert_scene_to_model(self, scene_point: Point3D) -> Point3D:
+        """
+        Converts a point in scene space to a point in model space.
+        Args:
+            scene_point: the point in scene space to convert.
+
+        Returns:
+            the point in model space.
+        """
+        return scene_point / self.scene_per_model + self.scene_origin
 
 
 class Projection(ABC):
@@ -25,13 +65,21 @@ class Projection(ABC):
 
     """
 
+    scene_x: float
+    scene_y: float
     camera_z: float
+    scale: float
+    conversion: ModelToSceneConversion
 
     def __init__(self, scene_x: float = 0.0, scene_y: float = 0.0, camera_z: float = 2.0, scale: float = 1.0) -> None:
         self.scene_x = scene_x
         self.scene_y = scene_y
         self.camera_z = camera_z
         self.scale = scale
+
+        scene_origin: Point3D = scene_x * RIGHT + scene_y * UP + camera_z * OUT
+        scene_per_model: float = scale
+        self.conversion = ModelToSceneConversion(scene_origin, scene_per_model)
 
     @abstractmethod
     def compute_u(self, model_point: np.ndarray) -> np.ndarray:
@@ -69,12 +117,12 @@ class Projection(ABC):
         This is a protected method. It is the responsibility of callers to ensure that u is a unit vector.
 
         Args:
-            model_point: A NumPy array containing a point in model space.
+            model_point: A NumPy array containing a point (mx, my, mz) in model space.
             u: A NumPy array containing a unit direction vector.
 
         Returns:
-            A NumPy array containing (x, y, t) where (x, y, c) is the projection of the model point onto
-                the camera plane z=c and t is the parameter value of the model point along the projection line.
+            A NumPy array containing (x, y, mz) where (x, y, c) is the projection of the model point onto
+                the camera plane z=c.
 
         Raises:
             TypeError: if model_point is not a NumPy array of float64 values.
@@ -98,7 +146,7 @@ class Projection(ABC):
         x: float = m_x - t * u_x - self.scene_x
         y: float = m_y - t * u_y - self.scene_y
 
-        return  self.scale * np.array((x, y, t), dtype=np.float64)
+        return  self.scale * np.array((x, y, m_z), dtype=np.float64)
 
     def polygon_t(self, polygon: ConvexPlanarPolygon, x: float, y: float) -> float:
         """
