@@ -1,0 +1,5 @@
+Some diagrams of graphs are clearer than others.
+One way to make a diagram clearer is to reduce the number 
+of times that edges cross each other.
+The following diagram represents exactly the same graph
+as the previous diagram but is not as clear because it contains an edge crossover.

@@ -1,0 +1,8 @@
+Graphs often arise in situations where nodes and edges have additional properties beyond their connectivity.
+A graph in which each node and edge is labelled with some data is called a labelled graph.
+The label might simply be an identifier, or it might contain numerical data.
+
+Let's label the nodes and edges of our example graph.
+Label the nodes as A through E.
+Label the edges as 1 through 4.
+Now we have a labelled graph.

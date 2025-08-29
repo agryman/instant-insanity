@@ -1,5 +1,0 @@
-Here's title page of The Trinity Four's 1940 paper 
-on The Dissection of Rectangles into Squares
-published under their real names.
-They solved the problem by associating a directed, labelled graph,
-also known as a network, with a dissection.

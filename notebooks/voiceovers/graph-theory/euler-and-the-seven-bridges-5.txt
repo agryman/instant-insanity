@@ -1,3 +1,0 @@
-Now let's compute the degree of each node.
-Note that the degree of each node is an odd number.
-This turns out to be a crucial observation!

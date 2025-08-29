@@ -19,7 +19,6 @@ of the standard cube using the standard coordinate system.
 """
 
 from enum import IntEnum, StrEnum
-from typing import Self
 import numpy as np
 
 from instant_insanity.core.geometry_types import VertexPath

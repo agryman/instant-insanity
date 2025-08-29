@@ -1,9 +1,0 @@
-Here's the solution.
-Dudeney describes it as follows.
-
-This is the only possible
-solution, and it is a singular fact (though I cannot here show the
-subtle method of working) that the number, sizes and order of those
-squares can be calculated direct from the given dimensions of the
-strip of gold, and the casket can have no other dimensions than 20
-inches square.

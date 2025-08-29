@@ -1,0 +1,26 @@
+Recall that focusing on the opposite-face pairs leads us to a two-stage search strategy
+in which we first solve the top-bottom faces and then solve the front-back faces without ruining the top-bottom solution.
+
+Carteblanche realized that you could succinctly represent the opposite-face colour information
+using a small labelled multigraph which we'll call the opposite-face graph.
+It has four nodes, one for each face colour, and twelve edges, three for each cube.
+
+Here's how to construct the opposite-face graph.
+Start by placing four nodes at the corners of a square and labelling each node with one of the four colours.
+At this point the opposite-face graph has four nodes and no edges.
+
+Next, do the following for each cube.
+
+Imagine detaching the faces of the cube from each other 
+and moving them away from the centre of the cube.
+Next, connect pairs of opposite faces with an edge and 
+label each of the three edges with the cube number and face name.
+For example, the edge labels for cube 1 are 1x, 1y, and 1z.
+Shrink the faces down to the size of the colour nodes of the graph.
+Move the x edge together with its face nodes onto the corresponding colour nodes of graph.
+Repeat this process for the y and z edges.
+Now the graph has 3 new labelled edges.
+
+After doing this for each cube the graph has 12 edges.
+
+This completes the construction of the graph.

@@ -82,8 +82,8 @@ FACE_LABEL_TO_NUMBER: dict[FaceLabel, FaceNumber] = {
 
 class FaceColour(StrEnum):
     """Colours that appear on a puzzle cube face."""
-    BLUE = 'dodgerblue'
-    GREEN = 'forestgreen'
+    BLUE = 'blue'
+    GREEN = 'green'
     ORANGE = 'orange'
     PURPLE = 'purple'
     RED = 'red'

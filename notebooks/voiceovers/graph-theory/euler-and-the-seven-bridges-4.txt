@@ -1,7 +1,0 @@
-Next, collapse each landmass into a node.
-Now we have an abstract representation of the
-bridges as a multigraph containing four nodes
-and seven edges.
-All of the geographic information has been discarded.
-All that remains is how the bridges connect the
-landmasses.

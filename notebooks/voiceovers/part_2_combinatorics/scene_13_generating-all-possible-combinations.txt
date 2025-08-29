@@ -1,0 +1,5 @@
+We can generate all possible combinations by performing the following random procedure.
+Put the four cubes in a bag, shake it, draw out the cubes one at a time, and arrange them in a row.
+If we repeat this procedure often enough then it will eventually generate all possible combinations.
+
+How many different combinations are there?

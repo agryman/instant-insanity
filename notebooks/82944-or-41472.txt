@@ -1,5 +1,0 @@
-Here we encounter an interesting situation. 
-We have two competing claims for the number of combinations.
-The puzzle package, and several YouTube videos, claim that there are 82,944 combinations.
-However, a paper published at Cambridge University in 1947 by Carteblanche gives an elegant solution to the puzzle 
-and claims that there are only 41,472 combinations.

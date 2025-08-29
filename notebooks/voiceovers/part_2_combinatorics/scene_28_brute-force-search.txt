@@ -1,0 +1,24 @@
+We now know that, in the absence of any shortcuts, we'd have to check 41,472 combinations in order to find a solution.
+Given enough time and patience, we could systematically generate every possible essentially distinct combination
+and check if it was a solution. 
+Mathematicians call this approach a brute-force search.
+
+How long would it take a human to perform a brute-force search?
+Let's compute the total time.
+
+As a rough estimate, suppose it takes our human 1 second to rotate a cube and 1 second to check
+if the combination is a solution.
+In some cases our human would have to rotate all four cubes to generate the next combination,
+So allowing four seconds to rotate the cubes and 1 second to check the combination 
+means it would take our human 5 seconds per combination.
+
+There are 60 seconds in a minute, 60 minutes in an hour, and 24 hours in a day giving a total of 86,400 seconds per day.
+At 5 seconds per combination, our human could try 17,280 combinations per day.
+
+There are 41,472 essentially distinct combinations.
+Therefore, our human would find the solution if they worked nonstop for 2.4 days and made no errors.
+This is called the worst-case time since it assumes that we are unlucky and have to generate all the combinations
+before we find the solution.
+
+This puzzle is clearly challenging, which likely contributes to its enduring popularity. 
+According to its Winning Moves box, over 20 million copies have been sold!

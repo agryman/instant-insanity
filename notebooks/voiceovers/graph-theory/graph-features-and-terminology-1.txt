@@ -1,8 +1,0 @@
-There are several variations on the basic concept of a graph.
-Here are some of the terms mathematicians use to describe them.
-
-An edge that connects a node to itself is called a loop.
-Edges that connect the same nodes are called parallel edges.
-
-A graph that does not contain any loops or parallel edges is called a simple graph.
-Our first example of a graph has no loops or parallel edges and is therefore a simple graph.

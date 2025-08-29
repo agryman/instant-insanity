@@ -1,6 +1,0 @@
-If you feel that Rock-Paper-Scissors so simple that drawing its game graph is overkill,
-then consider the more complex game of Rock-Paper-Scissors-Lizard-Spock.
-See Wikipedia for its rules.
-Now the game graph has five nodes and ten directed edges where, for simplicity, we have omitted
-the edge labels.
-The rules of this game can be read off at a glance from the graph.

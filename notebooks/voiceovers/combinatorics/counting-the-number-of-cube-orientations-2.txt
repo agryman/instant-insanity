@@ -1,3 +1,0 @@
-Having picked the top face, we can pick any of the four adjacent faces as the front face by spinning the cube about its vertical axis.
-
-Therefore, the total number of cube orientations is six times four which equals twenty-four.

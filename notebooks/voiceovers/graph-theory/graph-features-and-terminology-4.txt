@@ -1,5 +1,0 @@
-A graph in which each edge is assigned a direction is called a directed graph.
-Let's give each edge in our example graph a direction.
-Now we have a directed, labelled multigraph.
-
-Directed, labelled multigraphs will be used in the solution of Instant Insanity.

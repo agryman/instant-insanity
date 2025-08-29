@@ -1,8 +1,0 @@
-A river containing two large islands ran through the city of Konigsberg.
-Seven bridges crossed the river,
-connecting the islands to its banks.
-The people of Konigsberg amused themselves by trying to find
-a walking path that crossed each of the bridges exactly once.
-They were allowed to start and end the path anywhere, possibly on different landmasses.
-We'll refer to the sought-after path as a tour.
-Sadly, despite their efforts, no one could find a tour.

@@ -1,7 +1,0 @@
-How difficult is it to solve the puzzle?
-One way to solve it is to try every possible combination of the cubes until we find one that works.
-In computer science, this solution strategy is called a brute-force search.
-In the absence of any further insight into how to solve the puzzle,
-its difficulty is therefore directly proportional to the total number of combinations.
-
-So how many combinations are there?

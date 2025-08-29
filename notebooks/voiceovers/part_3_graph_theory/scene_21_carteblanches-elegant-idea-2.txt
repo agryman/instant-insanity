@@ -1,0 +1,15 @@
+Suppose you have an arrangement of the four cubes in which the top-bottom faces are solved, 
+but the front-back faces are not.
+You can then try to solve the front-back faces by turning each cube about its vertical axis 
+without ruining the top-bottom solution.
+
+This observation suggests that you should try to solve the puzzle in two stages.
+First, you try to solve the top-bottom faces by rotating the cubes without any restrictions.
+Then, you try to solve the front-back faces but restricting yourself to quarter turns about the vertical axis so that
+you don't ruin the top-bottom solution.
+
+It may be that there are no front-back solutions that work with a given top-bottom solution.
+In this case you must look for another top-bottom solution and then try again to solve the front-back faces.
+This process is called backtracking.
+
+It turns out that using this two-stage search strategy leads to a speedy solution.

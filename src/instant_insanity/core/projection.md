@@ -44,7 +44,8 @@ $$
 Our goal is to draw 3d objects that live in model space $S$ as 2d objects on the camera plane $C$.
 However, we need to draw the 2d projections of our 3d objects in the correct order to achieve the correct appearance.
 If object A is behind object B in model space then we need to draw the 2d projection
-of object A before we draw that of object B.
+of object A before we draw that of object B. 
+This procedure is known as the [Painter's Algorithm](https://en.wikipedia.org/wiki/Painter%27s_algorithm).
 
 For simplicity, we will assume that our 3d objects can be modelled as collections of opaque, convex, planar
 polygons and that we can always sort them into some drawing order that will produce the correct visual appearance.
@@ -98,8 +99,11 @@ A perspective projection is defined by giving a viewpoint $V \in S$.
 The viewpoint represents the position of our eyes.
 
 Treat $V$ as a fixed parameter in what follows.
+Consider points $M$ that are distinct from $V$.
+If $M = V$ then its projection is not defined.
 
 Let $L(M)$ be the line in model space that passes through the points $M$ and $V$.
+This line exists because we have assumed that $M \ne V$.
 Think of $L(M)$ as a light ray that leaves the 3d object at $M$ and enters our eye at $V$.
 The projection $p(M)$ is the unique point where the light ray intersects the camera plane.
 

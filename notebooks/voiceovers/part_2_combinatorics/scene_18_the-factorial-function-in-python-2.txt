@@ -1,0 +1,3 @@
+Python has a built-in factorial function.
+
+Import it from the math package and use it to compute the number of cube orderings.

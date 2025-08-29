@@ -1,6 +1,0 @@
-Here's a figure from the 1940 paper that shows an example
-of converting a rectangle dissection into a network.
-
-This tells us that, by the year 1940, The Trinity Four had become masters
-at applying graph theory to the solution of puzzles.
-In this case the puzzle had led to a very interesting mathematical problem.

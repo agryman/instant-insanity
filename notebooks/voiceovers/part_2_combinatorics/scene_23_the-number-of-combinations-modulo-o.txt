@@ -1,0 +1,17 @@
+As previously discussed, we are going to regard all combinations 
+that differ only in cube ordering as being essentially equivalent.
+When mathematicians say that two objects are equivalent with regard to some property, 
+they say that the objects are equivalent modulo that property, or more briefly, mod that property.
+
+Let O denote the notion of equivalence of combinations when we ignore the order of the cubes.
+Every combination belongs to a family of 24 combinations that are equalivent modulo O.
+
+Let's calculate the number of combinations modulo O.
+Since the swap operations divide the set of all combinations into orbits of size 24,
+the number of combinations modulo O is the number of combinations divided by 24.
+
+Now we get that there are 331,776 essentially distinct combinations 
+which is much smaller than 7,962,624 but still much bigger than 82,944.
+Why are we still getting more than 82,944?
+The reason is that we should regard more combinations as being essentially equivalent.
+We'll do this next.

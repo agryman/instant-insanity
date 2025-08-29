@@ -1,0 +1,4 @@
+The famous mathematician Leonhard Euler laid the foundations for graph theory in 1736
+when he settled the popular recreational puzzle known as the Seven Bridges of Konigsberg.
+Wikipedia explains this problem in detail.
+Here's a brief summary.

@@ -1,3 +1,0 @@
-Python has some built-in support for combinatorics.
-
-Let's compute four factorial using expicit multiplication.
