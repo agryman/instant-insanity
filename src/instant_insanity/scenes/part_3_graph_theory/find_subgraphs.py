@@ -6,12 +6,14 @@ from manim import Scene, tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot
 from manim.typing import Point3D, Vector3D
 from manim.utils.color.X11 import BLACK
 
+from instant_insanity.core.cube import FaceName
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping
 from instant_insanity.mobjects.quadrant import NodePair, Quadrant
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.solvers.graph_solver import GraphSolver, Grid
 
 
 class FindSubgraphs(GridMixin, Scene):
@@ -41,9 +43,45 @@ class FindSubgraphs(GridMixin, Scene):
         cube_number: PuzzleCubeNumber = PuzzleCubeNumber.ONE
         axis_label: AxisLabel = AxisLabel.X
         cube_axis: CubeAxis = (cube_number, axis_label)
-        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.X), total_graph, top_graph)
-        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), total_graph, front_graph)
-        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.X), top_graph, front_graph)
+        # self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.X), total_graph, top_graph)
+        # self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), total_graph, front_graph)
+        # self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.X), top_graph, front_graph)
+
+        graph_solver: GraphSolver = GraphSolver(puzzle)
+        graph_solver.solve()
+
+        self.move_solution(graph_solver, 0, total_graph, front_graph, top_graph)
+
+    def move_solution(self,
+                      graph_solver: GraphSolver,
+                      solution_index: int,
+                      total_graph: OppositeFaceGraph,
+                      front_graph: OppositeFaceGraph,
+                      top_graph) -> None:
+        """
+        Moves a solution into the subgraphs.
+        Args:
+            graph_solver: the solved graph
+            solution_index: the solution index in the solutions list
+            total_graph: the opposite face graph for the puzzle
+            front_graph: the opposite face subgraph for the front-back faces
+            top_graph: the opposite face subgraph for the top-bottom faces
+        """
+        assert solution_index < len(graph_solver.solutions)
+
+        grid: Grid  = graph_solver.solutions[solution_index]
+        grid_key: tuple[FaceName, PuzzleCubeNumber]
+        grid_value: AxisLabel | None
+        for grid_key, grid_value in grid.items():
+            face_name: FaceName = grid_key[0]
+            cube_number: PuzzleCubeNumber = grid_key[1]
+
+            assert grid_value is not None
+            assert isinstance(grid_value, AxisLabel)
+            axis_label: AxisLabel = grid_value
+
+            target_graph: OppositeFaceGraph = front_graph if face_name == FaceName.FRONT else top_graph
+            self.move_edge((cube_number, axis_label), total_graph, target_graph)
 
     def move_edge(self,
                   cube_axis: CubeAxis,

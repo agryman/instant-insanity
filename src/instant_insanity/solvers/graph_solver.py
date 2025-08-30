@@ -287,8 +287,8 @@ class GraphSolver:
         return max(spectrum.values()) <= 2
 
 
-WINNING_MOVES_GRAPH_SOLVER: GraphSolver = GraphSolver(puzzle=WINNING_MOVES_PUZZLE)
-CARTEBLANCHE_GRAPH_SOLVER: GraphSolver = GraphSolver(puzzle=CARTEBLANCHE_PUZZLE)
+WINNING_MOVES_GRAPH_SOLVER: GraphSolver = GraphSolver(WINNING_MOVES_PUZZLE)
+CARTEBLANCHE_GRAPH_SOLVER: GraphSolver = GraphSolver(CARTEBLANCHE_PUZZLE)
 
 if __name__ == "__main__":
     separator_line: str = '-' * 80
@@ -296,6 +296,7 @@ if __name__ == "__main__":
     print('Solving Winning Moves puzzle.')
     WINNING_MOVES_GRAPH_SOLVER.solve()
     print(separator_line)
-    print('Solving Carteblanch puzzle.')
+
+    print('Solving Carteblanche puzzle.')
     CARTEBLANCHE_GRAPH_SOLVER.solve()
     print(separator_line)
