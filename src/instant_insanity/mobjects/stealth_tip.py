@@ -37,15 +37,19 @@ def get_cubic_bezier_point_tangent(curve: CubicBezier, t: float) -> tuple[Point3
     return pt, vt
 
 
-def mk_stealth_tip_from_cubic_bezier(curve: CubicBezier, t_buff: float = 0.01, forward=True) -> StealthTip:
+def mk_stealth_tip_from_cubic_bezier(curve: CubicBezier,
+                                     forward: bool = True,
+                                     t_buff: float = 0.5,
+                                     scale: float = 1.0) -> StealthTip:
     """
     Makes a stealth arrow tip that lies on top of a cubic Bézier curve to indicate the direction of the edge.
     The centre of the tip is set back from the end of the curver.
 
     Args:
         curve: the cubic Bézier curve.
-        t_buff: the buffer for the parameter t. It should be positive if the curve ends on a dot.
         forward: a boolean flag indicating the direction of the curve.
+        t_buff: the buffer for the parameter t. It should be positive if the curve ends on a dot.
+        scale: the scaling factor for the tip.
 
     Returns:
         the stealth tip mobject correctly positioned and rotated to lie over one end of the curve.
@@ -66,7 +70,7 @@ def mk_stealth_tip_from_cubic_bezier(curve: CubicBezier, t_buff: float = 0.01, f
             fill_opacity=1.0,
             stroke_color=BLACK,
             stroke_width=1)
-    tip.scale(0.5)
+    tip.scale(scale)
     tip.rotate(theta)
     tip.move_to(p)
 
