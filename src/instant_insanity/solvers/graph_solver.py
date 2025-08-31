@@ -15,7 +15,7 @@ of faces in the front, back, top, and bottom positions.
 from enum import StrEnum
 
 from instant_insanity.core.cube import FaceName
-from instant_insanity.core.puzzle import Puzzle, AxisLabel, PuzzleCubeNumber, FaceColour, AXIS_TO_FACE_NAME_PAIR, \
+from instant_insanity.core.puzzle import Puzzle, AxisLabel, PuzzleCubeNumber, FaceColour, INITIAL_AXIS_TO_FACE_NAME_PAIR, \
     FaceNamePair, PuzzleCube, CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE
 
 type GridRow = FaceName
@@ -104,7 +104,7 @@ class GraphSolver:
         """
         spectrum: Spectrum = self.zero_spectrum()
         cube: PuzzleCube = self.puzzle.number_to_cube[cube_number]
-        face_name_pair: FaceNamePair = AXIS_TO_FACE_NAME_PAIR[axis_label]
+        face_name_pair: FaceNamePair = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
         face_name: FaceName
         for face_name in face_name_pair:
             face_colour: FaceColour = cube.name_to_colour[face_name]

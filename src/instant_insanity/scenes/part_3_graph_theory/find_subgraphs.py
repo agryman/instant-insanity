@@ -2,28 +2,23 @@
 This module animates the search for the two subgraphs of the opposite-face graph of a puzzle.
 """
 
-from manim import Scene, tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot, StealthTip, CubicBezier
-from manim.typing import Point3D, Vector3D
+from manim import Scene, tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot, StealthTip, CubicBezier, FadeIn, FadeOut
+from manim.typing import Vector3D
 from manim.utils.color.X11 import BLACK
 
 from instant_insanity.core.cube import FaceName
-from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, \
-    CARTEBLANCHE_PUZZLE
+from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, EdgeToMobjectMapping
 from instant_insanity.mobjects.quadrant import NodePair, Quadrant
-from instant_insanity.mobjects.stealth_tip import mk_stealth_tip_from_cubic_bezier
+from instant_insanity.mobjects.stealth_tip import mk_stealth_tip_from_cubic_bezier, EdgeTip, CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid
 
-type EdgeTip = tuple[CubicBezier, bool, StealthTip]
-type CubeEdgeTip = dict[PuzzleCubeNumber, EdgeTip]
-
-
 class FindSubgraphs(GridMixin, Scene):
     def construct(self):
-        puzzle: Puzzle = CARTEBLANCHE_PUZZLE #WINNING_MOVES_PUZZLE
+        puzzle: Puzzle =  WINNING_MOVES_PUZZLE
 
         # add three graphs
 
@@ -42,17 +37,20 @@ class FindSubgraphs(GridMixin, Scene):
 
         self.add(total_graph, front_graph, top_graph, front_text, top_text)
 
-        cube_number: PuzzleCubeNumber = PuzzleCubeNumber.ONE
-        axis_label: AxisLabel = AxisLabel.X
-
         graph_solver: GraphSolver = GraphSolver(puzzle)
         graph_solver.solve()
 
         self.move_solution(graph_solver, 0, total_graph, front_graph, top_graph)
-        front_tips: CubeEdgeTip = self.mk_edge_directions(front_graph)
-        for edge_tip in front_tips.values():
-            self.add(edge_tip[2])
-            self.wait()
+
+        subgraph: OppositeFaceGraph
+        for subgraph in (front_graph, top_graph):
+            cube_edge_tips: CubeEdgeTip = self.mk_edge_directions(subgraph)
+            for edge_tip in cube_edge_tips.values():
+                self.play(FadeIn(edge_tip.tip), run_time=0.5)
+
+        # fade out the total graph in preparation for entry to the next scene CubesFromSubgraphs
+
+        self.play(FadeOut(total_graph))
 
         self.wait(4)
 
@@ -130,7 +128,8 @@ class FindSubgraphs(GridMixin, Scene):
 
         self.wait()
 
-    def mk_edge_directions(self, subgraph: OppositeFaceGraph) -> CubeEdgeTip:
+    @staticmethod
+    def mk_edge_directions(subgraph: OppositeFaceGraph) -> CubeEdgeTip:
         """
         Pick directions for the edges of the 2-factor subgraph.
         The subgraph has one edge per cube so pick directions in that order.
@@ -217,8 +216,8 @@ class FindSubgraphs(GridMixin, Scene):
                                                                forward=forward,
                                                                t_buff=0.2,
                                                                scale=1.0)
-            cube_tips[cube_number] = (curve, forward, tip)
-    
+            cube_tips[cube_number] = EdgeTip(curve, forward, tip)
+
         return cube_tips
 
 if __name__ == "__main__":

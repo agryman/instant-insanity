@@ -16,13 +16,13 @@ class AxisLabel(StrEnum):
 FaceNamePair: TypeAlias = tuple[FaceName, FaceName]
 
 # use the Carteblanche labels
-AXIS_TO_FACE_NAME_PAIR: dict[AxisLabel, FaceNamePair] = {
+INITIAL_AXIS_TO_FACE_NAME_PAIR: dict[AxisLabel, FaceNamePair] = {
     AxisLabel.X: (FaceName.FRONT, FaceName.BACK),
     AxisLabel.Y: (FaceName.RIGHT, FaceName.LEFT),
     AxisLabel.Z: (FaceName.TOP, FaceName.BOTTOM)
 }
 
-FACE_NAME_TO_AXIS: dict[FaceName, AxisLabel] = {
+INITIAL_FACE_NAME_TO_AXIS: dict[FaceName, AxisLabel] = {
     FaceName.FRONT: AxisLabel.X,
     FaceName.BACK: AxisLabel.X,
     FaceName.RIGHT: AxisLabel.Y,
@@ -33,51 +33,51 @@ FACE_NAME_TO_AXIS: dict[FaceName, AxisLabel] = {
 
 class FaceLabel(StrEnum):
     """Labels that appear on the faces of a cube in Carteblanche 1947."""
-    FRONT = "x"
-    BACK = "x'"
-    RIGHT = "y"
-    LEFT = "y'"
-    TOP = "z"
-    BOTTOM = "z'"
+    X = "x"
+    X_PRIME = "x'"
+    Y = "y"
+    Y_PRIME = "y'"
+    Z = "z"
+    Z_PRIME = "z'"
 
 # map face names to face labels
-FACE_NAME_TO_LABEL: dict[FaceName, FaceLabel] = {
-    FaceName.FRONT: FaceLabel.FRONT,
-    FaceName.RIGHT: FaceLabel.RIGHT,
-    FaceName.TOP: FaceLabel.TOP,
-    FaceName.BOTTOM: FaceLabel.BOTTOM,
-    FaceName.LEFT: FaceLabel.LEFT,
-    FaceName.BACK: FaceLabel.BACK
+INITIAL_FACE_NAME_TO_LABEL: dict[FaceName, FaceLabel] = {
+    FaceName.FRONT: FaceLabel.X,
+    FaceName.RIGHT: FaceLabel.Y,
+    FaceName.TOP: FaceLabel.Z,
+    FaceName.BOTTOM: FaceLabel.Z_PRIME,
+    FaceName.LEFT: FaceLabel.Y_PRIME,
+    FaceName.BACK: FaceLabel.X_PRIME
 }
 
 # map face labels to face names
-FACE_LABEL_TO_NAME: dict[FaceLabel, FaceName] = {
-    FaceLabel.FRONT: FaceName.FRONT,
-    FaceLabel.BACK: FaceName.BACK,
-    FaceLabel.RIGHT: FaceName.RIGHT,
-    FaceLabel.LEFT: FaceName.LEFT,
-    FaceLabel.TOP: FaceName.TOP,
-    FaceLabel.BOTTOM: FaceName.BOTTOM
+INITIAL_FACE_LABEL_TO_NAME: dict[FaceLabel, FaceName] = {
+    FaceLabel.X: FaceName.FRONT,
+    FaceLabel.X_PRIME: FaceName.BACK,
+    FaceLabel.Y: FaceName.RIGHT,
+    FaceLabel.Y_PRIME: FaceName.LEFT,
+    FaceLabel.Z: FaceName.TOP,
+    FaceLabel.Z_PRIME: FaceName.BOTTOM
 }
 
 # map face numbers to face labels
 FACE_NUMBER_TO_LABEL: dict[FaceNumber, FaceLabel] = {
-    FaceNumber.FRONT: FaceLabel.FRONT,
-    FaceNumber.RIGHT: FaceLabel.RIGHT,
-    FaceNumber.TOP: FaceLabel.TOP,
-    FaceNumber.BOTTOM: FaceLabel.BOTTOM,
-    FaceNumber.LEFT: FaceLabel.LEFT,
-    FaceNumber.BACK: FaceLabel.BACK
+    FaceNumber.THREE: FaceLabel.X,
+    FaceNumber.ONE: FaceLabel.Y,
+    FaceNumber.TWO: FaceLabel.Z,
+    FaceNumber.FIVE: FaceLabel.Z_PRIME,
+    FaceNumber.SIX: FaceLabel.Y_PRIME,
+    FaceNumber.FOUR: FaceLabel.X_PRIME
 }
 
 # map face labels to face numbers
 FACE_LABEL_TO_NUMBER: dict[FaceLabel, FaceNumber] = {
-    FaceLabel.FRONT: FaceNumber.FRONT,
-    FaceLabel.BACK: FaceNumber.BACK,
-    FaceLabel.RIGHT: FaceNumber.RIGHT,
-    FaceLabel.LEFT: FaceNumber.LEFT,
-    FaceLabel.TOP: FaceNumber.TOP,
-    FaceLabel.BOTTOM: FaceNumber.BOTTOM
+    FaceLabel.X: FaceNumber.THREE,
+    FaceLabel.X_PRIME: FaceNumber.FOUR,
+    FaceLabel.Y: FaceNumber.ONE,
+    FaceLabel.Y_PRIME: FaceNumber.SIX,
+    FaceLabel.Z: FaceNumber.TWO,
+    FaceLabel.Z_PRIME: FaceNumber.FIVE
 }
 
 class FaceColour(StrEnum):
@@ -150,7 +150,7 @@ class PuzzleCube:
 
         label: FaceLabel
         initial: str
-        self.name_to_colour = {FACE_LABEL_TO_NAME[label]: FaceColour.from_initial(initial)
+        self.name_to_colour = {INITIAL_FACE_LABEL_TO_NAME[label]: FaceColour.from_initial(initial)
                                for label, initial in zip(FaceLabel, cube_spec)}
 
     def __eq__(self, other: object) -> bool:
@@ -163,7 +163,7 @@ class PuzzleCube:
         axis_to_face_colour_pair: dict[AxisLabel, FaceColourPair] = {}
         axis: AxisLabel
         face_name_pair: FaceNamePair
-        for axis, face_name_pair in AXIS_TO_FACE_NAME_PAIR.items():
+        for axis, face_name_pair in INITIAL_AXIS_TO_FACE_NAME_PAIR.items():
             name1: FaceName
             name2: FaceName
             name1, name2 = face_name_pair

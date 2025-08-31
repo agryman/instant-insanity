@@ -44,35 +44,35 @@ class FaceName(StrEnum):
 
 class FaceNumber(IntEnum):
     """Numbers that appear on the faces of a die."""
-    RIGHT = 1
-    TOP = 2
-    FRONT = 3
-    BACK = 4
-    BOTTOM = 5
-    LEFT = 6
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
 
     def opposite(self) -> 'FaceNumber':
         """Return the opposite face number."""
         return FaceNumber(7 - self.value)
 
 # map face names to face numbers
-FACE_NAME_TO_NUMBER: dict[FaceName, FaceNumber] = {
-    FaceName.RIGHT: FaceNumber.RIGHT,
-    FaceName.LEFT: FaceNumber.LEFT,
-    FaceName.TOP: FaceNumber.TOP,
-    FaceName.BOTTOM: FaceNumber.BOTTOM,
-    FaceName.FRONT: FaceNumber.FRONT,
-    FaceName.BACK: FaceNumber.BACK
+INITIAL_FACE_NAME_TO_NUMBER: dict[FaceName, FaceNumber] = {
+    FaceName.RIGHT: FaceNumber.ONE,
+    FaceName.LEFT: FaceNumber.SIX,
+    FaceName.TOP: FaceNumber.TWO,
+    FaceName.BOTTOM: FaceNumber.FIVE,
+    FaceName.FRONT: FaceNumber.THREE,
+    FaceName.BACK: FaceNumber.FOUR
 }
 
 # map face numbers to face names
-FACE_NUMBER_TO_NAME: dict[FaceNumber, FaceName] = {
-    FaceNumber.RIGHT: FaceName.RIGHT,
-    FaceNumber.LEFT: FaceName.LEFT,
-    FaceNumber.TOP: FaceName.TOP,
-    FaceNumber.BOTTOM: FaceName.BOTTOM,
-    FaceNumber.FRONT: FaceName.FRONT,
-    FaceNumber.BACK: FaceName.BACK
+INITIAL_FACE_NUMBER_TO_NAME: dict[FaceNumber, FaceName] = {
+    FaceNumber.ONE: FaceName.RIGHT,
+    FaceNumber.SIX: FaceName.LEFT,
+    FaceNumber.TWO: FaceName.TOP,
+    FaceNumber.FIVE: FaceName.BOTTOM,
+    FaceNumber.THREE: FaceName.FRONT,
+    FaceNumber.FOUR: FaceName.BACK
 }
 
 def mk_point(point: list[float]) -> np.ndarray:

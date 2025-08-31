@@ -7,7 +7,7 @@ from manim.typing import Point3D
 
 from instant_insanity.core.cube import FaceName
 from instant_insanity.core.object_count import ObjectToCountMapping
-from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, PuzzleCube, AXIS_TO_FACE_NAME_PAIR, \
+from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, PuzzleCube, INITIAL_AXIS_TO_FACE_NAME_PAIR, \
     CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE, CubeAxis, PuzzleCubeNumber, AxisLabel
 from instant_insanity.mobjects.coloured_node import mk_dot
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
@@ -54,7 +54,7 @@ def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
         # add the pair counts for the cube
         name_1: FaceName
         name_2: FaceName
-        for (name_1, name_2) in AXIS_TO_FACE_NAME_PAIR.values():
+        for (name_1, name_2) in INITIAL_AXIS_TO_FACE_NAME_PAIR.values():
             # add the counts for the axis
             colour_1: FaceColour = cube.name_to_colour[name_1]
             colour_2: FaceColour = cube.name_to_colour[name_2]

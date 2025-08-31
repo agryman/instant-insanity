@@ -2,9 +2,22 @@
 This module makes a stealth arrow tip mobject that can be added to a cubic Bézier curve
 to indicate the direction of the edge.
 """
+from dataclasses import dataclass
+
 import numpy as np
-from manim import Mobject, CubicBezier, StealthTip, BLACK
+from manim import CubicBezier, StealthTip, BLACK
 from manim.typing import Point3D, Vector3D
+
+from instant_insanity.core.puzzle import PuzzleCubeNumber
+
+type CubeEdgeTip = dict[PuzzleCubeNumber, EdgeTip]
+
+@dataclass
+class EdgeTip:
+    curve: CubicBezier
+    forward: bool
+    tip: StealthTip
+
 
 def get_cubic_bezier_point_tangent(curve: CubicBezier, t: float) -> tuple[Point3D, Vector3D]:
     """

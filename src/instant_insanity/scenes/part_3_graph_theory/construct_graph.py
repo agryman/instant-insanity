@@ -29,7 +29,7 @@ from instant_insanity.core.geometry_types import PolygonId, SortedPolygonIdToPol
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
-                                          PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, AXIS_TO_FACE_NAME_PAIR,
+                                          PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, INITIAL_AXIS_TO_FACE_NAME_PAIR,
                                           FaceNamePair, FaceColour)
 from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
@@ -124,7 +124,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             the (start, end) face data pair.
         """
         # compute the polygon_id's of the axis
-        face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[axis_label]
+        face_pair: tuple[FaceName, FaceName] = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
         axis_polygon_id_list: list[PolygonId] = [PuzzleCube3D.name_to_id(face_name)
                                                  for face_name in face_pair]
         axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
@@ -187,7 +187,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         cube_number, axis_label = cube_axis
 
         # compute the polygon_id's of the axis
-        face_pair: tuple[FaceName, FaceName] = AXIS_TO_FACE_NAME_PAIR[axis_label]
+        face_pair: tuple[FaceName, FaceName] = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
         axis_polygon_id_list: list[PolygonId] = [Puzzle3D.name_to_id((cube_number, face_name))
                                                  for face_name in face_pair]
         axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
@@ -457,7 +457,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
                     self.wait(tracker.duration)
 
             for axis_label in AxisLabel:
-                fair_name_pair: FaceNamePair = AXIS_TO_FACE_NAME_PAIR[axis_label]
+                fair_name_pair: FaceNamePair = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
                 face_name_0: FaceName = fair_name_pair[0]
                 face_name_1: FaceName = fair_name_pair[1]
                 face_colour_0: FaceColour = cube.name_to_colour[face_name_0]
