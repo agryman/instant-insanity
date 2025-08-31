@@ -5,7 +5,7 @@ import numpy as np
 from manim import Dot, VGroup, Polygon
 from manim.typing import Point3D
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.object_count import ObjectToCountMapping
 from instant_insanity.core.puzzle import FaceColour, Puzzle, FaceColourPair, PuzzleCube, INITIAL_AXIS_TO_FACE_NAME_PAIR, \
     CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE, CubeAxis, PuzzleCubeNumber, AxisLabel
@@ -52,8 +52,8 @@ def mk_colour_to_node(puzzle: Puzzle) -> ColourToNodeMapping:
     cube: PuzzleCube
     for cube in puzzle.number_to_cube.values():
         # add the pair counts for the cube
-        name_1: FaceName
-        name_2: FaceName
+        name_1: FacePlane
+        name_2: FacePlane
         for (name_1, name_2) in INITIAL_AXIS_TO_FACE_NAME_PAIR.values():
             # add the counts for the axis
             colour_1: FaceColour = cube.name_to_colour[name_1]
@@ -335,7 +335,7 @@ class FaceData:
 
 def mk_face_data_from_cube(graph: OppositeFaceGraph,
                            cube: PuzzleCube3D,
-                           name: FaceName,
+                           name: FacePlane,
                            polygon: Polygon) -> FaceData:
     colour: FaceColour = cube.get_colour_name(name)
     return mk_face_data(graph, colour, polygon)
@@ -343,7 +343,7 @@ def mk_face_data_from_cube(graph: OppositeFaceGraph,
 def mk_face_data_from_puzzle(graph: OppositeFaceGraph,
                              puzzle3d: Puzzle3D,
                              cube_number: PuzzleCubeNumber,
-                             name: FaceName,
+                             name: FacePlane,
                              polygon: Polygon) -> FaceData:
     colour: FaceColour = puzzle3d.get_colour_name(cube_number, name)
     return mk_face_data(graph, colour, polygon)

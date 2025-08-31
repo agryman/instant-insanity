@@ -4,7 +4,7 @@ from manim.typing import Vector3D
 from manim import Scene, Polygon, Text, tempconfig, DOWN, BLACK
 
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import PolygonId
 from instant_insanity.core.projection import OrthographicProjection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle, PuzzleCube, PuzzleCubeNumber, \
@@ -40,7 +40,7 @@ class OrthographicProjectionDemo(GridMixin, Scene):
         self.add(cube)
 
         # find the scene coordinates of the centre of the front face
-        front_id: PolygonId = PuzzleCube3D.name_to_id(FaceName.FRONT)
+        front_id: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
         front_face: Polygon = cube.id_to_scene_polygon[front_id]
         centre: np.ndarray = front_face.get_center()
         centre_str: str = f'front face centre = ({centre[0]:.2f}, {centre[1]:.2f}, {centre[2]:.2f})'

@@ -7,7 +7,7 @@ from manim import (
 )
 from manim.typing import Point3D
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE_SPEC, CARTEBLANCHE_PUZZLE_SPEC
 from instant_insanity.scenes.coloured_cube import ColouredCube, FACE_NORMAL, OPPOSITE_FACES
 

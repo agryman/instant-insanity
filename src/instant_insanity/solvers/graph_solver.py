@@ -14,17 +14,17 @@ of faces in the front, back, top, and bottom positions.
 """
 from enum import StrEnum
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import Puzzle, AxisLabel, PuzzleCubeNumber, FaceColour, INITIAL_AXIS_TO_FACE_NAME_PAIR, \
-    FaceNamePair, PuzzleCube, CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE
+    FacePlanePair, PuzzleCube, CARTEBLANCHE_PUZZLE, WINNING_MOVES_PUZZLE
 
-type GridRow = FaceName
+type GridRow = FacePlane
 type GridColumn = PuzzleCubeNumber
 type GridKey = tuple[GridRow, GridColumn]
 type GridValue = AxisLabel | None
 type Grid = dict[GridKey, GridValue]
 
-GRID_ROWS: list[GridRow] = [FaceName.FRONT, FaceName.TOP]
+GRID_ROWS: list[GridRow] = [FacePlane.FRONT, FacePlane.TOP]
 GRID_COLUMNS: list[GridColumn] = list(PuzzleCubeNumber)
 
 def is_final_grid_key(grid_key: GridKey) -> bool:
@@ -104,8 +104,8 @@ class GraphSolver:
         """
         spectrum: Spectrum = self.zero_spectrum()
         cube: PuzzleCube = self.puzzle.number_to_cube[cube_number]
-        face_name_pair: FaceNamePair = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
-        face_name: FaceName
+        face_name_pair: FacePlanePair = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
+        face_name: FacePlane
         for face_name in face_name_pair:
             face_colour: FaceColour = cube.name_to_colour[face_name]
             spectrum[face_colour] += 1

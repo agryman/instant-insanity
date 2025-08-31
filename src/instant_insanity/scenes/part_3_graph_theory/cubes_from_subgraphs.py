@@ -7,7 +7,7 @@ Recall that Carteblanche's puzzle has two solutions.
 from manim import Scene, tempconfig, LEFT, DOWN, RIGHT, Tex, BLACK
 
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import Puzzle, WINNING_MOVES_PUZZLE, PuzzleCubeNumber, AxisLabel
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -22,9 +22,9 @@ class CubesFromSubgraphs(GridMixin, Scene):
         front_graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * LEFT + 1.5 * DOWN)
         top_graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT + 1.5 * DOWN)
 
-        subgraphs: dict[FaceName, OppositeFaceGraph] = {
-            FaceName.FRONT: front_graph,
-            FaceName.TOP: top_graph,
+        subgraphs: dict[FacePlane, OppositeFaceGraph] = {
+            FacePlane.FRONT: front_graph,
+            FacePlane.TOP: top_graph,
         }
 
         front_text: Tex = Tex("front-back", color=BLACK, font_size=36)

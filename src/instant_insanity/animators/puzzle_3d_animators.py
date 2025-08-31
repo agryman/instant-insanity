@@ -4,7 +4,7 @@ from numpy.random import standard_t
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.cube_animators import CubeExplosionAnimorph
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
+from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import PolygonId, PolygonIdToVertexPathMapping, VertexPath
 from instant_insanity.core.puzzle import PuzzleCubeNumber
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D
@@ -50,14 +50,14 @@ class Puzzle3DCubeExplosionAnimorph(Puzzle3DAnimorph):
 
         # copy the current model paths and then update the faces
         id_to_model_path: PolygonIdToVertexPathMapping = puzzle3d.id_to_model_path.copy()
-        face_name: FaceName
-        for face_name in FaceName:
+        face_name: FacePlane
+        for face_name in FacePlane:
             polygon_id: PolygonId = Puzzle3D.name_to_id((cube_number, face_name))
             standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_name,
                                                                                   self.expansion_factor,
                                                                                   alpha)
             model_path_0: VertexPath = puzzle3d.id_to_model_path_0[polygon_id]
-            translation: Vector3D = model_path_0[0] - FACE_NAME_TO_VERTEX_PATH[face_name][0]
+            translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_name][0]
             id_to_model_path[polygon_id] = standard_model_path + translation
 
         puzzle3d.set_id_to_model_path(id_to_model_path)

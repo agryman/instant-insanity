@@ -7,7 +7,7 @@ from instant_insanity.animators.animorph import Updater
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
 from instant_insanity.core.geometry_types import Vector, PolygonId, SortedPolygonIdToPolygonMapping
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
@@ -33,13 +33,13 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         animorph: CubeRigidMotionAnimorph = CubeRigidMotionAnimorph(cube, rotation, translation)
 
         # draw the outlines of the front and right faces at some points in the animation
-        names: list[FaceName] = [FaceName.FRONT, FaceName.RIGHT]
+        names: list[FacePlane] = [FacePlane.FRONT, FacePlane.RIGHT]
         colours: list[ManimColor] = [BLUE, GREEN]
         alpha: float
         for alpha in [0.0, 0.5, 1.0]:
             animorph.morph_to(alpha)
             id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube.id_to_scene_polygon
-            name: FaceName
+            name: FacePlane
             colour: ManimColor
             for name, colour in zip(names, colours):
                 polygon_id: PolygonId = PuzzleCube3D.name_to_id(name)

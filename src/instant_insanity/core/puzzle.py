@@ -4,7 +4,7 @@ from typing import TypeAlias, Self
 from enum import IntEnum, StrEnum
 from dataclasses import dataclass
 
-from instant_insanity.core.cube import FaceName, FaceNumber
+from instant_insanity.core.cube import FacePlane, FaceNumber
 
 # there is one opposite face pair for each axis
 class AxisLabel(StrEnum):
@@ -13,22 +13,22 @@ class AxisLabel(StrEnum):
     Y = 'y'
     Z = 'z'
 
-FaceNamePair: TypeAlias = tuple[FaceName, FaceName]
+FacePlanePair: TypeAlias = tuple[FacePlane, FacePlane]
 
 # use the Carteblanche labels
-INITIAL_AXIS_TO_FACE_NAME_PAIR: dict[AxisLabel, FaceNamePair] = {
-    AxisLabel.X: (FaceName.FRONT, FaceName.BACK),
-    AxisLabel.Y: (FaceName.RIGHT, FaceName.LEFT),
-    AxisLabel.Z: (FaceName.TOP, FaceName.BOTTOM)
+INITIAL_AXIS_TO_FACE_NAME_PAIR: dict[AxisLabel, FacePlanePair] = {
+    AxisLabel.X: (FacePlane.FRONT, FacePlane.BACK),
+    AxisLabel.Y: (FacePlane.RIGHT, FacePlane.LEFT),
+    AxisLabel.Z: (FacePlane.TOP, FacePlane.BOTTOM)
 }
 
-INITIAL_FACE_NAME_TO_AXIS: dict[FaceName, AxisLabel] = {
-    FaceName.FRONT: AxisLabel.X,
-    FaceName.BACK: AxisLabel.X,
-    FaceName.RIGHT: AxisLabel.Y,
-    FaceName.LEFT: AxisLabel.Y,
-    FaceName.TOP: AxisLabel.Z,
-    FaceName.BOTTOM: AxisLabel.Z
+INITIAL_FACE_NAME_TO_AXIS: dict[FacePlane, AxisLabel] = {
+    FacePlane.FRONT: AxisLabel.X,
+    FacePlane.BACK: AxisLabel.X,
+    FacePlane.RIGHT: AxisLabel.Y,
+    FacePlane.LEFT: AxisLabel.Y,
+    FacePlane.TOP: AxisLabel.Z,
+    FacePlane.BOTTOM: AxisLabel.Z
 }
 
 class FaceLabel(StrEnum):
@@ -41,23 +41,23 @@ class FaceLabel(StrEnum):
     Z_PRIME = "z'"
 
 # map face names to face labels
-INITIAL_FACE_NAME_TO_LABEL: dict[FaceName, FaceLabel] = {
-    FaceName.FRONT: FaceLabel.X,
-    FaceName.RIGHT: FaceLabel.Y,
-    FaceName.TOP: FaceLabel.Z,
-    FaceName.BOTTOM: FaceLabel.Z_PRIME,
-    FaceName.LEFT: FaceLabel.Y_PRIME,
-    FaceName.BACK: FaceLabel.X_PRIME
+INITIAL_FACE_NAME_TO_LABEL: dict[FacePlane, FaceLabel] = {
+    FacePlane.FRONT: FaceLabel.X,
+    FacePlane.RIGHT: FaceLabel.Y,
+    FacePlane.TOP: FaceLabel.Z,
+    FacePlane.BOTTOM: FaceLabel.Z_PRIME,
+    FacePlane.LEFT: FaceLabel.Y_PRIME,
+    FacePlane.BACK: FaceLabel.X_PRIME
 }
 
 # map face labels to face names
-INITIAL_FACE_LABEL_TO_NAME: dict[FaceLabel, FaceName] = {
-    FaceLabel.X: FaceName.FRONT,
-    FaceLabel.X_PRIME: FaceName.BACK,
-    FaceLabel.Y: FaceName.RIGHT,
-    FaceLabel.Y_PRIME: FaceName.LEFT,
-    FaceLabel.Z: FaceName.TOP,
-    FaceLabel.Z_PRIME: FaceName.BOTTOM
+INITIAL_FACE_LABEL_TO_NAME: dict[FaceLabel, FacePlane] = {
+    FaceLabel.X: FacePlane.FRONT,
+    FaceLabel.X_PRIME: FacePlane.BACK,
+    FaceLabel.Y: FacePlane.RIGHT,
+    FaceLabel.Y_PRIME: FacePlane.LEFT,
+    FaceLabel.Z: FacePlane.TOP,
+    FaceLabel.Z_PRIME: FacePlane.BOTTOM
 }
 
 # map face numbers to face labels
@@ -137,7 +137,7 @@ class PuzzleCube:
 
     """
     cube_spec: PuzzleCubeSpec
-    name_to_colour: dict[FaceName, FaceColour]
+    name_to_colour: dict[FacePlane, FaceColour]
 
     def __init__(self, cube_spec: PuzzleCubeSpec):
         # cube_spec must be a string of six face colour initials
@@ -162,10 +162,10 @@ class PuzzleCube:
 
         axis_to_face_colour_pair: dict[AxisLabel, FaceColourPair] = {}
         axis: AxisLabel
-        face_name_pair: FaceNamePair
+        face_name_pair: FacePlanePair
         for axis, face_name_pair in INITIAL_AXIS_TO_FACE_NAME_PAIR.items():
-            name1: FaceName
-            name2: FaceName
+            name1: FacePlane
+            name2: FacePlane
             name1, name2 = face_name_pair
             colour1: FaceColour = self.name_to_colour[name1]
             colour2: FaceColour = self.name_to_colour[name2]

@@ -1,6 +1,6 @@
 import pytest
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import PolygonId
 from instant_insanity.core.puzzle import PuzzleCubeNumber
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D
@@ -19,19 +19,19 @@ valid_cases = [
 def test_id_to_name_valid(text: str, expected_tuple: tuple[int, str]) -> None:
     """Test id_to_name parses valid strings into correct tuples."""
     result = Puzzle3D.id_to_name(PolygonId(text))
-    assert result == (PuzzleCubeNumber(expected_tuple[0]), FaceName(expected_tuple[1]))
+    assert result == (PuzzleCubeNumber(expected_tuple[0]), FacePlane(expected_tuple[1]))
 
 @pytest.mark.parametrize('tuple_value, expected_text', [(t, s) for s, t in valid_cases])
 def test_name_to_id_valid(tuple_value: tuple[int, str], expected_text: str) -> None:
     """Test name_to_id formats valid tuples into correct strings."""
-    name = (PuzzleCubeNumber(tuple_value[0]), FaceName(tuple_value[1]))
+    name = (PuzzleCubeNumber(tuple_value[0]), FacePlane(tuple_value[1]))
     result = Puzzle3D.name_to_id(name)
     assert result == expected_text
 
 @pytest.mark.parametrize('tuple_value', [t for _, t in valid_cases])
 def test_round_trip(tuple_value: tuple[int, str]) -> None:
     """Test round-trip conversion: tuple -> string -> tuple."""
-    name = (PuzzleCubeNumber(tuple_value[0]), FaceName(tuple_value[1]))
+    name = (PuzzleCubeNumber(tuple_value[0]), FacePlane(tuple_value[1]))
     text = Puzzle3D.name_to_id(name)
     parsed = Puzzle3D.id_to_name(text)
     assert parsed == tuple_value
@@ -65,5 +65,5 @@ invalid_tuples = [
 def test_name_to_id_invalid(tuple_value: tuple) -> None:
     """Test name_to_id raises ValueError on invalid tuples."""
     with pytest.raises(ValueError):
-        name = (PuzzleCubeNumber(tuple_value[0]), FaceName(tuple_value[1]))
+        name = (PuzzleCubeNumber(tuple_value[0]), FacePlane(tuple_value[1]))
         Puzzle3D.name_to_id(name)

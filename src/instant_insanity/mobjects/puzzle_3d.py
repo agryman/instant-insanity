@@ -6,7 +6,7 @@ from manim.typing import Point3D, Vector3D
 from manim import LEFT, RIGHT, ManimColor
 
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
+from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, PuzzleCubeNumber, PuzzleCube, FaceColour
 from instant_insanity.mobjects.polygons_3d import Polygons3D, DEFAULT_POLYGON_SETTINGS
@@ -16,7 +16,7 @@ from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
 type CubeNumberToCubeMapping = dict[PuzzleCubeNumber, PuzzleCube3D]
 
 # A polygon in this group is uniquely identified by the pair (cube_number, face_name).
-type Puzzle3DPolygonName = tuple[PuzzleCubeNumber, FaceName]
+type Puzzle3DPolygonName = tuple[PuzzleCubeNumber, FacePlane]
 
 DEFAULT_CUBE_SIDE_LENGTH: float = 2.0  # the side length of the standard cube
 DEFAULT_BUFF: float = 0.1  # the horizontal space between cubes, MUST be positive to avoid collisions
@@ -60,16 +60,16 @@ class Puzzle3D(Polygons3D):
         Converts a puzzle polygon name to its polygon id.
 
         Args:
-            name: a polygon name, e.g. (PuzzleCubeNumber.TWO, FaceName.RIGHT).
+            name: a polygon name, e.g. (PuzzleCubeNumber.TWO, FacePlane.RIGHT).
 
         Returns:
             the polygon id, e.g. PolygonID('2/right').
         """
         cube_number: PuzzleCubeNumber
-        face_name: FaceName
-        cube_number, face_name = name
+        face_plane: FacePlane
+        cube_number, face_plane = name
 
-        id_str: str = f'{cube_number.value}/{face_name.value}'
+        id_str: str = f'{cube_number.value}/{face_plane.value}'
 
         return PolygonId(id_str)
 
@@ -81,20 +81,20 @@ class Puzzle3D(Polygons3D):
             polygon_id: a polygon id, e.g. PolygonId('2/right').
 
         Returns:
-            its polygon name, e.g. (PuzzleCubeNumber.TWO, FaceName.RIGHT).
+            its polygon name, e.g. (PuzzleCubeNumber.TWO, FacePlane.RIGHT).
         """
         id_str: str = str(polygon_id)
 
         cube_number_str: str
-        face_name_value: str
-        cube_number_str, face_name_value = id_str.split('/')
+        face_plane_value: str
+        cube_number_str, face_plane_value = id_str.split('/')
 
         cube_number_value: int = int(cube_number_str)
         cube_number = PuzzleCubeNumber(cube_number_value)
 
-        face_name: FaceName = FaceName(face_name_value)
+        face_plane: FacePlane = FacePlane(face_plane_value)
 
-        return cube_number, face_name
+        return cube_number, face_plane
 
     @staticmethod
     def mk_id_to_model_path_0(cube_one_centre: Point3D,
@@ -111,9 +111,9 @@ class Puzzle3D(Polygons3D):
         cube_number: PuzzleCubeNumber
         for i, cube_number in enumerate(PuzzleCubeNumber):
             cube_origin_i: Point3D = cube_one_centre + cube_centre_delta * i
-            face_name: FaceName
+            face_name: FacePlane
             vertex_path: VertexPath
-            for face_name, vertex_path in FACE_NAME_TO_VERTEX_PATH.items():
+            for face_name, vertex_path in FACE_PLANE_TO_VERTEX_PATH.items():
                 polygon_id = Puzzle3D.name_to_id((cube_number, face_name))
                 id_to_model_path_0[polygon_id] = vertex_path + cube_origin_i
 
@@ -130,7 +130,7 @@ class Puzzle3D(Polygons3D):
             a dict of settings the polygon.
         """
         cube_number: PuzzleCubeNumber
-        face_name: FaceName
+        face_name: FacePlane
         cube_number, face_name = Puzzle3D.id_to_name(polygon_id)
         puzzle_cube: PuzzleCube = self.puzzle.number_to_cube[cube_number]
         colour_name: FaceColour = puzzle_cube.name_to_colour[face_name]
@@ -140,7 +140,7 @@ class Puzzle3D(Polygons3D):
 
         return polygon_settings
 
-    def get_colour_name(self, cube_number: PuzzleCubeNumber, face_name: FaceName) -> FaceColour:
+    def get_colour_name(self, cube_number: PuzzleCubeNumber, face_name: FacePlane) -> FaceColour:
         puzzle: Puzzle = self.puzzle
         cube: PuzzleCube = puzzle.number_to_cube[cube_number]
         colour_name: FaceColour = cube.name_to_colour[face_name]
@@ -148,6 +148,6 @@ class Puzzle3D(Polygons3D):
 
     def hide_cube(self, cube_number: PuzzleCubeNumber) -> None:
         cube_ids: set[PolygonId] = {Puzzle3D.name_to_id((cube_number, face_name))
-                                    for face_name in FaceName}
+                                    for face_name in FacePlane}
         visible_polygon_ids: set[PolygonId] = self.visible_polygon_ids - cube_ids
         self.set_visible_polygon_ids(visible_polygon_ids)

@@ -1,5 +1,5 @@
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE_SPEC
 from instant_insanity.scenes.coloured_cube import ColouredCube
 
@@ -36,12 +36,12 @@ class UnfoldCubeToNet(ThreeDScene):
         delay: float = 1.0
         self.wait(delay)
 
-        top: Square = cube.face_square[FaceName.TOP]
-        bottom: Square = cube.face_square[FaceName.BOTTOM]
-        front: Square = cube.face_square[FaceName.FRONT]
-        back: Square = cube.face_square[FaceName.BACK]
-        left: Square = cube.face_square[FaceName.LEFT]
-        right: Square = cube.face_square[FaceName.RIGHT]
+        top: Square = cube.face_square[FacePlane.TOP]
+        bottom: Square = cube.face_square[FacePlane.BOTTOM]
+        front: Square = cube.face_square[FacePlane.FRONT]
+        back: Square = cube.face_square[FacePlane.BACK]
+        left: Square = cube.face_square[FacePlane.LEFT]
+        right: Square = cube.face_square[FacePlane.RIGHT]
 
         # Animate unfolding into T-net
         self.play(Rotate(top, angle=PI / 2, axis=RIGHT, about_point=front.get_top()), run_time=delay)

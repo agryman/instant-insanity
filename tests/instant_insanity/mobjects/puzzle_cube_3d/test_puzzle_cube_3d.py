@@ -1,19 +1,19 @@
 from manim import *
 
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_VERTEX_PATH
+from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping, PolygonId
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
-FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.FRONT)
-BACK_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.BACK)
-RIGHT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.RIGHT)
-LEFT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.LEFT)
-TOP_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.TOP)
-BOTTOM_ID: PolygonId = PuzzleCube3D.name_to_id(FaceName.BOTTOM)
+FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
+BACK_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.BACK)
+RIGHT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.RIGHT)
+LEFT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.LEFT)
+TOP_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.TOP)
+BOTTOM_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.BOTTOM)
 
 
 def test_three_d_puzzle_cube():
@@ -55,7 +55,7 @@ def test_translation():
     right_polygon_before = id_to_scene_polygon_before[RIGHT_ID]
     actual_vertices_before = right_polygon_before.get_vertices()
 
-    model_vertices_before = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT]
+    model_vertices_before = FACE_PLANE_TO_VERTEX_PATH[FacePlane.RIGHT]
     expected_vertices_before = projection.project_points(model_vertices_before)
     assert np.allclose(actual_vertices_before, expected_vertices_before)
 
@@ -69,14 +69,14 @@ def test_translation():
     right_polygon_after = id_to_scene_polygon_after[RIGHT_ID]
     actual_vertices_after = right_polygon_after.get_vertices()
 
-    model_vertices_after = FACE_NAME_TO_VERTEX_PATH[FaceName.RIGHT] + translation
+    model_vertices_after = FACE_PLANE_TO_VERTEX_PATH[FacePlane.RIGHT] + translation
     expected_vertices_after = projection.project_points(model_vertices_after)
     assert np.allclose(actual_vertices_after, expected_vertices_after)
 
     assert len(id_to_scene_polygon_before) == len(id_to_scene_polygon_after)
 
 def test_polygon_ids():
-    for face_name in FaceName:
+    for face_name in FacePlane:
         polygon_id = PuzzleCube3D.name_to_id(face_name)
         face_name_2 = PuzzleCube3D.id_to_name(polygon_id)
         assert face_name_2 == face_name

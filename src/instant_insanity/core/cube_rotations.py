@@ -7,7 +7,7 @@ we define a canonical rotation matrix that maps the initial orientation to the f
 from dataclasses import dataclass
 from scipy.spatial.transform import Rotation
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import FaceLabel
 
 def get_opposite_face_label(face_label: FaceLabel) -> FaceLabel:
@@ -39,12 +39,12 @@ class CubeOrientation:
         if self.front == get_opposite_face_label(self.top):
             raise ValueError(f'Expected adjacent faces but got opposites {self.front} and {self.top}')
 
-    def get_face_name_to_label_mapping(self) -> dict[FaceName, FaceLabel]:
-        mapping: dict[FaceName, FaceLabel] = {
-            FaceName.FRONT: self.front,
-            FaceName.BACK: get_opposite_face_label(self.front),
-            FaceName.TOP: self.top,
-            FaceName.BOTTOM: get_opposite_face_label(self.top)
+    def get_face_name_to_label_mapping(self) -> dict[FacePlane, FaceLabel]:
+        mapping: dict[FacePlane, FaceLabel] = {
+            FacePlane.FRONT: self.front,
+            FacePlane.BACK: get_opposite_face_label(self.front),
+            FacePlane.TOP: self.top,
+            FacePlane.BOTTOM: get_opposite_face_label(self.top)
         }
         return mapping
 

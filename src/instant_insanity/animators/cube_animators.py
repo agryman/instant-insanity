@@ -5,7 +5,7 @@ from manim import Mobject
 from manim.typing import Vector3D
 
 from instant_insanity.animators.animorph import Animorph
-from instant_insanity.core.cube import FaceName, FACE_NAME_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_NAME_TO_VERTEX_PATH
+from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath, Vertex, Vector
 from instant_insanity.core.transformation import transform_vertex_path, rotation_matrix_about_line, \
     apply_linear_transform
@@ -87,20 +87,20 @@ class CubeExplosionAnimorph(CubeAnimorph):
         cube3d: PuzzleCube3D = self.get_cube3d()
 
         id_to_model_path: PolygonIdToVertexPathMapping = {}
-        face_name: FaceName
-        for face_name in FaceName:
+        face_name: FacePlane
+        for face_name in FacePlane:
             polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_name)
             standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_name,
                                                                                   self.expansion_factor,
                                                                                   alpha)
             model_path_0: VertexPath = cube3d.id_to_model_path_0[polygon_id]
-            translation: Vector3D = model_path_0[0] - FACE_NAME_TO_VERTEX_PATH[face_name][0]
+            translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_name][0]
             id_to_model_path[polygon_id] = standard_model_path + translation
 
         cube3d.set_id_to_model_path(id_to_model_path)
 
     @staticmethod
-    def morph_standard_face_to(name: FaceName,
+    def morph_standard_face_to(name: FacePlane,
                                expansion_factor: float,
                                alpha: float) -> np.ndarray:
         """
@@ -134,34 +134,34 @@ class CubeExplosionAnimorph(CubeAnimorph):
         u: Vector = unit_k
         theta_max: float = 0.0
         z_max: float = -(3.0 + expansion_factor) / 2.0
-        face_normal: Vector = FACE_NAME_TO_UNIT_NORMAL[name]
+        face_normal: Vector = FACE_PLANE_TO_UNIT_NORMAL[name]
         translation_max: Vector = z_max * unit_k + (expansion_factor - 1.0) * face_normal
 
         match name:
-            case FaceName.RIGHT:
+            case FacePlane.RIGHT:
                 p = RBF
                 u = unit_j
                 theta_max = -quarter_turn
-            case FaceName.LEFT:
+            case FacePlane.LEFT:
                 p = LBF
                 u = unit_j
                 theta_max = quarter_turn
-            case FaceName.TOP:
+            case FacePlane.TOP:
                 p = LTF
                 u = unit_i
                 theta_max = quarter_turn
-            case FaceName.BOTTOM:
+            case FacePlane.BOTTOM:
                 p = LBF
                 u = unit_i
                 theta_max = -quarter_turn
-            case FaceName.FRONT:
+            case FacePlane.FRONT:
                 translation_max = origin
-            case FaceName.BACK:
+            case FacePlane.BACK:
                 translation_max = -(expansion_factor - 1.0) * unit_k
 
         theta: float = alpha * theta_max
         rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        standard_model_path_0: VertexPath = FACE_NAME_TO_VERTEX_PATH[name]
+        standard_model_path_0: VertexPath = FACE_PLANE_TO_VERTEX_PATH[name]
         rotated_model_path: VertexPath = apply_linear_transform(rot_mat, standard_model_path_0)
 
         translation: Vector = alpha * translation_max

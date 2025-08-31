@@ -7,7 +7,7 @@ The polygons are ordered from back to the front.
 from manim import *
 from manim.typing import Vector3D
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import FaceColour, PuzzleCube
 from instant_insanity.manim_scenes.coloured_cube import MANIM_COLOUR_MAP, TEST_PUZZLE_CUBE_SPEC
 
@@ -23,7 +23,7 @@ class CubeFromPolygons(Scene):
 
         # create a puzzle cube spec that has a different colour for each face
         puzzle_cube: PuzzleCube = PuzzleCube(TEST_PUZZLE_CUBE_SPEC)
-        face_colour: dict[FaceName, FaceColour] = puzzle_cube.name_to_colour
+        face_colour: dict[FacePlane, FaceColour] = puzzle_cube.name_to_colour
 
         # define the vertices of the standard cube
         v1: Vector3D = LEFT + DOWN + OUT
@@ -40,12 +40,12 @@ class CubeFromPolygons(Scene):
 
         # create the front face
         front_vertices: list[Vector3D] = [v1, v2, v3, v4]
-        front_colour: ManimColor = MANIM_COLOUR_MAP[face_colour[FaceName.FRONT]]
+        front_colour: ManimColor = MANIM_COLOUR_MAP[face_colour[FacePlane.FRONT]]
         front_face = mk_face(front_vertices, front_colour)
 
         # create the back face
         back_vertices: list[Vector3D] = [v8, v7, v6, v5]
-        back_colour: ManimColor = MANIM_COLOUR_MAP[face_colour[FaceName.BACK]]
+        back_colour: ManimColor = MANIM_COLOUR_MAP[face_colour[FacePlane.BACK]]
         back_face: Polygon = mk_face(back_vertices, back_colour)
         back_face.shift(RIGHT + 0.5 * UP)
 

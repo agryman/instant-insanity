@@ -6,7 +6,7 @@ from manim import Scene, tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot, StealthTip
 from manim.typing import Vector3D
 from manim.utils.color.X11 import BLACK
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, EdgeToMobjectMapping
@@ -72,17 +72,17 @@ class FindSubgraphs(GridMixin, Scene):
         assert solution_index < len(graph_solver.solutions)
 
         grid: Grid = graph_solver.solutions[solution_index]
-        grid_key: tuple[FaceName, PuzzleCubeNumber]
+        grid_key: tuple[FacePlane, PuzzleCubeNumber]
         grid_value: AxisLabel | None
         for grid_key, grid_value in grid.items():
-            face_name: FaceName = grid_key[0]
+            face_name: FacePlane = grid_key[0]
             cube_number: PuzzleCubeNumber = grid_key[1]
 
             assert grid_value is not None
             assert isinstance(grid_value, AxisLabel)
             axis_label: AxisLabel = grid_value
 
-            target_graph: OppositeFaceGraph = front_graph if face_name == FaceName.FRONT else top_graph
+            target_graph: OppositeFaceGraph = front_graph if face_name == FacePlane.FRONT else top_graph
             self.move_edge((cube_number, axis_label), total_graph, target_graph)
 
     def move_edge(self,

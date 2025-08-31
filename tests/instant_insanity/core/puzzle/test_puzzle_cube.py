@@ -1,85 +1,85 @@
 import pytest
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import (FaceColour, PuzzleCube, PuzzleCubeNumber, Puzzle,
                                           CARTEBLANCHE_PUZZLE_SPEC, WINNING_MOVES_PUZZLE_SPEC)
 
 TANTALIZER_1 = { # ROWOGG
-    FaceName.FRONT: FaceColour.RED,
-    FaceName.BACK: FaceColour.ORANGE,
-    FaceName.RIGHT: FaceColour.WHITE,
-    FaceName.LEFT: FaceColour.ORANGE,
-    FaceName.TOP: FaceColour.GREEN,
-    FaceName.BOTTOM: FaceColour.GREEN
+    FacePlane.FRONT: FaceColour.RED,
+    FacePlane.BACK: FaceColour.ORANGE,
+    FacePlane.RIGHT: FaceColour.WHITE,
+    FacePlane.LEFT: FaceColour.ORANGE,
+    FacePlane.TOP: FaceColour.GREEN,
+    FacePlane.BOTTOM: FaceColour.GREEN
 }
 
 TANTALIZER_2 = { # GRORWW
-    FaceName.FRONT: FaceColour.GREEN,
-    FaceName.BACK: FaceColour.RED,
-    FaceName.RIGHT: FaceColour.ORANGE,
-    FaceName.LEFT: FaceColour.RED,
-    FaceName.TOP: FaceColour.WHITE,
-    FaceName.BOTTOM: FaceColour.WHITE
+    FacePlane.FRONT: FaceColour.GREEN,
+    FacePlane.BACK: FaceColour.RED,
+    FacePlane.RIGHT: FaceColour.ORANGE,
+    FacePlane.LEFT: FaceColour.RED,
+    FacePlane.TOP: FaceColour.WHITE,
+    FacePlane.BOTTOM: FaceColour.WHITE
 }
 
 TANTALIZER_3 = { # OWGWGR
-    FaceName.FRONT: FaceColour.ORANGE,
-    FaceName.BACK: FaceColour.WHITE,
-    FaceName.RIGHT: FaceColour.GREEN,
-    FaceName.LEFT: FaceColour.WHITE,
-    FaceName.TOP: FaceColour.GREEN,
-    FaceName.BOTTOM: FaceColour.RED
+    FacePlane.FRONT: FaceColour.ORANGE,
+    FacePlane.BACK: FaceColour.WHITE,
+    FacePlane.RIGHT: FaceColour.GREEN,
+    FacePlane.LEFT: FaceColour.WHITE,
+    FacePlane.TOP: FaceColour.GREEN,
+    FacePlane.BOTTOM: FaceColour.RED
 }
 
 TANTALIZER_4 = { # WGRGRW
-    FaceName.FRONT: FaceColour.WHITE,
-    FaceName.BACK: FaceColour.GREEN,
-    FaceName.RIGHT: FaceColour.RED,
-    FaceName.LEFT: FaceColour.GREEN,
-    FaceName.TOP: FaceColour.RED,
-    FaceName.BOTTOM: FaceColour.WHITE
+    FacePlane.FRONT: FaceColour.WHITE,
+    FacePlane.BACK: FaceColour.GREEN,
+    FacePlane.RIGHT: FaceColour.RED,
+    FacePlane.LEFT: FaceColour.GREEN,
+    FacePlane.TOP: FaceColour.RED,
+    FacePlane.BOTTOM: FaceColour.WHITE
 }
 
 WINNING_MOVES_1 = { # GWBRRR
-    FaceName.FRONT: FaceColour.GREEN,
-    FaceName.BACK: FaceColour.WHITE,
-    FaceName.RIGHT: FaceColour.BLUE,
-    FaceName.LEFT: FaceColour.RED,
-    FaceName.TOP: FaceColour.RED,
-    FaceName.BOTTOM: FaceColour.RED
+    FacePlane.FRONT: FaceColour.GREEN,
+    FacePlane.BACK: FaceColour.WHITE,
+    FacePlane.RIGHT: FaceColour.BLUE,
+    FacePlane.LEFT: FaceColour.RED,
+    FacePlane.TOP: FaceColour.RED,
+    FacePlane.BOTTOM: FaceColour.RED
 }
 
 WINNING_MOVES_2 = { # RGBBWG
-    FaceName.FRONT: FaceColour.RED,
-    FaceName.BACK: FaceColour.GREEN,
-    FaceName.RIGHT: FaceColour.BLUE,
-    FaceName.LEFT: FaceColour.BLUE,
-    FaceName.TOP: FaceColour.WHITE,
-    FaceName.BOTTOM: FaceColour.GREEN
+    FacePlane.FRONT: FaceColour.RED,
+    FacePlane.BACK: FaceColour.GREEN,
+    FacePlane.RIGHT: FaceColour.BLUE,
+    FacePlane.LEFT: FaceColour.BLUE,
+    FacePlane.TOP: FaceColour.WHITE,
+    FacePlane.BOTTOM: FaceColour.GREEN
 }
 
 WINNING_MOVES_3 = { # WRWBGR
-    FaceName.FRONT: FaceColour.WHITE,
-    FaceName.BACK: FaceColour.RED,
-    FaceName.RIGHT: FaceColour.WHITE,
-    FaceName.LEFT: FaceColour.BLUE,
-    FaceName.TOP: FaceColour.GREEN,
-    FaceName.BOTTOM: FaceColour.RED
+    FacePlane.FRONT: FaceColour.WHITE,
+    FacePlane.BACK: FaceColour.RED,
+    FacePlane.RIGHT: FaceColour.WHITE,
+    FacePlane.LEFT: FaceColour.BLUE,
+    FacePlane.TOP: FaceColour.GREEN,
+    FacePlane.BOTTOM: FaceColour.RED
 }
 
 WINNING_MOVES_4 = { # BRGWBW
-    FaceName.FRONT: FaceColour.BLUE,
-    FaceName.BACK: FaceColour.RED,
-    FaceName.RIGHT: FaceColour.GREEN,
-    FaceName.LEFT: FaceColour.WHITE,
-    FaceName.TOP: FaceColour.BLUE,
-    FaceName.BOTTOM: FaceColour.WHITE
+    FacePlane.FRONT: FaceColour.BLUE,
+    FacePlane.BACK: FaceColour.RED,
+    FacePlane.RIGHT: FaceColour.GREEN,
+    FacePlane.LEFT: FaceColour.WHITE,
+    FacePlane.TOP: FaceColour.BLUE,
+    FacePlane.BOTTOM: FaceColour.WHITE
 }
 
 @pytest.mark.parametrize(
     "cube_spec, expected_faces",
     [
-        ('wwwwww', {face_name: FaceColour.WHITE for face_name in FaceName}),
-        ('WWWWWW', {face_name: FaceColour.WHITE for face_name in FaceName}),
+        ('wwwwww', {face_name: FaceColour.WHITE for face_name in FacePlane}),
+        ('WWWWWW', {face_name: FaceColour.WHITE for face_name in FacePlane}),
         (CARTEBLANCHE_PUZZLE_SPEC[0], TANTALIZER_1),
         (CARTEBLANCHE_PUZZLE_SPEC[1], TANTALIZER_2),
         (CARTEBLANCHE_PUZZLE_SPEC[2], TANTALIZER_3),

@@ -7,7 +7,7 @@ from manim import (BLACK, WHITE, ORANGE, PURPLE, YELLOW, PURE_BLUE, PURE_GREEN, 
                    PI, Square, Text, VGroup, ManimColor)
 from manim.typing import Point3D
 
-from instant_insanity.core.cube import FaceName
+from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
 
 TEST_PUZZLE_CUBE_SPEC: PuzzleCubeSpec = 'RBOGYP' # Red, Blue, Orange, Green, Yellow, Purple
@@ -22,26 +22,26 @@ MANIM_COLOUR_MAP: dict[FaceColour, ManimColor] = {
     FaceColour.YELLOW: YELLOW
 }
 
-FACE_NORMAL: dict[FaceName, Point3D] = {
-    FaceName.FRONT: OUT,
-    FaceName.BACK: IN,
-    FaceName.RIGHT: RIGHT,
-    FaceName.LEFT: LEFT,
-    FaceName.TOP: UP,
-    FaceName.BOTTOM: DOWN
+FACE_NORMAL: dict[FacePlane, Point3D] = {
+    FacePlane.FRONT: OUT,
+    FacePlane.BACK: IN,
+    FacePlane.RIGHT: RIGHT,
+    FacePlane.LEFT: LEFT,
+    FacePlane.TOP: UP,
+    FacePlane.BOTTOM: DOWN
 }
 
-OPPOSITE_FACES: list[tuple[FaceName, FaceName]] = [
-    (FaceName.LEFT, FaceName.RIGHT),
-    (FaceName.BOTTOM, FaceName.TOP),
-    (FaceName.BACK, FaceName.FRONT)
+OPPOSITE_FACES: list[tuple[FacePlane, FacePlane]] = [
+    (FacePlane.LEFT, FacePlane.RIGHT),
+    (FacePlane.BOTTOM, FacePlane.TOP),
+    (FacePlane.BACK, FacePlane.FRONT)
     ]
 
 
 class ColouredCube(VGroup):
     """A 3D cube with coloured faces."""
     puzzle_cube: PuzzleCube
-    face_square: dict[FaceName, Square]
+    face_square: dict[FacePlane, Square]
     # front: Square
     # back: Square
     # right: Square
@@ -84,12 +84,12 @@ class ColouredCube(VGroup):
         self.add(front, back, top, bottom, left, right)
 
         self.face_square = {
-            FaceName.FRONT: front,
-            FaceName.BACK: back,
-            FaceName.RIGHT: right,
-            FaceName.LEFT: left,
-            FaceName.TOP: top,
-            FaceName.BOTTOM: bottom
+            FacePlane.FRONT: front,
+            FacePlane.BACK: back,
+            FacePlane.RIGHT: right,
+            FacePlane.LEFT: left,
+            FacePlane.TOP: top,
+            FacePlane.BOTTOM: bottom
         }
 
     init_points = generate_points
@@ -144,12 +144,12 @@ def add_face_labels(cube: ColouredCube) -> VGroup:
     Refer to the session titled "3D Axes in Manim" at https://chatgpt.com/share/6875aaf3-b378-8013-958a-0b61d0c6c79f
     """
     label_specs = [
-        ("x",   cube.face_square[FaceName.FRONT],  OUT),
-        ("x'",  cube.face_square[FaceName.BACK],  -OUT),
-        ("y",   cube.face_square[FaceName.RIGHT], RIGHT),
-        ("y'",  cube.face_square[FaceName.LEFT],  LEFT),
-        ("z",   cube.face_square[FaceName.TOP],    UP),
-        ("z'",  cube.face_square[FaceName.BOTTOM], DOWN),
+        ("x", cube.face_square[FacePlane.FRONT], OUT),
+        ("x'", cube.face_square[FacePlane.BACK], -OUT),
+        ("y", cube.face_square[FacePlane.RIGHT], RIGHT),
+        ("y'", cube.face_square[FacePlane.LEFT], LEFT),
+        ("z", cube.face_square[FacePlane.TOP], UP),
+        ("z'", cube.face_square[FacePlane.BOTTOM], DOWN),
     ]
 
     labels = VGroup()
