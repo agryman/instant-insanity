@@ -391,7 +391,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
         voiceover_3: str = '''
         We're going to add the edges to the graph one cube at a time.
-        We'll transform each cube into its three pairs of opposite faces.
+        We'll morph each cube into its three pairs of opposite faces.
         Each pair of opposite faces will become an edge.
         The six faces will thus be converted into three edges by this process.
         '''
@@ -439,9 +439,9 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             with self.voiceover(text=voiceover_5) as _:
                 self.animate_explode_puzzle_cube(puzzle3d, cube_number)
 
-            voiceover_6: str = f'Transform cube {cube_number}.'
+            voiceover_6: str = f'Morph cube {cube_number}.'
             if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_6 = f'''Next, transform each pair of opposite faces in cube {cube_number} into an edge.
+                voiceover_6 = f'''Next, morph each pair of opposite faces in cube {cube_number} into an edge.
                 We need to keep track of where the edges came from so
                 we'll label each one with its cube number and axis.
                 For example, the x-axis of cube 1 will be labelled 1x.

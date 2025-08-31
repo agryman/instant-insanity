@@ -1,15 +1,12 @@
 from manim import (
     ThreeDScene, config,
-    OUT, IN, UP, DOWN, LEFT, RIGHT, DEGREES,
+    LEFT, DEGREES,
     WHITE, BLACK, Line3D, FadeIn,
-    Text, tempconfig, RendererType, UL,
-    ThreeDCamera
+    Text, tempconfig, RendererType, UL
 )
 from manim.typing import Point3D
 
-from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE_SPEC, CARTEBLANCHE_PUZZLE_SPEC
-from instant_insanity.scenes.coloured_cube import ColouredCube, FACE_NORMAL, OPPOSITE_FACES
+from instant_insanity.mobjects.coloured_cube import ColouredCube, OPPOSITE_FACES
 
 config.background_color = WHITE  # must be set before scene instantiation
 RENDERER_TYPE: RendererType = RendererType.OPENGL

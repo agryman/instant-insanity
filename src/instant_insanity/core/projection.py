@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from manim import RIGHT, UP, OUT
-from manim.typing import Point3D
+from manim.typing import Point3D, Vector3D
 
 from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
@@ -264,3 +264,13 @@ class OrthographicProjection(Projection):
         check_vector3_float64(model_point)
 
         return self.u
+
+def mk_standard_orthographic_projection() -> OrthographicProjection:
+    direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
+    u: Vector3D = direction / np.linalg.norm(direction)
+    projection: OrthographicProjection = OrthographicProjection(u,
+                                                                scale=0.5,
+                                                                scene_x=2.0,
+                                                                scene_y=-3.0,
+                                                                camera_z=1.0)
+    return projection

@@ -8,10 +8,10 @@ from manim import LEFT, RIGHT, ManimColor
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.projection import Projection
-from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, PuzzleCubeNumber, PuzzleCube, FaceColour
+from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, PuzzleCube, FaceColour
 from instant_insanity.mobjects.polygons_3d import Polygons3D, DEFAULT_POLYGON_SETTINGS
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
-from instant_insanity.scenes.coloured_cube import MANIM_COLOUR_MAP
+from instant_insanity.mobjects.coloured_cube import MANIM_COLOUR_MAP
 
 type CubeNumberToCubeMapping = dict[PuzzleCubeNumber, PuzzleCube3D]
 

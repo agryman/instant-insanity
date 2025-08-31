@@ -11,7 +11,7 @@ from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
-from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
+from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.scenes.coordinate_grid import GridMixin
 

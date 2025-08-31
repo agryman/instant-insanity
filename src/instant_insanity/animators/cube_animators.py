@@ -41,13 +41,13 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
         translation: the translation vector.
     """
 
-    rotation: np.ndarray
-    translation: np.ndarray
+    rotation: Vector3D
+    translation: Vector3D
 
     def __init__(self,
                  cube: PuzzleCube3D,
-                 rotation: np.ndarray,
-                 translation: np.ndarray,
+                 rotation: Vector3D,
+                 translation: Vector3D,
                  ) -> None:
         super().__init__(cube)
         self.rotation = rotation

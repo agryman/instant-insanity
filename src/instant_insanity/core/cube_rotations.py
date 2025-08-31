@@ -39,12 +39,20 @@ class CubeOrientation:
         if self.front == get_opposite_face_label(self.top):
             raise ValueError(f'Expected adjacent faces but got opposites {self.front} and {self.top}')
 
-    def get_face_name_to_label_mapping(self) -> dict[FacePlane, FaceLabel]:
+    def get_face_plane_to_label_mapping(self) -> dict[FacePlane, FaceLabel]:
+        """
+        TODO: Should this go the other way, namely map a face name (e.g. x) to its plane (e.g. front)
+        in the cube orientation?
+
+        Returns:
+
+        """
         mapping: dict[FacePlane, FaceLabel] = {
             FacePlane.FRONT: self.front,
             FacePlane.BACK: get_opposite_face_label(self.front),
             FacePlane.TOP: self.top,
-            FacePlane.BOTTOM: get_opposite_face_label(self.top)
+            FacePlane.BOTTOM: get_opposite_face_label(self.top),
+
         }
         return mapping
 

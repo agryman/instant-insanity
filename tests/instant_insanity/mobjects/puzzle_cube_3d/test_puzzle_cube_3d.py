@@ -5,7 +5,7 @@ from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping, PolygonId
 from instant_insanity.core.projection import PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec
-from instant_insanity.scenes.coloured_cube import TEST_PUZZLE_CUBE_SPEC
+from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
 FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
