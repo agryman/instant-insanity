@@ -22,6 +22,9 @@ classifiers = [
 "Documentation" = "https://agryman.github.io/"
 "Issue Tracker" = "https://agryman.github.io/"
 
+[project.scripts]
+make-background-linen = "instant_insanity.scripts.make_background_linen:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}    # Specifies that the packages are located in the 'src' directory
 

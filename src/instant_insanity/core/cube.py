@@ -21,8 +21,10 @@ of the standard cube using the standard coordinate system.
 from enum import IntEnum, StrEnum
 import numpy as np
 
+from instant_insanity.core.geometry_types import VertexPath
 
-class FaceName(StrEnum):
+
+class FacePlane(StrEnum):
     """
     This enum assigns names to the faces of a cube.
     * The right face is in the plane x = 1.
@@ -42,51 +44,69 @@ class FaceName(StrEnum):
 
 class FaceNumber(IntEnum):
     """Numbers that appear on the faces of a die."""
-    RIGHT = 1
-    TOP = 2
-    FRONT = 3
-    BACK = 4
-    BOTTOM = 5
-    LEFT = 6
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
 
     def opposite(self) -> 'FaceNumber':
         """Return the opposite face number."""
         return FaceNumber(7 - self.value)
 
-# map face names to face numbers
-FACE_NAME_TO_NUMBER: dict[FaceName, FaceNumber] = {
-    FaceName.RIGHT: FaceNumber.RIGHT,
-    FaceName.LEFT: FaceNumber.LEFT,
-    FaceName.TOP: FaceNumber.TOP,
-    FaceName.BOTTOM: FaceNumber.BOTTOM,
-    FaceName.FRONT: FaceNumber.FRONT,
-    FaceName.BACK: FaceNumber.BACK
+# map face planes to initial face numbers
+INITIAL_FACE_PLANE_TO_NUMBER: dict[FacePlane, FaceNumber] = {
+    FacePlane.RIGHT: FaceNumber.ONE,
+    FacePlane.LEFT: FaceNumber.SIX,
+    FacePlane.TOP: FaceNumber.TWO,
+    FacePlane.BOTTOM: FaceNumber.FIVE,
+    FacePlane.FRONT: FaceNumber.THREE,
+    FacePlane.BACK: FaceNumber.FOUR
 }
 
-# map face numbers to face names
-FACE_NUMBER_TO_NAME: dict[FaceNumber, FaceName] = {
-    FaceNumber.RIGHT: FaceName.RIGHT,
-    FaceNumber.LEFT: FaceName.LEFT,
-    FaceNumber.TOP: FaceName.TOP,
-    FaceNumber.BOTTOM: FaceName.BOTTOM,
-    FaceNumber.FRONT: FaceName.FRONT,
-    FaceNumber.BACK: FaceName.BACK
+# map initial face numbers to face planes
+INITIAL_FACE_NUMBER_TO_PLANE: dict[FaceNumber, FacePlane] = {
+    FaceNumber.ONE: FacePlane.RIGHT,
+    FaceNumber.SIX: FacePlane.LEFT,
+    FaceNumber.TWO: FacePlane.TOP,
+    FaceNumber.FIVE: FacePlane.BOTTOM,
+    FaceNumber.THREE: FacePlane.FRONT,
+    FaceNumber.FOUR: FacePlane.BACK
 }
+
+def mk_point(point: list[float]) -> np.ndarray:
+    return np.array(point, dtype=np.float64)
 
 # 3D coordinates of standard cube vertices
-RTF = np.array([1.0, 1.0, 1.0])
-RTB = np.array([1.0, 1.0, -1.0])
-RBF = np.array([1.0, -1.0, 1.0])
-RBB = np.array([1.0, -1.0, -1.0])
-LTF = np.array([-1.0, 1.0, 1.0])
-LTB = np.array([-1.0, 1.0, -1.0])
-LBF = np.array([-1.0, -1.0, 1.0])
-LBB = np.array([-1.0, -1.0, -1.0])
+RTF: np.ndarray = mk_point([1.0, 1.0, 1.0])
+RTB: np.ndarray = mk_point([1.0, 1.0, -1.0])
+RBF: np.ndarray = mk_point([1.0, -1.0, 1.0])
+RBB: np.ndarray = mk_point([1.0, -1.0, -1.0])
+LTF: np.ndarray = mk_point([-1.0, 1.0, 1.0])
+LTB: np.ndarray = mk_point([-1.0, 1.0, -1.0])
+LBF: np.ndarray = mk_point([-1.0, -1.0, 1.0])
+LBB: np.ndarray = mk_point([-1.0, -1.0, -1.0])
 
-# vertex lists of standard cube faces
-RIGHT = np.array([RTF, RTB, RBB, RBF, RTF])
-LEFT = np.array([LTF, LTB, LBB, LBF, LTF])
-TOP = np.array([RTF, RTB, LTB, LTF, RTF])
-BOTTOM = np.array([RBF, RBB, LBB, LBF, RBF])
-FRONT = np.array([RTF, LTF, LBF, RBF, RTF])
-BACK = np.array([RTB, LTB, LBB, RBB, RTB])
+def mk_points(points: list[np.ndarray]) -> np.ndarray:
+    return np.array(points, dtype=np.float64)
+
+# vertex paths of standard cube faces
+FACE_PLANE_TO_VERTEX_PATH: dict[FacePlane, VertexPath] = {
+    FacePlane.RIGHT: mk_points([RTF, RTB, RBB, RBF]),
+    FacePlane.LEFT: mk_points([LTF, LTB, LBB, LBF]),
+    FacePlane.TOP: mk_points([RTF, RTB, LTB, LTF]),
+    FacePlane.BOTTOM: mk_points([RBF, RBB, LBB, LBF]),
+    FacePlane.FRONT: mk_points([RTF, LTF, LBF, RBF]),
+    FacePlane.BACK: mk_points([RTB, LTB, LBB, RBB])
+}
+
+# outward-pointing unit normals of standard cube faces
+FACE_PLANE_TO_UNIT_NORMAL: dict[FacePlane, np.ndarray] = {
+    FacePlane.RIGHT: mk_point([1.0, 0.0, 0.0]),
+    FacePlane.LEFT: mk_point([-1.0, 0.0, 0.0]),
+    FacePlane.TOP: mk_point([0.0, 1.0, 0.0]),
+    FacePlane.BOTTOM: mk_point([0.0, -1.0, 0.0]),
+    FacePlane.FRONT: mk_point([0.0, 0.0, 1.0]),
+    FacePlane.BACK: mk_point([0.0, 0.0, -1.0])
+}
