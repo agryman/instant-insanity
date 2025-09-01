@@ -1,6 +1,6 @@
 import pytest
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_NAME
+from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 
 
 @pytest.mark.parametrize(
@@ -15,4 +15,4 @@ from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_NAME
     ]
 )
 def test_face_label_to_name(face, expected_label):
-    assert INITIAL_FACE_LABEL_TO_NAME[face] is expected_label
+    assert INITIAL_FACE_LABEL_TO_PLANE[face] is expected_label

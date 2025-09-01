@@ -8,7 +8,7 @@ from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import PolygonId
 from instant_insanity.core.projection import OrthographicProjection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle, PuzzleCube, PuzzleCubeNumber, \
-    PuzzleCubeSpec
+    PuzzleCubeSpec, FaceLabel, INITIAL_FACE_PLANE_TO_LABEL
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
@@ -40,7 +40,8 @@ class OrthographicProjectionDemo(GridMixin, Scene):
         self.add(cube)
 
         # find the scene coordinates of the centre of the front face
-        front_id: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
+        front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
+        front_id: PolygonId = PuzzleCube3D.name_to_id(front_label)
         front_face: Polygon = cube.id_to_scene_polygon[front_id]
         centre: np.ndarray = front_face.get_center()
         centre_str: str = f'front face centre = ({centre[0]:.2f}, {centre[1]:.2f}, {centre[2]:.2f})'

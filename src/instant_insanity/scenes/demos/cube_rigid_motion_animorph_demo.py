@@ -9,7 +9,7 @@ from instant_insanity.core.geometry_types import Vector, PolygonId, SortedPolygo
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
-from instant_insanity.core.puzzle import PuzzleCubeSpec
+from instant_insanity.core.puzzle import PuzzleCubeSpec, FaceLabel, INITIAL_FACE_PLANE_TO_LABEL
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
@@ -33,16 +33,17 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         animorph: CubeRigidMotionAnimorph = CubeRigidMotionAnimorph(cube, rotation, translation)
 
         # draw the outlines of the front and right faces at some points in the animation
-        names: list[FacePlane] = [FacePlane.FRONT, FacePlane.RIGHT]
+        face_planes: list[FacePlane] = [FacePlane.FRONT, FacePlane.RIGHT]
+        face_labels: list[FaceLabel] = [INITIAL_FACE_PLANE_TO_LABEL[face_plane] for face_plane in face_planes]
         colours: list[ManimColor] = [BLUE, GREEN]
         alpha: float
         for alpha in [0.0, 0.5, 1.0]:
             animorph.morph_to(alpha)
             id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube.id_to_scene_polygon
-            name: FacePlane
+            face_label: FaceLabel
             colour: ManimColor
-            for name, colour in zip(names, colours):
-                polygon_id: PolygonId = PuzzleCube3D.name_to_id(name)
+            for face_label, colour in zip(face_labels, colours):
+                polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_label)
                 polygon: Polygon = id_to_scene_polygon[polygon_id]
                 vertices: np.ndarray = polygon.get_vertices()
                 alpha_polygon_outline: Polygon = Polygon(*vertices,

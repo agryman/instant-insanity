@@ -109,7 +109,7 @@ class CubeOrientations(GridMixin, Scene):
                 # add a text label
                 label = front_label.value + top_label.value
                 text: Text = Text(label, color=BLACK, font_size=18, font='sans-serif')
-                front_id: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
+                front_id: PolygonId = PuzzleCube3D.name_to_id(front_label)
                 front_polygon: Polygon = cube3d.id_to_scene_polygon[front_id]
                 text.next_to(front_polygon, DOWN, buff=0.15)
                 self.add(text)

@@ -8,9 +8,9 @@ from manim import (BLACK, WHITE, ORANGE, PURPLE, YELLOW, PURE_BLUE, PURE_GREEN, 
 from manim.typing import Point3D
 
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour
+from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 
-TEST_PUZZLE_CUBE_SPEC: PuzzleCubeSpec = 'RBOGYP' # Red, Blue, Orange, Green, Yellow, Purple
+TEST_PUZZLE_CUBE_SPEC: PuzzleCubeSpec = 'RYBWGO' # Red, Yellow, Blue, White, Green, Orange
 
 MANIM_COLOUR_MAP: dict[FaceColour, ManimColor] = {
     FaceColour.BLUE: PURE_BLUE,
@@ -105,8 +105,10 @@ class ColouredCube(VGroup):
         # not sure what this accomplishes
         super().init_colors(propagate_colors)
 
-        for face, colour_name in self.puzzle_cube.name_to_colour.items():
-            face_square = self.face_square[face]
+        face_label: FaceLabel
+        for face_label, colour_name in self.puzzle_cube.face_label_to_colour.items():
+            face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
+            face_square = self.face_square[face_plane]
             face_square.set_fill(MANIM_COLOUR_MAP[colour_name], opacity=1.0)
             face_square.set_stroke(color=BLACK, width=1.0)
 

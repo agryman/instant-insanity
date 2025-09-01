@@ -4,16 +4,16 @@ from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import SortedPolygonIdToPolygonMapping, PolygonId
 from instant_insanity.core.projection import PerspectiveProjection
-from instant_insanity.core.puzzle import PuzzleCubeSpec
+from instant_insanity.core.puzzle import PuzzleCubeSpec, FaceLabel
 from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
-FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.FRONT)
-BACK_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.BACK)
-RIGHT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.RIGHT)
-LEFT_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.LEFT)
-TOP_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.TOP)
-BOTTOM_ID: PolygonId = PuzzleCube3D.name_to_id(FacePlane.BOTTOM)
+FRONT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.X)
+BACK_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.X_PRIME)
+RIGHT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.Y)
+LEFT_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.Y_PRIME)
+TOP_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.Z)
+BOTTOM_ID: PolygonId = PuzzleCube3D.name_to_id(FaceLabel.Z_PRIME)
 
 
 def test_three_d_puzzle_cube():
@@ -76,9 +76,9 @@ def test_translation():
     assert len(id_to_scene_polygon_before) == len(id_to_scene_polygon_after)
 
 def test_polygon_ids():
-    for face_name in FacePlane:
-        polygon_id = PuzzleCube3D.name_to_id(face_name)
-        face_name_2 = PuzzleCube3D.id_to_name(polygon_id)
-        assert face_name_2 == face_name
-        polygon_id_2 = PuzzleCube3D.name_to_id(face_name_2)
+    for face_label in FaceLabel:
+        polygon_id = PuzzleCube3D.name_to_id(face_label)
+        face_label_2 = PuzzleCube3D.id_to_name(polygon_id)
+        assert face_label_2 == face_label
+        polygon_id_2 = PuzzleCube3D.name_to_id(face_label_2)
         assert polygon_id_2 == polygon_id

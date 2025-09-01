@@ -6,30 +6,6 @@ from dataclasses import dataclass
 
 from instant_insanity.core.cube import FacePlane, FaceNumber
 
-# there is one opposite face pair for each axis
-class AxisLabel(StrEnum):
-    """Labels that appear on cube axes that connect pairs of opposite faces."""
-    X = 'x'
-    Y = 'y'
-    Z = 'z'
-
-FacePlanePair: TypeAlias = tuple[FacePlane, FacePlane]
-
-# use the Carteblanche labels
-INITIAL_AXIS_TO_FACE_NAME_PAIR: dict[AxisLabel, FacePlanePair] = {
-    AxisLabel.X: (FacePlane.FRONT, FacePlane.BACK),
-    AxisLabel.Y: (FacePlane.RIGHT, FacePlane.LEFT),
-    AxisLabel.Z: (FacePlane.TOP, FacePlane.BOTTOM)
-}
-
-INITIAL_FACE_NAME_TO_AXIS: dict[FacePlane, AxisLabel] = {
-    FacePlane.FRONT: AxisLabel.X,
-    FacePlane.BACK: AxisLabel.X,
-    FacePlane.RIGHT: AxisLabel.Y,
-    FacePlane.LEFT: AxisLabel.Y,
-    FacePlane.TOP: AxisLabel.Z,
-    FacePlane.BOTTOM: AxisLabel.Z
-}
 
 class FaceLabel(StrEnum):
     """Labels that appear on the faces of a cube in Carteblanche 1947."""
@@ -40,8 +16,49 @@ class FaceLabel(StrEnum):
     Z = "z"
     Z_PRIME = "z'"
 
-# map face names to face labels
-INITIAL_FACE_NAME_TO_LABEL: dict[FacePlane, FaceLabel] = {
+# there is one opposite face pair for each axis
+class AxisLabel(StrEnum):
+    """Labels that appear on cube axes that connect pairs of opposite faces."""
+    X = 'x'
+    Y = 'y'
+    Z = 'z'
+
+FACE_LABEL_AXIS: dict[FaceLabel, AxisLabel] = {
+    FaceLabel.X: AxisLabel.X,
+    FaceLabel.Y: AxisLabel.Y,
+    FaceLabel.Z: AxisLabel.Z,
+    FaceLabel.X_PRIME: AxisLabel.X,
+    FaceLabel.Y_PRIME: AxisLabel.Y,
+    FaceLabel.Z_PRIME: AxisLabel.Z,
+}
+
+type FacePlanePair = tuple[FacePlane, FacePlane]
+type FaceLabelPair = tuple[FaceLabel, FaceLabel]
+
+AXIS_TO_FACE_LABEL_PAIR: dict[AxisLabel, FaceLabelPair] = {
+    AxisLabel.X: (FaceLabel.X, FaceLabel.X_PRIME),
+    AxisLabel.Y: (FaceLabel.Y, FaceLabel.Y_PRIME),
+    AxisLabel.Z: (FaceLabel.Z, FaceLabel.Z_PRIME),
+}
+
+# use the Carteblanche labels
+INITIAL_AXIS_TO_FACE_PLANE_PAIR: dict[AxisLabel, FacePlanePair] = {
+    AxisLabel.X: (FacePlane.FRONT, FacePlane.BACK),
+    AxisLabel.Y: (FacePlane.RIGHT, FacePlane.LEFT),
+    AxisLabel.Z: (FacePlane.TOP, FacePlane.BOTTOM)
+}
+
+INITIAL_FACE_PLANE_TO_AXIS: dict[FacePlane, AxisLabel] = {
+    FacePlane.FRONT: AxisLabel.X,
+    FacePlane.BACK: AxisLabel.X,
+    FacePlane.RIGHT: AxisLabel.Y,
+    FacePlane.LEFT: AxisLabel.Y,
+    FacePlane.TOP: AxisLabel.Z,
+    FacePlane.BOTTOM: AxisLabel.Z
+}
+
+# map face planes to face labels
+INITIAL_FACE_PLANE_TO_LABEL: dict[FacePlane, FaceLabel] = {
     FacePlane.FRONT: FaceLabel.X,
     FacePlane.RIGHT: FaceLabel.Y,
     FacePlane.TOP: FaceLabel.Z,
@@ -50,8 +67,8 @@ INITIAL_FACE_NAME_TO_LABEL: dict[FacePlane, FaceLabel] = {
     FacePlane.BACK: FaceLabel.X_PRIME
 }
 
-# map face labels to face names
-INITIAL_FACE_LABEL_TO_NAME: dict[FaceLabel, FacePlane] = {
+# map face labels to face planes
+INITIAL_FACE_LABEL_TO_PLANE: dict[FaceLabel, FacePlane] = {
     FaceLabel.X: FacePlane.FRONT,
     FaceLabel.X_PRIME: FacePlane.BACK,
     FaceLabel.Y: FacePlane.RIGHT,
@@ -137,7 +154,7 @@ class PuzzleCube:
 
     """
     cube_spec: PuzzleCubeSpec
-    name_to_colour: dict[FacePlane, FaceColour]
+    face_label_to_colour: dict[FaceLabel, FaceColour]
 
     def __init__(self, cube_spec: PuzzleCubeSpec):
         # cube_spec must be a string of six face colour initials
@@ -148,33 +165,33 @@ class PuzzleCube:
 
         self.cube_spec = cube_spec
 
-        label: FaceLabel
+        face_label: FaceLabel
         initial: str
-        self.name_to_colour = {INITIAL_FACE_LABEL_TO_NAME[label]: FaceColour.from_initial(initial)
-                               for label, initial in zip(FaceLabel, cube_spec)}
+        self.face_label_to_colour = {face_label: FaceColour.from_initial(initial)
+                                     for face_label, initial in zip(FaceLabel, cube_spec)}
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, PuzzleCube):
             return NotImplemented
-        return self.name_to_colour == other.name_to_colour
+        return self.face_label_to_colour == other.face_label_to_colour
 
     def get_axis_to_face_colour_pair(self) -> dict[AxisLabel, FaceColourPair]:
 
         axis_to_face_colour_pair: dict[AxisLabel, FaceColourPair] = {}
         axis: AxisLabel
-        face_name_pair: FacePlanePair
-        for axis, face_name_pair in INITIAL_AXIS_TO_FACE_NAME_PAIR.items():
-            name1: FacePlane
-            name2: FacePlane
-            name1, name2 = face_name_pair
-            colour1: FaceColour = self.name_to_colour[name1]
-            colour2: FaceColour = self.name_to_colour[name2]
-            axis_to_face_colour_pair[axis] = (colour1, colour2)
+        face_label_pair: FaceLabelPair
+        for axis, face_label_pair in AXIS_TO_FACE_LABEL_PAIR.items():
+            face_label_1: FaceLabel
+            face_label_2: FaceLabel
+            face_label_1, face_label_2 = face_label_pair
+            colour_1: FaceColour = self.face_label_to_colour[face_label_1]
+            colour_2: FaceColour = self.face_label_to_colour[face_label_2]
+            axis_to_face_colour_pair[axis] = (colour_1, colour_2)
 
         return axis_to_face_colour_pair
 
     def get_colours(self) -> list[FaceColour]:
-        return list(set(self.name_to_colour.values()))
+        return list(set(self.face_label_to_colour.values()))
 
 class PuzzleCubeNumber(IntEnum):
     """ The numbers of the cubes in an Instant Insanity puzzle. """
@@ -241,7 +258,7 @@ class Puzzle:
         colours: set[FaceColour] = {
             colour
             for cube in self.number_to_cube.values()
-            for colour in cube.name_to_colour.values()
+            for colour in cube.face_label_to_colour.values()
         }
         return colours
 

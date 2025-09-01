@@ -29,8 +29,9 @@ from instant_insanity.core.geometry_types import PolygonId, SortedPolygonIdToPol
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
-                                          PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel, INITIAL_AXIS_TO_FACE_NAME_PAIR,
-                                          FacePlanePair, FaceColour)
+                                          PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel,
+                                          FaceColour, AXIS_TO_FACE_LABEL_PAIR, FaceLabelPair, FaceLabel,
+                                          INITIAL_FACE_PLANE_TO_LABEL)
 from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data_from_cube, \
@@ -124,9 +125,10 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             the (start, end) face data pair.
         """
         # compute the polygon_id's of the axis
-        face_pair: tuple[FacePlane, FacePlane] = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
-        axis_polygon_id_list: list[PolygonId] = [PuzzleCube3D.name_to_id(face_name)
-                                                 for face_name in face_pair]
+        face_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
+        face_label: FaceLabel
+        axis_polygon_id_list: list[PolygonId] = [PuzzleCube3D.name_to_id(face_label)
+                                                 for face_label in face_pair]
         axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
 
         # get the polygons of the axis in depth-sorted order
@@ -150,11 +152,10 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         # make the face data pair
         data_list: list[FaceData] = []
         i: int
-        face_name: FacePlane
-        for i, face_name in enumerate(face_pair):
+        for i, face_label in enumerate(face_pair):
             polygon_id = axis_polygon_id_list[i]
             polygon = id_to_axis_polygon[polygon_id]
-            data: FaceData = mk_face_data_from_cube(graph, cube3d, face_name, polygon)
+            data: FaceData = mk_face_data_from_cube(graph, cube3d, face_label, polygon)
             data_list.append(data)
 
         # sort the start and end nodes to match the order in the graph
@@ -187,9 +188,9 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         cube_number, axis_label = cube_axis
 
         # compute the polygon_id's of the axis
-        face_pair: tuple[FacePlane, FacePlane] = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
-        axis_polygon_id_list: list[PolygonId] = [Puzzle3D.name_to_id((cube_number, face_name))
-                                                 for face_name in face_pair]
+        face_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
+        axis_polygon_id_list: list[PolygonId] = [Puzzle3D.name_to_id((cube_number, face_label))
+                                                 for face_label in face_pair]
         axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
 
         # get the polygons of the axis in depth-sorted order
@@ -213,11 +214,11 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         # make the face data pair
         data_list: list[FaceData] = []
         i: int
-        face_name: FacePlane
-        for i, face_name in enumerate(face_pair):
+        face_label: FaceLabel
+        for i, face_label in enumerate(face_pair):
             polygon_id = axis_polygon_id_list[i]
             polygon = id_to_axis_polygon[polygon_id]
-            data: FaceData = mk_face_data_from_puzzle(graph, puzzle3d, cube_number, face_name, polygon)
+            data: FaceData = mk_face_data_from_puzzle(graph, puzzle3d, cube_number, face_label, polygon)
             data_list.append(data)
 
         # sort the start and end nodes to match the order in the graph
@@ -351,7 +352,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         # create and display the 3D puzzle
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
         puzzle: Puzzle = Puzzle(puzzle_spec)
-        puzzle3d: Puzzle3D = self.mk_puzzle3d(puzzle, projection)
+        puzzle3d: Puzzle3D = ConstructGraph.mk_puzzle3d(puzzle, projection)
         self.add(puzzle3d)
 
         voiceover_1: str = '''
@@ -379,7 +380,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
         cube_number: PuzzleCubeNumber
         cube: PuzzleCube
-        face_name: FacePlane
+        face_label: FaceLabel
         axis_label: AxisLabel
         cube_axis: CubeAxis
         start: FaceData
@@ -405,12 +406,13 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
             # move the cube to the work area
             moveable_polygon_ids = {
-                Puzzle3D.name_to_id((cube_number, face_name)) for face_name in FacePlane
+                Puzzle3D.name_to_id((cube_number, face_label)) for face_label in FaceLabel
             }
 
             # move the centre of the front face to the target
             front_target: Point3D = 6.0 * DOWN + 3.0 * LEFT
-            front_id: PolygonId = Puzzle3D.name_to_id((cube_number, FacePlane.FRONT))
+            front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
+            front_id: PolygonId = Puzzle3D.name_to_id((cube_number, front_label))
             front_path: VertexPath = puzzle3d.id_to_model_path[front_id]
             front_centre: Point3D = np.mean(front_path, 0)
             translation = front_target - front_centre
@@ -457,11 +459,11 @@ class ConstructGraph(GridMixin, VoiceoverScene):
                     self.wait(tracker.duration)
 
             for axis_label in AxisLabel:
-                fair_name_pair: FacePlanePair = INITIAL_AXIS_TO_FACE_NAME_PAIR[axis_label]
-                face_name_0: FacePlane = fair_name_pair[0]
-                face_name_1: FacePlane = fair_name_pair[1]
-                face_colour_0: FaceColour = cube.name_to_colour[face_name_0]
-                face_colour_1: FaceColour = cube.name_to_colour[face_name_1]
+                face_label_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
+                face_label_0: FaceLabel = face_label_pair[0]
+                face_label_1: FaceLabel = face_label_pair[1]
+                face_colour_0: FaceColour = cube.face_label_to_colour[face_label_0]
+                face_colour_1: FaceColour = cube.face_label_to_colour[face_label_1]
                 voiceover_7a: str = f'Convert its {axis_label}-axis.'
                 if cube_number == PuzzleCubeNumber.ONE:
                     voiceover_7a = f'''The {axis_label}-axis connects a {face_colour_0} face to a {face_colour_1} face.

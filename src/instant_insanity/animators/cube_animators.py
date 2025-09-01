@@ -7,6 +7,7 @@ from manim.typing import Vector3D
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath, Vertex, Vector
+from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.core.transformation import transform_vertex_path, rotation_matrix_about_line, \
     apply_linear_transform
 
@@ -87,14 +88,15 @@ class CubeExplosionAnimorph(CubeAnimorph):
         cube3d: PuzzleCube3D = self.get_cube3d()
 
         id_to_model_path: PolygonIdToVertexPathMapping = {}
-        face_name: FacePlane
-        for face_name in FacePlane:
-            polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_name)
-            standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_name,
+        face_label: FaceLabel
+        for face_label in FaceLabel:
+            polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_label)
+            face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
+            standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
                                                                                   self.expansion_factor,
                                                                                   alpha)
             model_path_0: VertexPath = cube3d.id_to_model_path_0[polygon_id]
-            translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_name][0]
+            translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_plane][0]
             id_to_model_path[polygon_id] = standard_model_path + translation
 
         cube3d.set_id_to_model_path(id_to_model_path)

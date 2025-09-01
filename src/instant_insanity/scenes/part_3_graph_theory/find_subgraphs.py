@@ -9,7 +9,8 @@ from manim.utils.color.X11 import BLACK
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
-from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, EdgeToMobjectMapping
+from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, \
+    EdgeToMobjectMapping, mk_edge_directions
 from instant_insanity.mobjects.quadrant import NodePair, Quadrant
 from instant_insanity.mobjects.stealth_tip import mk_stealth_tip_from_cubic_bezier, EdgeTip, CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -44,7 +45,7 @@ class FindSubgraphs(GridMixin, Scene):
 
         subgraph: OppositeFaceGraph
         for subgraph in (front_graph, top_graph):
-            cube_edge_tips: CubeEdgeTip = self.mk_edge_directions(subgraph)
+            cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
             for edge_tip in cube_edge_tips.values():
                 self.play(FadeIn(edge_tip.tip), run_time=0.5)
 
@@ -128,97 +129,6 @@ class FindSubgraphs(GridMixin, Scene):
 
         self.wait()
 
-    @staticmethod
-    def mk_edge_directions(subgraph: OppositeFaceGraph) -> CubeEdgeTip:
-        """
-        Pick directions for the edges of the 2-factor subgraph.
-        The subgraph has one edge per cube so pick directions in that order.
-        Each edge is either forward or backward with respect to the start and end points
-        of its Bézier curve. Indicate the direction by drawing a stealth arrow tip on the edge.
-
-        Args:
-            subgraph: the 2-factor subgraph.
-
-        Returns:
-            a dict that maps cube numbers to edge tips.
-        """
-
-        # get the edges of the subgraph
-        cube_axis: CubeAxis
-        labelled_edge: LabelledEdge
-        subgraph_edges: EdgeToMobjectMapping = {
-            cube_axis: labelled_edge
-            for cube_axis, labelled_edge in subgraph.edge_to_mobject.items()
-            if subgraph.edge_to_subgraph[cube_axis]
-        }
-        # there MUST be exactly four edges in the subgraph
-        assert len(subgraph_edges) == 4
-
-        # get the cube numbers of the subgraph
-        subgraph_cubes: set[PuzzleCubeNumber] = {
-            cube_number for cube_number, axis_label in subgraph_edges.keys()
-        }
-        # there MUST be exactly four cubes in the subgraph
-        assert len(subgraph_cubes) == 4
-
-        # get the start and end nodes for each cube
-        cube_start_end: dict[PuzzleCubeNumber, NodePair] = {
-            cube_number: labelled_edge.node_pair
-            for (cube_number, _), labelled_edge in subgraph_edges.items()
-        }
-
-        # compute the total degree of each node
-        node: Quadrant
-        node_degrees: dict[Quadrant, int] = {node: 0 for node in Quadrant}
-        for node_pair in cube_start_end.values():
-            for node in node_pair:
-                node_degrees[node] += 1
-
-        # every node MUST have total degree 2
-        for node in Quadrant:
-            assert node_degrees[node] == 2
-
-        # assign a direction to the edges
-        # each edge MUST come out of either its start or end node, which could be the same
-        # therefore, it is sufficient to specify which node the edge comes out of
-
-        cube_out: dict[PuzzleCubeNumber, Quadrant] = dict()
-        # always set the out node for cube 1 to its start node
-        o1: Quadrant = cube_start_end[PuzzleCubeNumber.ONE][0]
-        cube_out[PuzzleCubeNumber.ONE] = o1
-
-        # generate all the combinations and break as soon as we find one that works
-        solved: bool = False
-        o2: Quadrant
-        for o2 in cube_start_end[PuzzleCubeNumber.TWO]:
-            cube_out[PuzzleCubeNumber.TWO] = o2
-            o3: Quadrant
-            for o3 in cube_start_end[PuzzleCubeNumber.THREE]:
-                cube_out[PuzzleCubeNumber.THREE] = o3
-                o4: Quadrant
-                for o4 in cube_start_end[PuzzleCubeNumber.FOUR]:
-                    cube_out[PuzzleCubeNumber.FOUR] = o4
-                    solved = len(set(cube_out.values())) == 4
-                    if solved:
-                        break # o4
-                if solved:
-                    break # o3
-            if solved:
-                break # o2
-
-        # create the stealth tips for each edge
-        cube_tips: dict[PuzzleCubeNumber, EdgeTip] = dict()
-        for cube_axis, labelled_edge in subgraph_edges.items():
-            cube_number, axis_label = cube_axis
-            curve: CubicBezier = labelled_edge.curve
-            forward: bool = cube_out[cube_number] == labelled_edge.node_pair[0]
-            tip: StealthTip = mk_stealth_tip_from_cubic_bezier(curve,
-                                                               forward=forward,
-                                                               t_buff=0.2,
-                                                               scale=1.0)
-            cube_tips[cube_number] = EdgeTip(curve, forward, tip)
-
-        return cube_tips
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
