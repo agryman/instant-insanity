@@ -5,7 +5,9 @@ This module defines the ConvexPlanarPolygon class.
 import numpy as np
 from shapely.geometry import Polygon
 from shapely.validation import explain_validity
+from manim.typing import Point3D, Vector3D
 
+from instant_insanity.core.projection import Planar
 from instant_insanity.core.type_check import check_matrix_nx3_float64, check_array_float64
 
 
@@ -37,7 +39,7 @@ def check_convex_polygon(points: np.ndarray) -> None:
 MIN_EDGE_LENGTH: float = 1e-3
 
 
-class ConvexPlanarPolygon:
+class ConvexPlanarPolygon(Planar):
     """
     A convex planar polygon is a nonempty subset of a plane in euclidean 3-space
     that is the intersection of three or more half-planes.
@@ -121,3 +123,11 @@ class ConvexPlanarPolygon:
         T: np.ndarray = np.stack((unit_i, unit_j), axis=1)  # shape (3, 2)
         xy: np.ndarray = v_rel @ T  # shape (n, 2)
         check_convex_polygon(xy)
+
+    def get_point(self) -> Point3D:
+        # return the first vertex
+        return self.vertices[0]
+
+    def get_normal(self) -> Vector3D:
+        # return the unit normal
+        return self.unit_k
