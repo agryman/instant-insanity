@@ -1,19 +1,28 @@
 """
-This module implements projection of points in model space onto
+This module implements a symbolic version of the projection of points in model space onto
 the camera plane.
 
 Refer to projection.md for the math.
+
+We use SymPy datatypes instead of NumPy.
+The two main types are:
+Scalar: real numbers, modelled as Expr
+Vector: real vectors in 3D space modelled Matrix with shape (3,1), e.g. as column vectors
 """
 
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-import numpy as np
-from manim import RIGHT, UP, OUT
-from manim.typing import Point3D, Vector3D
+from sympy import Expr, Matrix, sqrt, S, Rational, Integer
 
-from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
+type Scalar = Expr
+type Vector = Matrix
+
+# define the unit vectors
+UNIT_I: Vector = Matrix([S.One, S.Zero, S.Zero])
+UNIT_J: Vector = Matrix([S.Zero, S.One, S.Zero])
+UNIT_K: Vector = Matrix([S.Zero, S.Zero, S.One])
 
 
 class Planar(Protocol):
@@ -22,7 +31,7 @@ class Planar(Protocol):
     The plane consists of all the points p that satisfy (p - b) @ n = 0.
     """
 
-    def get_point(self) -> Point3D:
+    def get_point(self) -> Vector:
         """
         Gets any point on the plane.
 
@@ -31,7 +40,7 @@ class Planar(Protocol):
         """
         ...
 
-    def get_normal(self) -> Vector3D:
+    def get_normal(self) -> Vector:
         """
         Gets any nonzero vector that is normal to the plane.
 
@@ -53,10 +62,17 @@ class ModelToSceneConversion:
     For example, the standard cube in model space has side length = 2.0.
     To make it look like a cube in scene space with side length = 1.0 use scene_per_model = 0.5.
     """
-    scene_origin: Point3D
-    scene_per_model: float
+    scene_origin: Vector
+    scene_per_model: Scalar
 
-    def convert_model_to_scene(self, model_point: Point3D) -> Point3D:
+    def __post_init__(self) -> None:
+        assert isinstance(self.scene_origin, Matrix)
+        assert self.scene_origin.shape == (3, 1)
+
+        assert isinstance(self.scene_per_model, Expr)
+        assert self.scene_per_model.is_positive
+
+    def convert_model_to_scene(self, model_point: Vector) -> Vector:
         """
         Converts a point in model space to a point in scene space.
         Args:
@@ -65,9 +81,12 @@ class ModelToSceneConversion:
         Returns:
             the point in scene space.
         """
+        assert isinstance(model_point, Matrix)
+        assert model_point.shape == (3, 1)
+
         return (model_point - self.scene_origin) * self.scene_per_model
 
-    def convert_scene_to_model(self, scene_point: Point3D) -> Point3D:
+    def convert_scene_to_model(self, scene_point: Vector) -> Vector:
         """
         Converts a point in scene space to a point in model space.
         Args:
@@ -76,6 +95,9 @@ class ModelToSceneConversion:
         Returns:
             the point in model space.
         """
+        assert isinstance(scene_point, Matrix)
+        assert scene_point.shape == (3, 1)
+
         return scene_point / self.scene_per_model + self.scene_origin
 
 
@@ -91,27 +113,31 @@ class Projection(ABC):
 
     """
 
-    scene_x: float
-    scene_y: float
-    camera_z: float
-    scale: float
+    scene_x: Scalar
+    scene_y: Scalar
+    camera_z: Scalar
+    scale: Scalar
     conversion: ModelToSceneConversion
 
-    def __init__(self, scene_x: float = 0.0, scene_y: float = 0.0, camera_z: float = 2.0, scale: float = 1.0) -> None:
+    def __init__(self,
+                 scene_x: Scalar = S.Zero,
+                 scene_y: Scalar = S.Zero,
+                 camera_z: Scalar = S.Zero,
+                 scale: Scalar = S.One) -> None:
         self.scene_x = scene_x
         self.scene_y = scene_y
         self.camera_z = camera_z
         self.scale = scale
 
-        scene_origin: Point3D = scene_x * RIGHT + scene_y * UP + camera_z * OUT
-        scene_per_model: float = scale
+        scene_origin: Vector = scene_x * UNIT_I + scene_y * UNIT_J + camera_z * UNIT_K
+        scene_per_model: Scalar = scale
         self.conversion = ModelToSceneConversion(scene_origin, scene_per_model)
 
     @abstractmethod
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
+    def compute_u(self, model_point: Vector) -> Vector:
         pass
 
-    def project_point(self, model_point: np.ndarray) -> np.ndarray:
+    def project_point(self, model_point: Vector) -> Vector:
         """Projects the model point onto the camera plane and computes its parameter t along the projection line.
 
         Args:
@@ -125,56 +151,54 @@ class Projection(ABC):
             TypeError: if model_point is not a NumPy array of float64 values.
             ValueError: if model_point is not a 3-vector
         """
-        check_vector3_float64(model_point)
-        u: np.ndarray = self.compute_u(model_point)
+        assert isinstance(model_point, Matrix)
+        u: Vector = self.compute_u(model_point)
 
         return self._project_point_along_u(model_point, u)
 
-    def project_points(self, model_points: np.ndarray) -> np.ndarray:
-        check_matrix_nx3_float64(model_points)
+    def project_points(self, model_points: Matrix) -> Matrix:
+        assert isinstance(model_points, Matrix)
 
-        projected_points: list[np.ndarray] = [self.project_point(model_point)
-                                              for model_point in model_points]
-        return np.array(projected_points, dtype=np.float64)
+        projected_points: Matrix = Matrix([self.project_point(model_point)
+                                           for model_point in model_points])
+        return projected_points.T
 
-    def _project_point_along_u(self, model_point: np.ndarray, u: np.ndarray) -> np.ndarray:
+    def _project_point_along_u(self, model_point: Vector, u: Vector) -> Vector:
         """Projects the model point onto the camera plane along the direction given by the unit vector u.
 
         This is a protected method. It is the responsibility of callers to ensure that u is a unit vector.
 
         Args:
-            model_point: A NumPy array containing a point (mx, my, mz) in model space.
-            u: A NumPy array containing a unit direction vector.
+            model_point: A Vector containing a point (mx, my, mz) in model space.
+            u: A Vector containing a unit direction vector.
 
         Returns:
-            A NumPy array containing (x, y, mz) where (x, y, c) is the projection of the model point onto
+            A Vector containing (x, y, mz) where (x, y, c) is the projection of the model point onto
                 the camera plane z=c.
 
         Raises:
-            TypeError: if model_point is not a NumPy array of float64 values.
+            TypeError: if model_point is not a Vector.
             ValueError: if model_point is not a 3-vector or the z-component of u is too small.
         """
-        u_x: float
-        u_y: float
-        u_z: float
+        u_x: Scalar
+        u_y: Scalar
+        u_z: Scalar
         u_x, u_y, u_z = u
-        if np.isclose(u_z, 0.0):
-            raise ValueError('unit vector z-component is too small')
 
-        m_x: float
-        m_y: float
-        m_z: float
+        m_x: Scalar
+        m_y: Scalar
+        m_z: Scalar
         m_x, m_y, m_z = model_point
 
-        c: float = self.camera_z
+        c: Scalar = self.camera_z
 
-        t: float = (m_z - c) / u_z
-        x: float = m_x - t * u_x - self.scene_x
-        y: float = m_y - t * u_y - self.scene_y
+        t: Scalar = (m_z - c) / u_z
+        x: Scalar = m_x - t * u_x - self.scene_x
+        y: Scalar = m_y - t * u_y - self.scene_y
 
-        return self.scale * np.array((x, y, m_z), dtype=np.float64)
+        return self.scale * Matrix([x, y, m_z])
 
-    def polygon_t(self, polygon: Planar, x: float, y: float) -> float:
+    def polygon_t(self, polygon: Planar, x: Scalar, y: Scalar) -> float:
         """
         Compute the t parameter of the point in model space that projects to (x, y, c)
         on the camera plane.
@@ -204,15 +228,15 @@ class Projection(ABC):
         We can solve for t as follows:
         t = (b - p) @ n / u @ n
         """
-        p: np.ndarray = np.array([
+        p: Vector = Matrix([
             x / self.scale + self.scene_x,
             y / self.scale + self.scene_y,
             self.camera_z
-        ], dtype=np.float64)
-        unit_u: np.ndarray = self.compute_u(p)
-        b: np.ndarray = polygon.get_point()
-        n: np.ndarray = polygon.get_normal()
-        t: float = np.dot(b - p, n) / np.dot(unit_u, n)
+        ])
+        unit_u: Vector = self.compute_u(p)
+        b: Vector = polygon.get_point()
+        n: Vector = polygon.get_normal()
+        t: float = ((b - p).T * n) / (unit_u.T * n)
 
         return t
 
@@ -224,9 +248,9 @@ class PerspectiveProjection(Projection):
         camera_z: A float that specifies the position of the camera plane.
         viewpoint: A 3d point that specifies the position of the viewpoint in model space.
     """
-    viewpoint: np.ndarray
+    viewpoint: Vector
 
-    def __init__(self, viewpoint: np.ndarray, **kwargs) -> None:
+    def __init__(self, viewpoint: Vector, **kwargs) -> None:
         """Initialize the projection.
 
         Args:
@@ -237,20 +261,20 @@ class PerspectiveProjection(Projection):
             ValueError: if viewpoint is not a 3-vector.
 
         """
-        check_vector3_float64(viewpoint)
+        assert isinstance(viewpoint, Matrix)
+        assert viewpoint.shape == (3, 1)
 
         super().__init__(**kwargs)
         self.viewpoint = viewpoint
 
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
-        check_vector3_float64(model_point)
+    def compute_u(self, model_point: Vector) -> Vector:
+        assert isinstance(model_point, Matrix)
+        assert model_point.shape == (3, 1)
 
         # compute the unit vector u pointing from the model point to the viewpoint
-        direction: np.ndarray = self.viewpoint - model_point
-        norm: np.floating = np.linalg.norm(direction)
-        if np.isclose(norm, 0.0):
-            raise ValueError('model point is too close to viewpoint')
-        u: np.ndarray = direction / norm
+        direction: Vector = self.viewpoint - model_point
+        norm: Scalar = sqrt(direction.T * direction)
+        u: Vector = direction / norm
 
         return u
 
@@ -262,9 +286,9 @@ class OrthographicProjection(Projection):
         u: A unit vector that specifies the direction of the projection.
     """
 
-    u: np.ndarray
+    u: Vector
 
-    def __init__(self, u: np.ndarray, **kwargs) -> None:
+    def __init__(self, u: Vector, **kwargs) -> None:
         """Initializes an orthographic projection object.
 
         Args:
@@ -274,33 +298,34 @@ class OrthographicProjection(Projection):
             TypeError: if u is not a NumPy array of float64 values.
             ValueError: if u is not a unit 3-vector or its z-component is too small.
         """
-        check_vector3_float64(u)
+        assert isinstance(u, Matrix)
+        assert u.shape == (3, 1)
 
         super().__init__(**kwargs)
 
-        norm: np.floating = np.linalg.norm(u)
-        if not np.isclose(norm, 1.0):
-            raise ValueError('u must be a unit vector')
+        norm2: Scalar = u.T * u
+        assert norm2 == S.One
 
-        u_z: float
+        u_z: Scalar
         _, _, u_z = u
-        if np.isclose(u_z, 0.0):
-            raise ValueError('unit vector z-component is too small')
+        if u_z == S.Zero:
+            raise ValueError('unit vector z-component is zero')
 
         self.u = u
 
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
-        check_vector3_float64(model_point)
+    def compute_u(self, model_point: Vector) -> Vector:
+        assert isinstance(model_point, Matrix)
+        assert model_point.shape == (3, 1)
 
         return self.u
 
 
 def mk_standard_orthographic_projection() -> OrthographicProjection:
-    direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
-    u: Vector3D = direction / np.linalg.norm(direction)
+    direction: Vector = Matrix([Rational(3, 2), S.One, Integer(5)])
+    u: Vector = direction / sqrt(direction.T * direction)
     projection: OrthographicProjection = OrthographicProjection(u,
-                                                                scale=0.5,
-                                                                scene_x=2.0,
-                                                                scene_y=-3.0,
-                                                                camera_z=1.0)
+                                                                scale=Rational(1, 2),
+                                                                scene_x=Integer(2),
+                                                                scene_y=Integer(-3),
+                                                                camera_z=S.One)
     return projection

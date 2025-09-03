@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def xy_polar(v0: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Project 3D vectors to the XY-plane and compute polar coords.
 
