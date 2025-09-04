@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from sympy import Expr, Matrix, sqrt, S, Rational, Integer
+from sympy import Expr, Matrix, sqrt, S, Rational, Integer, simplify
 
 type Scalar = Expr
 type Vector = Matrix
@@ -245,8 +245,8 @@ class PerspectiveProjection(Projection):
     """This class models a perspective projection.
 
     Attributes:
-        camera_z: A float that specifies the position of the camera plane.
-        viewpoint: A 3d point that specifies the position of the viewpoint in model space.
+        camera_z: A Scalar that specifies the position of the camera plane.
+        viewpoint: A Vector that specifies the position of the viewpoint in model space.
     """
     viewpoint: Vector
 
@@ -257,8 +257,7 @@ class PerspectiveProjection(Projection):
             viewpoint: The position of the viewpoint.
 
         Raises:
-            TypeError: if viewpoint is not an NumPy array of type float64.
-            ValueError: if viewpoint is not a 3-vector.
+            TypeError: if viewpoint is not a Vector.
 
         """
         assert isinstance(viewpoint, Matrix)
@@ -273,7 +272,7 @@ class PerspectiveProjection(Projection):
 
         # compute the unit vector u pointing from the model point to the viewpoint
         direction: Vector = self.viewpoint - model_point
-        norm: Scalar = sqrt(direction.T * direction)
+        norm: Scalar = direction.norm()
         u: Vector = direction / norm
 
         return u
@@ -283,7 +282,7 @@ class OrthographicProjection(Projection):
     """This class models an orthographic projection.
 
     Attributes:
-        u: A unit vector that specifies the direction of the projection.
+        u: A unit Vector that specifies the direction of the projection.
     """
 
     u: Vector
@@ -295,16 +294,16 @@ class OrthographicProjection(Projection):
             u: A unit vector that specifies the direction of the projection.
 
         Raises:
-            TypeError: if u is not a NumPy array of float64 values.
-            ValueError: if u is not a unit 3-vector or its z-component is too small.
+            TypeError: if u is not a unit Vector.
+            ValueError: if the z-component of u is zero.
         """
         assert isinstance(u, Matrix)
         assert u.shape == (3, 1)
 
         super().__init__(**kwargs)
 
-        norm2: Scalar = u.T * u
-        assert norm2 == S.One
+        norm_u: Scalar = simplify(u.norm())
+        assert norm_u == S.One
 
         u_z: Scalar
         _, _, u_z = u
@@ -322,7 +321,7 @@ class OrthographicProjection(Projection):
 
 def mk_standard_orthographic_projection() -> OrthographicProjection:
     direction: Vector = Matrix([Rational(3, 2), S.One, Integer(5)])
-    u: Vector = direction / sqrt(direction.T * direction)
+    u: Vector = direction / direction.norm()
     projection: OrthographicProjection = OrthographicProjection(u,
                                                                 scale=Rational(1, 2),
                                                                 scene_x=Integer(2),
