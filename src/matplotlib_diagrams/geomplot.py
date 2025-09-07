@@ -114,12 +114,6 @@ def plot_segments(ax: Axes, segments: Iterable[Segment], *, linewidth: float = 1
     for (x1, y1), (x2, y2) in segments:
         ax.plot([x1, x2], [y1, y2], linewidth=linewidth, zorder=2)
 
-from matplotlib.axes import Axes
-from collections.abc import Iterable
-
-type Point = tuple[float, float]
-type Segment = tuple[Point, Point]
-
 def plot_infinite_lines(
     ax: Axes,
     lines: Iterable[Segment],

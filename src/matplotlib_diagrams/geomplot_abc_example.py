@@ -1,4 +1,5 @@
-import geomplot as gp
+import matplotlib_diagrams.geomplot as gp
+
 def abc_example():
     A: gp.Point = (0.0, 0.0)
     B: gp.Point = (4.0, 1.0)
