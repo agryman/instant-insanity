@@ -3,7 +3,7 @@ This module implements the Puzzle3D class which is a Polygon3D that consists
 of all 24 faces of the 4 puzzle cubes.
 """
 from manim.typing import Point3D, Vector3D
-from manim import LEFT, RIGHT, ManimColor
+from manim import LEFT, RIGHT, ManimColor, ORIGIN
 
 from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
@@ -21,11 +21,11 @@ type Puzzle3DPolygonName = tuple[PuzzleCubeNumber, FaceLabel]
 
 DEFAULT_CUBE_SIDE_LENGTH: float = 2.0  # the side length of the standard cube
 DEFAULT_BUFF: float = 0.1  # the horizontal space between cubes, MUST be positive to avoid collisions
-DEFAULT_CUBE_ONE_CENTRE: Point3D = 1.5 * DEFAULT_CUBE_SIDE_LENGTH * LEFT
-DEFAULT_CUBE_CENTRE_DELTA: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + DEFAULT_BUFF) * RIGHT
+DEFAULT_CUBE_DELTA: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + DEFAULT_BUFF) * RIGHT
 
 
 class Puzzle3D(Polygons3D):
+
     """
     This class implements a 3D puzzle.
     The puzzle consists of four 3D puzzle cubes.
@@ -36,22 +36,22 @@ class Puzzle3D(Polygons3D):
 
     Attributes:
         puzzle: the Puzzle object.
-        cube_one_centre: the centre of cube one.
-        cube_centre_delta: the change in centres between cubes.
+        puzzle_centre: the centre of the puzzle.
+        cube_delta: the change in centres between cubes.
     """
     puzzle: Puzzle
-    cube_one_centre: Point3D
-    cube_one_centre_delta: Vector3D
+    puzzle_centre: Point3D
+    cube_delta: Vector3D
 
     def __init__(self, projection: Projection,
                  puzzle: Puzzle,
-                 cube_one_centre: Point3D = DEFAULT_CUBE_ONE_CENTRE,
-                 cube_centre_delta: Vector3D = DEFAULT_CUBE_CENTRE_DELTA) -> None:
+                 puzzle_centre: Point3D = ORIGIN,
+                 cube_delta: Vector3D = DEFAULT_CUBE_DELTA) -> None:
         self.puzzle = puzzle
-        self.cube_one_centre = cube_one_centre
-        self.cube_centre_delta = cube_centre_delta
-        id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0(cube_one_centre,
-                                                                                          cube_centre_delta)
+        self.puzzle_centre = puzzle_centre
+        self.cube_delta = cube_delta
+        id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0(puzzle_centre,
+                                                                                          cube_delta)
 
         super().__init__(projection, id_to_model_path_0)
 
@@ -98,26 +98,31 @@ class Puzzle3D(Polygons3D):
         return cube_number, face_label
 
     @staticmethod
-    def mk_id_to_model_path_0(cube_one_centre: Point3D,
-                              cube_centre_delta: Vector3D) -> PolygonIdToVertexPathMapping:
+    def mk_id_to_model_path_0(puzzle_centre: Point3D,
+                              cube_delta: Vector3D) -> PolygonIdToVertexPathMapping:
         """
         Makes the initial model space vertex paths.
+
+        Args:
+            puzzle_centre: the centre of puzzle.
+            cube_delta: the change in centres between cubes.
+
         Returns:
             the initial model space vertex paths.
         """
-        # arrange the cubes horizontally from left to right with centres laying on the x-axis
+        # arrange the cubes horizontally from left to right with centres shifted by cube_delta
 
         id_to_model_path_0: PolygonIdToVertexPathMapping = dict()
         i: int
         cube_number: PuzzleCubeNumber
         for i, cube_number in enumerate(PuzzleCubeNumber):
-            cube_origin_i: Point3D = cube_one_centre + cube_centre_delta * i
+            cube_centre_i: Point3D = puzzle_centre + (i - 2.5) * cube_delta
             face_plane: FacePlane
             vertex_path: VertexPath
             for face_plane, vertex_path in FACE_PLANE_TO_VERTEX_PATH.items():
                 face_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[face_plane]
                 polygon_id = Puzzle3D.name_to_id((cube_number, face_label))
-                id_to_model_path_0[polygon_id] = vertex_path + cube_origin_i
+                id_to_model_path_0[polygon_id] = vertex_path + cube_centre_i
 
         return id_to_model_path_0
 
