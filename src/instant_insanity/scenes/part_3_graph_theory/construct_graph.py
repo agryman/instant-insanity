@@ -15,7 +15,7 @@ from collections import OrderedDict
 import numpy as np
 
 from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, LEFT, RIGHT, FadeIn,
-                   always_redraw, Create, DOWN, IN, ORIGIN)
+                   always_redraw, Create, DOWN, IN, ORIGIN, UP)
 from manim.typing import Point3D, Vector3D
 from manim_voiceover import VoiceoverScene
 
@@ -104,9 +104,9 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         """
         # create the 3D puzzle
         buff: float = DEFAULT_CUBE_SIDE_LENGTH * 2.0 * (np.sqrt(2.0) - 1.0)
-        cube_one_centre: Point3D = 1.5 * (DEFAULT_CUBE_SIDE_LENGTH + buff) * LEFT + 2 * IN
-        cube_centre_delta: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + buff) * RIGHT
-        puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle, cube_one_centre, cube_centre_delta)
+        puzzle_centre: Point3D = 2 * IN + 4.5 * RIGHT + 1.0 * UP
+        cube_delta: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + buff) * RIGHT
+        puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle, puzzle_centre, cube_delta)
 
         return puzzle3d
 
