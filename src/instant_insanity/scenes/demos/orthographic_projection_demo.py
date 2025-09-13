@@ -23,12 +23,15 @@ class OrthographicProjectionDemo(GridMixin, Scene):
         camera_z: float = 1.0
         scene_x: float = 3.0
         scene_y: float = -2.0
-        scale: float = 0.5
-        projection: OrthographicProjection = OrthographicProjection(u,
-                                                                   scene_x=scene_x,
-                                                                   scene_y=scene_y,
-                                                                   camera_z=camera_z,
-                                                                   scale=scale)
+        scene_per_model: float = 0.5
+        projection: OrthographicProjection = OrthographicProjection(
+            u,
+            camera_z=camera_z,
+            scene_x=scene_x,
+            scene_y=scene_y,
+            scene_z=0.0,
+            scene_per_model=scene_per_model
+        )
 
         # create the cube object
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC

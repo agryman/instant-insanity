@@ -84,27 +84,23 @@ class Projection(ABC):
     This is the abstract base class for projections.
 
     Attributes:
-        scene_x: The x-offset to subtract from the projection onto the camera plane.
-        scene_y: The y-offset to subtract from the projection onto the camera plane.
-        camera_z: The z coordinate c of the camera plane.
-        scale: the scale factor to convert model coordinates to camera coordinates.
-
+        camera_z: the z-coordinate c of the camera plane.
+        conversion: the transformation that converts model space to scene space.
     """
 
-    scene_x: float
-    scene_y: float
     camera_z: float
-    scale: float
     conversion: ModelToSceneConversion
 
-    def __init__(self, scene_x: float = 0.0, scene_y: float = 0.0, camera_z: float = 2.0, scale: float = 1.0) -> None:
-        self.scene_x = scene_x
-        self.scene_y = scene_y
+    def __init__(self,
+                 camera_z: float = 2.0,
+                 scene_x: float = 0.0,
+                 scene_y: float = 0.0,
+                 scene_z: float = 0.0,
+                 scene_per_model: float = 1.0
+                 ) -> None:
         self.camera_z = camera_z
-        self.scale = scale
 
-        scene_origin: Point3D = scene_x * RIGHT + scene_y * UP + camera_z * OUT
-        scene_per_model: float = scale
+        scene_origin: Point3D = scene_x * RIGHT + scene_y * UP + scene_z * OUT
         self.conversion = ModelToSceneConversion(scene_origin, scene_per_model)
 
     @abstractmethod
@@ -169,10 +165,12 @@ class Projection(ABC):
         c: float = self.camera_z
 
         t: float = (m_z - c) / u_z
-        x: float = m_x - t * u_x - self.scene_x
-        y: float = m_y - t * u_y - self.scene_y
+        x: float = m_x - t * u_x
+        y: float = m_y - t * u_y
 
-        return self.scale * np.array((x, y, m_z), dtype=np.float64)
+        p: np.ndarray = np.array((x, y, m_z), dtype=np.float64)
+
+        return self.conversion.convert_model_to_scene(p)
 
     def polygon_t(self, polygon: Planar, x: float, y: float) -> float:
         """
@@ -180,15 +178,16 @@ class Projection(ABC):
         on the camera plane.
         Args:
             polygon: the plane in model space defined by the convex planar polygon.
-            x: the x coordinate of the projected point.
-            y: the y coordinate of the projected point.
+            x: the x-coordinate of the projected point in scene space.
+            y: the y-coordinate of the projected point in scene space.
 
         Returns:
-            the parameter t of the point in model space.
+            the t-parameter of the point in model space.
 
         Let u be the unit vector that defines the direction of the light ray.
-        Let p = (x, y, c) be a point on the camera plane.
-        Let m be the point in model space that projects to (x, y).
+        Let s = (x, y, z) be a point in scene space where z is not given.
+        Let p = (p_x, p_y, c) be the corresponding point on the camera plane.
+        Let m be the point in the polygon in model space that projects to p.
         We have:
         m = p + t * u
         for some parameter t.
@@ -204,11 +203,13 @@ class Projection(ABC):
         We can solve for t as follows:
         t = (b - p) @ n / u @ n
         """
-        p: np.ndarray = np.array([
-            x / self.scale + self.scene_x,
-            y / self.scale + self.scene_y,
-            self.camera_z
-        ], dtype=np.float64)
+
+        # we are not given the z-coordinate of the point in scene space so set it to 0.0
+        scene_point: np.ndarray = np.array([x, y, 0.0], dtype=np.float64)
+        p: np.ndarray = self.conversion.convert_scene_to_model(scene_point)
+        # we want the corresponding point in model space to lie on the camera plane
+        p[2] = self.camera_z
+
         unit_u: np.ndarray = self.compute_u(p)
         b: np.ndarray = polygon.get_point()
         n: np.ndarray = polygon.get_normal()
@@ -298,9 +299,12 @@ class OrthographicProjection(Projection):
 def mk_standard_orthographic_projection() -> OrthographicProjection:
     direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
     u: Vector3D = direction / np.linalg.norm(direction)
-    projection: OrthographicProjection = OrthographicProjection(u,
-                                                                scale=0.5,
-                                                                scene_x=2.0,
-                                                                scene_y=-3.0,
-                                                                camera_z=1.0)
+    projection: OrthographicProjection = OrthographicProjection(
+        u,
+        camera_z=1.0,
+        scene_x=2.0,
+        scene_y=-3.0,
+        scene_z=0.0,
+        scene_per_model=0.5
+    )
     return projection
