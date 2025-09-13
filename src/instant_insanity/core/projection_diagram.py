@@ -120,6 +120,13 @@ class ProjectionDiagram:
         )
             for plane_z in self.plane_zs]
 
+        # define the horizontal line V
+        viewpoint_y: float = self.viewpoint[1]
+        self.viewpoint_h_line = sp.Line2D(
+            sp.Point2D(0, viewpoint_y),
+            sp.Point2D(1, viewpoint_y)
+        )
+
         # initialize the points dict with the viewpoint v
         self.points = {'v': self.viewpoint}
 
@@ -207,6 +214,8 @@ def show_projection_diagram():
     for plane_label, plane_z in zip(diagram.plane_labels, diagram.plane_zs):
         gp.plot_hline(ax, y=plane_z, label=plane_label, color='blue', linewidth=1.2)
 
+    gp.plot_hline(ax, y=diagram.viewpoint[1], label='V', color='blue', linewidth=1.2)
+
     ax.set_ylabel('z', rotation=0, labelpad=5, ha='right', va='center')
 
     ax.axis('off')
@@ -253,10 +262,13 @@ class ProjectionDiagramScene(GridMixin, Scene):
         math_tex: MathTex
         line: Line
 
+        plane_labels: str = diagram.plane_labels + 'V'
+        h_lines: list[sp.Line2D] = diagram.h_lines + [diagram.viewpoint_h_line]
+        plane_zs: list[float] = diagram.plane_zs + [float(diagram.viewpoint[1])]
         plane_label: str
         h_line: sp.Line2D
         y_intercept: float
-        for plane_label, h_line, y_intercept in zip(diagram.plane_labels, diagram.h_lines, diagram.plane_zs):
+        for plane_label, h_line, y_intercept in zip(plane_labels, h_lines, plane_zs):
             line = self.infinite_line(h_line)
             line.set_color(PURE_BLUE)
             line.set_stroke(width=2)
@@ -318,7 +330,7 @@ class ProjectionDiagramScene(GridMixin, Scene):
             math_tex.next_to(end, direction=direction, buff=0.1)
             self.add(math_tex)
 
-render_manim: bool = False
+render_manim: bool = True
 
 if __name__ == '__main__':
     if render_manim:
