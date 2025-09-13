@@ -52,11 +52,14 @@ class ConstructGraph(GridMixin, VoiceoverScene):
     def mk_orthographic_projection() -> OrthographicProjection:
         direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
         u: Vector3D = direction / np.linalg.norm(direction)
-        projection: OrthographicProjection = OrthographicProjection(u,
-                                                                    scale=0.5,
-                                                                    scene_x=2.0,
-                                                                    scene_y=-3.0,
-                                                                    camera_z=1.0)
+        projection: OrthographicProjection = OrthographicProjection(
+            u,
+            camera_z=1.0,
+            scene_x=2.0,
+            scene_y=-3.0,
+            scene_z=0.0,
+            scene_per_model=0.5
+        )
         return projection
 
     @staticmethod

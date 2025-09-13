@@ -91,14 +91,24 @@ The puzzle is solved using an "opposite-face graph" where each cube contributes 
 - `pytest` - Testing
 - `mypy` - Type checking
 
+## File Conventions
+
+### Claude-Generated Code
+- **General/one-off code**: Place in `src/claude/` directory
+- **Tests for Claude code**: Place in `tests/claude/` directory, mirror the `src/claude/` structure
+- **Project contributions**: Place under appropriate `src/instant_insanity/` subdirectory based on function
+- Use `test_*.py` naming convention for all test files
+
+### Project Structure
+- Test files follow `test_*.py` naming convention in `tests/` directory
+- MyPy configuration excludes examples directories but checks main source code
+
 ## Important Notes
 
 - Python 3.11.11+ required (Google Colab compatibility)
 - Avoid directory names conflicting with package names (especially `manim`)
 - Use Cairo renderer for 2D scenes, OpenGL for 3D scenes (due to Cairo 3D rendering bugs)
 - Voiceover text stored in `notebooks/voiceovers/` subdirectories
-- Test files follow `test_*.py` naming convention in `tests/` directory
-- MyPy configuration excludes examples directories but checks main source code
 
 ## Development Environment
 

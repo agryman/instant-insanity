@@ -1,0 +1,13 @@
+@article{0ebbe457-aaf6-3c14-95bd-0ef12ec94a8f,
+ ISSN = {0025570X, 19300980},
+ URL = {http://www.jstor.org/stable/2688630},
+ author = {N. T. Gridgeman},
+ journal = {Mathematics Magazine},
+ number = {5},
+ pages = {243--252},
+ publisher = {[Mathematical Association of America, Taylor & Francis, Ltd.]},
+ title = {The 23 Colored Cubes},
+ urldate = {2025-09-08},
+ volume = {44},
+ year = {1971}
+}

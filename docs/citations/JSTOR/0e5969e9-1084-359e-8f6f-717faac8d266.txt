@@ -1,0 +1,13 @@
+@article{0e5969e9-1084-359e-8f6f-717faac8d266,
+ ISSN = {0025570X, 19300980},
+ URL = {http://www.jstor.org/stable/2689137},
+ author = {T. A. Brown},
+ journal = {Mathematics Magazine},
+ number = {4},
+ pages = {167--169},
+ publisher = {[Mathematical Association of America, Taylor & Francis, Ltd.]},
+ title = {A Note on "Instant Insanity"},
+ urldate = {2025-09-08},
+ volume = {41},
+ year = {1968}
+}

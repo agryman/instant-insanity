@@ -64,7 +64,8 @@ class DepthSort:
 
     def depth_sort(self, paths: PolygonIdToVertexPathMapping) -> SortedPolygonIdToVertexPathMapping:
         """
-        This function performs a depth sort on a set of vertex paths that convex, planar polygons.
+        This function performs a depth sort on a set of vertex paths that define
+        convex, planar polygons.
         Each vertex path is identified by a PolygonID which are the keys of the input dict.
         The input vertex paths are given in model space.
         They are projected onto scene space and then depth-sorted.
