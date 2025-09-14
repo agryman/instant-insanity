@@ -5,7 +5,7 @@ from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempcon
 
 from instant_insanity.animators.animorph import Updater
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
-from instant_insanity.core.geometry_types import Vector, PolygonId, SortedPolygonIdToPolygonMapping
+from instant_insanity.core.geometry_types import Vector, SortedPolygonKeyToPolygonMapping
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
@@ -39,12 +39,11 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         alpha: float
         for alpha in [0.0, 0.5, 1.0]:
             animorph.morph_to(alpha)
-            id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube.id_to_scene_polygon
+            key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[FaceLabel] = cube.key_to_scene_polygon
             face_label: FaceLabel
             colour: ManimColor
             for face_label, colour in zip(face_labels, colours):
-                polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_label)
-                polygon: Polygon = id_to_scene_polygon[polygon_id]
+                polygon: Polygon = key_to_scene_polygon[face_label]
                 vertices: np.ndarray = polygon.get_vertices()
                 alpha_polygon_outline: Polygon = Polygon(*vertices,
                                                          stroke_color=colour,
@@ -80,12 +79,12 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         # rotate again using a different animorph
         rotation = UP * 2 * PI
         translation = ORIGIN
-        moveable_polygon_ids: set[PolygonId] = set(cube.id_to_scene_polygon.keys())
-        p3danimorph: Polygons3DAnimorph
-        p3danimorph = RigidMotionPolygons3DAnimorph(cube,
+        moveable_polygon_keys: set[FaceLabel] = set(cube.key_to_scene_polygon.keys())
+        p3danimorph: Polygons3DAnimorph[FaceLabel]
+        p3danimorph = RigidMotionPolygons3DAnimorph[FaceLabel](cube,
                                                  rotation,
                                                  translation,
-                                                 moveable_polygon_ids)
+                                                 moveable_polygon_keys)
         cube.conceal_polygons()
         p3danimorph.play(self, run_time=2.0)
 

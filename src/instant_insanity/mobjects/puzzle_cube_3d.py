@@ -2,14 +2,14 @@ from manim import ManimColor, ORIGIN
 from manim.typing import Point3D
 
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
-from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.mobjects.coloured_cube import MANIM_COLOUR_MAP
 from instant_insanity.mobjects.polygons_3d import Polygons3D, DEFAULT_POLYGON_SETTINGS
 
 
-class PuzzleCube3D(Polygons3D):
+class PuzzleCube3D(Polygons3D[FaceLabel]):
     """
     This class draws a puzzle cube in 3D space.
 
@@ -35,38 +35,13 @@ class PuzzleCube3D(Polygons3D):
         self.cube_spec = cube_spec
         self.puzzle_cube = PuzzleCube(cube_spec)
         self.cube_centre = cube_centre
-        id_to_model_path_0: PolygonIdToVertexPathMapping = PuzzleCube3D.mk_id_to_model_path_0(cube_centre)
+        key_to_model_path_0: PolygonKeyToVertexPathMapping[FaceLabel] = PuzzleCube3D.mk_face_to_model_path_0(cube_centre)
 
-        super().__init__(projection, id_to_model_path_0)
+        super().__init__(projection, key_to_model_path_0)
 
-    @staticmethod
-    def name_to_id(face_name: FaceLabel) -> PolygonId:
-        """
-        Converts a face name to a polygon id.
-        Args:
-            face_name: the face name.
-
-        Returns:
-            the polygon id.
-        """
-        face_name_str: str = str(face_name.value)
-        return PolygonId(face_name_str)
 
     @staticmethod
-    def id_to_name(polygon_id: PolygonId) -> FaceLabel:
-        """
-        Converts a polygon id to a face name.
-
-        Args:
-            polygon_id: the polygon id.
-
-        Returns:
-            the face name.
-        """
-        return FaceLabel(polygon_id)
-
-    @staticmethod
-    def mk_id_to_model_path_0(cube_centre: Point3D = ORIGIN) -> PolygonIdToVertexPathMapping:
+    def mk_face_to_model_path_0(cube_centre: Point3D = ORIGIN) -> PolygonKeyToVertexPathMapping[FaceLabel]:
         """
         Makes the initial model space vertex paths.
 
@@ -76,14 +51,13 @@ class PuzzleCube3D(Polygons3D):
         Returns:
             the initial model space vertex paths.
         """
-        id_to_model_path_0: PolygonIdToVertexPathMapping = {}
-        face_name: FaceLabel
-        for face_name in FaceLabel:
-            polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_name)
-            face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_name]
+        face_to_model_path_0: PolygonKeyToVertexPathMapping[FaceLabel] = {}
+        face_label: FaceLabel
+        for face_label in FaceLabel:
+            face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
             vertex_path: VertexPath = FACE_PLANE_TO_VERTEX_PATH[face_plane]
-            id_to_model_path_0[polygon_id] = vertex_path + cube_centre
-        return id_to_model_path_0
+            face_to_model_path_0[face_label] = vertex_path + cube_centre
+        return face_to_model_path_0
 
     def get_colour_name(self, face_name: FaceLabel) -> FaceColour:
         """
@@ -110,10 +84,9 @@ class PuzzleCube3D(Polygons3D):
         colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
         return colour
 
-    def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
+    def get_polygon_settings(self, face_label: FaceLabel) -> dict:
         polygon_settings: dict = DEFAULT_POLYGON_SETTINGS.copy()
-        face_name: FaceLabel = self.id_to_name(polygon_id)
-        colour: ManimColor = self.get_manim_colour(face_name)
+        colour: ManimColor = self.get_manim_colour(face_label)
         polygon_settings['fill_color'] = colour
         return polygon_settings
 

@@ -3,8 +3,10 @@ from typing import OrderedDict
 from manim import Polygon, VGroup, WHITE, BLACK, LineJointType
 
 from instant_insanity.core.depth_sort import DepthSort
-from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, SortedPolygonIdToVertexPathMapping, \
-    SortedPolygonIdToPolygonMapping, PolygonId, VertexPath
+from instant_insanity.core.geometry_types import (
+    PolygonKeyToVertexPathMapping, SortedPolygonKeyToVertexPathMapping,
+    SortedPolygonKeyToPolygonMapping, VertexPath,
+)
 from instant_insanity.core.projection import Projection
 
 DEFAULT_POLYGON_SETTINGS: dict = {
@@ -17,7 +19,7 @@ DEFAULT_POLYGON_SETTINGS: dict = {
 }
 
 
-class Polygons3D(VGroup):
+class Polygons3D[KeyType](VGroup):
     """
     This class manages a set of 3D polygons in model space and their depth-sorted projections onto scene space.
 
@@ -31,10 +33,9 @@ class Polygons3D(VGroup):
     depth sort. This means that the binary relation *polygon X is strictly behind polygon Y*
     in the given projection defines a directed acyclic graph.
 
-    Each polygon is uniquely identified by a `PolygonId` which is simply a type alias for `str`.
-    This id is used as the key in several `dict`s.
-    We use the term *name* to refer to an application-specific polygon identifier.
-    It is up to users of this class to encode and decode meaningful names to and from their corresponding  `PolygonId`s.
+    Each polygon is uniquely identified by a key of type `KeyType`.
+    This key is used as the key in several `dict`s.
+    The `KeyType` can be any immutable type such as strings, enums, tuples, etc.
 
     This class supports animations of the set of polygons.
 
@@ -56,37 +57,37 @@ class Polygons3D(VGroup):
     Attributes:
         projection: the `Projection` from model space onto scene space.
         depth_sorter: the depth sorter used to depth-sort polygons.
-        visible_polygon_ids: the subset of visible polygons
-        id_to_model_path_0: the initial model paths of each polygon.
-        id_to_model_path: the interpolated model paths of each polygon.
-        id_to_scene_path: the `OrderedDict` of scene paths of each scene polygon.
-        id_to_scene_polygon: the `OrderedDict` of depth-sorted scene polygons.
+        visible_polygon_keys: the subset of visible polygons
+        key_to_model_path_0: the initial model paths of each polygon.
+        key_to_model_path: the interpolated model paths of each polygon.
+        key_to_scene_path: the `OrderedDict` of scene paths of each scene polygon.
+        key_to_scene_polygon: the `OrderedDict` of depth-sorted scene polygons.
     """
     projection: Projection
-    depth_sorter: DepthSort
-    visible_polygon_ids: set[PolygonId]
-    id_to_model_path_0: PolygonIdToVertexPathMapping
-    id_to_model_path: PolygonIdToVertexPathMapping
-    id_to_scene_path: SortedPolygonIdToVertexPathMapping
-    id_to_scene_polygon: SortedPolygonIdToPolygonMapping
+    depth_sorter: DepthSort[KeyType]
+    visible_polygon_keys: set[KeyType]
+    key_to_model_path_0: PolygonKeyToVertexPathMapping[KeyType]
+    key_to_model_path: PolygonKeyToVertexPathMapping[KeyType]
+    key_to_scene_path: SortedPolygonKeyToVertexPathMapping[KeyType]
+    key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[KeyType]
 
     def __init__(self,
                  projection: Projection,
-                 id_to_model_path_0: PolygonIdToVertexPathMapping) -> None:
+                 key_to_model_path_0: PolygonKeyToVertexPathMapping[KeyType]) -> None:
         """
 
         Args:
             projection: the projection from model space onto scene space.
-            id_to_model_path_0: the dict of initial model paths.
+            key_to_model_path_0: the dict of initial model paths.
         """
         super().__init__()
 
         self.projection = projection
-        self.depth_sorter = DepthSort(projection)
+        self.depth_sorter: DepthSort[KeyType] = DepthSort[KeyType](projection)
 
-        self.id_to_model_path_0 = id_to_model_path_0
-        self.id_to_model_path = id_to_model_path_0.copy()
-        self.visible_polygon_ids = set(id_to_model_path_0.keys())
+        self.key_to_model_path_0 = key_to_model_path_0
+        self.key_to_model_path = key_to_model_path_0.copy()
+        self.visible_polygon_keys = set(key_to_model_path_0.keys())
 
         self.update_scene_polygons()
 
@@ -97,46 +98,46 @@ class Polygons3D(VGroup):
         """
 
         # depth sort only the visible polygons
-        polygon_id: PolygonId
-        visible_id_to_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id: self.id_to_model_path[polygon_id] for polygon_id in self.visible_polygon_ids
+        polygon_key: KeyType
+        visible_key_to_model_path: PolygonKeyToVertexPathMapping[KeyType] = {
+            polygon_key: self.key_to_model_path[polygon_key] for polygon_key in self.visible_polygon_keys
         }
-        self.id_to_scene_path = self.depth_sorter.depth_sort(visible_id_to_model_path)
+        self.key_to_scene_path = self.depth_sorter.depth_sort(visible_key_to_model_path)
 
         # make the Polygon mobjects
         polygon: Polygon
         scene_path: VertexPath
-        self.id_to_scene_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
-        for polygon_id, scene_path in self.id_to_scene_path.items():
-            polygon_settings: dict = self.get_polygon_settings(polygon_id)
+        self.key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[KeyType] = OrderedDict()
+        for polygon_key, scene_path in self.key_to_scene_path.items():
+            polygon_settings: dict = self.get_polygon_settings(polygon_key)
             polygon = Polygon(*scene_path, **polygon_settings)
-            self.id_to_scene_polygon[polygon_id] = polygon
+            self.key_to_scene_polygon[polygon_key] = polygon
 
         # remove the submobjects of this group and add the updated polygons in depth-sorted order
         self.remove_polygons()
-        for polygon in self.id_to_scene_polygon.values():
+        for polygon in self.key_to_scene_polygon.values():
             self.add(polygon)
 
-    def set_visible_polygon_ids(self, visible_polygon_ids: set[PolygonId]) -> None:
-        assert visible_polygon_ids <= set(self.id_to_model_path_0.keys())
+    def set_visible_polygon_keys(self, visible_polygon_keys: set[KeyType]) -> None:
+        assert visible_polygon_keys <= set(self.key_to_model_path_0.keys())
 
-        self.visible_polygon_ids = visible_polygon_ids.copy()
+        self.visible_polygon_keys = visible_polygon_keys.copy()
         self.update_scene_polygons()
 
-    def set_id_to_model_path(self, id_to_model_path: PolygonIdToVertexPathMapping) -> None:
+    def set_key_to_model_path(self, key_to_model_path: PolygonKeyToVertexPathMapping[KeyType]) -> None:
         """
         Updates the polygons from the given model paths.
 
         Args:
-            id_to_model_path: the updated model vertex paths for each polygon
+            key_to_model_path: the updated model vertex paths for each polygon
                 corresponding the current tracker alpha value.
         """
-        assert set(id_to_model_path.keys()) == set(self.id_to_model_path_0.keys())
+        assert set(key_to_model_path.keys()) == set(self.key_to_model_path_0.keys())
 
-        self.id_to_model_path = id_to_model_path
+        self.key_to_model_path = key_to_model_path
         self.update_scene_polygons()
 
-    def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
+    def get_polygon_settings(self, polygon_key: KeyType) -> dict:
         return DEFAULT_POLYGON_SETTINGS
 
     def conceal_polygons(self) -> None:
@@ -163,19 +164,19 @@ class Polygons3D(VGroup):
         """
         Sets the initial model paths to be the current model paths.
         """
-        self.id_to_model_path_0 = self.id_to_model_path.copy()
+        self.key_to_model_path_0 = self.key_to_model_path.copy()
 
-    def detach_polygon(self, polygon_id: PolygonId) -> Polygon:
+    def detach_polygon(self, polygon_key: KeyType) -> Polygon:
         """
         Detaches a polygon from the group so that it can be separately animated.
 
         Args:
-            polygon_id: the polygon id.
+            polygon_key: the polygon key.
 
         Returns:
             the polygon that was detached.
         """
-        polygon: Polygon = self.id_to_scene_polygon[polygon_id]
-        visible_polygon_ids: set[PolygonId] = self.visible_polygon_ids - {polygon_id}
-        self.set_visible_polygon_ids(visible_polygon_ids)
+        polygon: Polygon = self.key_to_scene_polygon[polygon_key]
+        visible_polygon_keys: set[KeyType] = self.visible_polygon_keys - {polygon_key}
+        self.set_visible_polygon_keys(visible_polygon_keys)
         return polygon

@@ -94,9 +94,3 @@ def test_as_vertex_success():
 def test_as_vertex_path_success():
     vp = as_vertex_path([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
     assert vp.dtype == np.float64 and vp.shape == (3, 3)
-
-def test_newtype_polygon_id_is_distinct_in_type_checking_context():
-    # At runtime PolygonId is a str, but constructing ensures intent in code.
-    pid = PolygonId('front_face')
-    assert isinstance(pid, str)
-    # mypy would treat PolygonId differently than str in static analysis.

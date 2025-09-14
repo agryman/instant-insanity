@@ -7,13 +7,12 @@ reuse across your codebase.
 Conventions:
     - Vertex: a single 3D point (float64), shape (3,)
     - VertexPath: ordered polygon boundary vertices, shape (n, 3), start is not repeated
-    - PolygonId: opaque unique identifier for a polygon (e.g., 'front_face', 'A12', UUID)
-    - PolygonIdToVertexPathMapping: mapping from PolygonId -> VertexPath (data)
-    - PolygonIdToPolygonMapping: mapping from PolygonId -> Manim Polygon (object)
+    - PolygonKey: immutable unique identifier for a polygon (e.g., 'front_face', 'A12', UUID)
+    - PolygonKeyToVertexPathMapping: mapping from PolygonKey -> VertexPath (data)
+    - PolygonKeyToPolygonMapping: mapping from PolygonKey -> Manim Polygon (object)
 
 Notes:
-    - We use NewType for PolygonId to get compile-time separation from plain str and
-      other ID types (e.g., FaceId) while keeping zero runtime overhead.
+    - We use generic type PolygonKey in Polygons3D.
 
 """
 from typing import NewType, TypeAlias, OrderedDict
@@ -27,11 +26,10 @@ __all__ = [
     'Vector',
     'Vertex',
     'VertexPath',
-    'PolygonId',
-    'PolygonIdToVertexPathMapping',
-    'PolygonIdToPolygonMapping',
-    'SortedPolygonIdToVertexPathMapping',
-    'SortedPolygonIdToPolygonMapping',
+    'PolygonKeyToVertexPathMapping',
+    'PolygonKeyToPolygonMapping', 
+    'SortedPolygonKeyToVertexPathMapping',
+    'SortedPolygonKeyToPolygonMapping',
     'is_vertex',
     'is_vertex_path',
     'check_vertex',
@@ -45,16 +43,11 @@ Vector: TypeAlias = NDArray[np.float64]          # shape (3,)
 Vertex: TypeAlias = NDArray[np.float64]          # shape (3,)
 VertexPath: TypeAlias = NDArray[np.float64]      # shape (n, 3)
 
-# --- Identifiers ---
-PolygonId = NewType('PolygonId', str)            # opaque unique ID for a polygon
-
-# --- Mappings ---
-PolygonIdToVertexPathMapping: TypeAlias = dict[PolygonId, VertexPath]
-PolygonIdToPolygonMapping: TypeAlias = dict[PolygonId, Polygon]
-
-# --- Sorted Mappings ---
-SortedPolygonIdToVertexPathMapping: TypeAlias = OrderedDict[PolygonId, VertexPath]
-SortedPolygonIdToPolygonMapping: TypeAlias = OrderedDict[PolygonId, Polygon]
+# --- Generic Mappings ---
+type PolygonKeyToVertexPathMapping[KeyType] = dict[KeyType, VertexPath]
+type PolygonKeyToPolygonMapping[KeyType] = dict[KeyType, Polygon]
+type SortedPolygonKeyToVertexPathMapping[KeyType] = OrderedDict[KeyType, VertexPath]
+type SortedPolygonKeyToPolygonMapping[KeyType] = OrderedDict[KeyType, Polygon]
 
 # --- Predicates and validators ---
 

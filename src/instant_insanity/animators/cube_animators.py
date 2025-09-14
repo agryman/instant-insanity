@@ -6,7 +6,7 @@ from manim.typing import Vector3D
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_PLANE_TO_VERTEX_PATH
-from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath, Vertex, Vector
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath, Vertex, Vector
 from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.core.transformation import transform_vertex_path, rotation_matrix_about_line, \
     apply_linear_transform
@@ -14,14 +14,13 @@ from instant_insanity.core.transformation import transform_vertex_path, rotation
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 
 
-class CubeAnimorph(Animorph):
+class CubeAnimorph(Animorph, ABC):
     """
     This is the abstract base class for `ThreeDPuzzleCube` animorphs.
     """
 
     def __init__(self, cube: PuzzleCube3D):
-        if not isinstance(cube, PuzzleCube3D):
-            raise TypeError(f'cube must be of type ThreeDPuzzleCube but got {type(cube)}')
+        assert isinstance(cube, PuzzleCube3D)
         super().__init__(cube)
 
     def get_cube3d(self) -> PuzzleCube3D:
@@ -60,14 +59,14 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
 
         alpha_rotation: np.ndarray = alpha * self.rotation
         alpha_translation: np.ndarray = alpha * self.translation
-        id_to_model_path_0: PolygonIdToVertexPathMapping = cube.id_to_model_path_0
-        polygon_id: PolygonId
+        key_to_model_path_0: PolygonKeyToVertexPathMapping[FaceLabel] = cube.key_to_model_path_0
+        face_label: FaceLabel
         model_path_0: VertexPath
-        id_to_model_path: PolygonIdToVertexPathMapping = {
-            polygon_id: transform_vertex_path(alpha_rotation, alpha_translation, model_path_0)
-            for polygon_id, model_path_0 in id_to_model_path_0.items()
+        key_to_model_path: PolygonKeyToVertexPathMapping[FaceLabel] = {
+            face_label: transform_vertex_path(alpha_rotation, alpha_translation, model_path_0)
+            for face_label, model_path_0 in key_to_model_path_0.items()
         }
-        cube.set_id_to_model_path(id_to_model_path)
+        cube.set_key_to_model_path(key_to_model_path)
 
 
 class CubeExplosionAnimorph(CubeAnimorph):
@@ -87,19 +86,18 @@ class CubeExplosionAnimorph(CubeAnimorph):
         super().morph_to(alpha)
         cube3d: PuzzleCube3D = self.get_cube3d()
 
-        id_to_model_path: PolygonIdToVertexPathMapping = {}
+        key_to_model_path: PolygonKeyToVertexPathMapping[FaceLabel] = {}
         face_label: FaceLabel
         for face_label in FaceLabel:
-            polygon_id: PolygonId = PuzzleCube3D.name_to_id(face_label)
             face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
             standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
                                                                                   self.expansion_factor,
                                                                                   alpha)
-            model_path_0: VertexPath = cube3d.id_to_model_path_0[polygon_id]
+            model_path_0: VertexPath = cube3d.key_to_model_path_0[face_label]
             translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_plane][0]
-            id_to_model_path[polygon_id] = standard_model_path + translation
+            key_to_model_path[face_label] = standard_model_path + translation
 
-        cube3d.set_id_to_model_path(id_to_model_path)
+        cube3d.set_key_to_model_path(key_to_model_path)
 
     @staticmethod
     def morph_standard_face_to(name: FacePlane,
