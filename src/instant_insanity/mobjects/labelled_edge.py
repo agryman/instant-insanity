@@ -1,7 +1,7 @@
 """
 This module implements the LabelledEdge class which is used in the OppositeFaceGraph.
 """
-from typing import Self, TypeAlias
+from typing import Self
 import numpy as np
 
 from manim import CubicBezier, Text, VGroup, ManimColor, BLACK, OUT
@@ -9,7 +9,7 @@ from manim.typing import Point3D
 
 from instant_insanity.mobjects.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
 
-PointPair: TypeAlias = tuple[Point3D, Point3D]
+type PointPair = tuple[Point3D, Point3D]
 
 DEFAULT_EDGE_FONT: str = 'sans-serif'
 DEFAULT_EDGE_FONT_SIZE: int = 15

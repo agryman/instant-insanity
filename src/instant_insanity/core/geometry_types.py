@@ -15,7 +15,7 @@ Notes:
     - We use generic type PolygonKey in Polygons3D.
 
 """
-from typing import NewType, TypeAlias, OrderedDict
+from typing import OrderedDict
 
 import numpy as np
 from numpy.typing import NDArray
@@ -39,9 +39,9 @@ __all__ = [
 ]
 
 # --- Core data types ---
-Vector: TypeAlias = NDArray[np.float64]          # shape (3,)
-Vertex: TypeAlias = NDArray[np.float64]          # shape (3,)
-VertexPath: TypeAlias = NDArray[np.float64]      # shape (n, 3)
+type Vector = NDArray[np.float64]          # shape (3,)
+type Vertex = NDArray[np.float64]          # shape (3,)
+type VertexPath = NDArray[np.float64]      # shape (n, 3)
 
 # --- Generic Mappings ---
 type PolygonKeyToVertexPathMapping[KeyType] = dict[KeyType, VertexPath]
