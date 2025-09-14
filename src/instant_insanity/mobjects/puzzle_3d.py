@@ -3,9 +3,9 @@ This module implements the Puzzle3D class which is a Polygon3D that consists
 of all 24 faces of the 4 puzzle cubes.
 """
 from manim.typing import Point3D, Vector3D
-from manim import LEFT, RIGHT, ManimColor, ORIGIN
+from manim import RIGHT, ManimColor, ORIGIN
 
-from instant_insanity.core.geometry_types import PolygonIdToVertexPathMapping, PolygonId, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, PuzzleCube, FaceColour, FaceLabel, \
@@ -24,7 +24,7 @@ DEFAULT_BUFF: float = 0.1  # the horizontal space between cubes, MUST be positiv
 DEFAULT_CUBE_DELTA: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + DEFAULT_BUFF) * RIGHT
 
 
-class Puzzle3D(Polygons3D):
+class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
 
     """
     This class implements a 3D puzzle.
@@ -50,56 +50,14 @@ class Puzzle3D(Polygons3D):
         self.puzzle = puzzle
         self.puzzle_centre = puzzle_centre
         self.cube_delta = cube_delta
-        id_to_model_path_0: PolygonIdToVertexPathMapping = Puzzle3D.mk_id_to_model_path_0(puzzle_centre,
-                                                                                          cube_delta)
+        key_to_model_path_0: PolygonKeyToVertexPathMapping[Puzzle3DPolygonName] = Puzzle3D.mk_name_to_model_path_0(puzzle_centre, cube_delta)
 
-        super().__init__(projection, id_to_model_path_0)
+        super().__init__(projection, key_to_model_path_0)
 
-    @staticmethod
-    def name_to_id(name: Puzzle3DPolygonName) -> PolygonId:
-        """
-        Converts a puzzle polygon name to its polygon id.
-
-        Args:
-            name: a polygon name, e.g. (PuzzleCubeNumber.TWO, FacePlane.RIGHT).
-
-        Returns:
-            the polygon id, e.g. PolygonID('2/right').
-        """
-        cube_number: PuzzleCubeNumber
-        face_label: FaceLabel
-        cube_number, face_label = name
-
-        id_str: str = f'{cube_number.value}/{face_label.value}'
-
-        return PolygonId(id_str)
 
     @staticmethod
-    def id_to_name(polygon_id: PolygonId) -> Puzzle3DPolygonName:
-        """
-        Converts a polygon id to its polygon name.
-        Args:
-            polygon_id: a polygon id, e.g. PolygonId('2/right').
-
-        Returns:
-            its polygon name, e.g. (PuzzleCubeNumber.TWO, FacePlane.RIGHT).
-        """
-        id_str: str = str(polygon_id)
-
-        cube_number_str: str
-        face_label_value: str
-        cube_number_str, face_label_value = id_str.split('/')
-
-        cube_number_value: int = int(cube_number_str)
-        cube_number = PuzzleCubeNumber(cube_number_value)
-
-        face_label: FaceLabel = FaceLabel(face_label_value)
-
-        return cube_number, face_label
-
-    @staticmethod
-    def mk_id_to_model_path_0(puzzle_centre: Point3D,
-                              cube_delta: Vector3D) -> PolygonIdToVertexPathMapping:
+    def mk_name_to_model_path_0(puzzle_centre: Point3D,
+                                cube_delta: Vector3D) -> PolygonKeyToVertexPathMapping[Puzzle3DPolygonName]:
         """
         Makes the initial model space vertex paths.
 
@@ -112,7 +70,7 @@ class Puzzle3D(Polygons3D):
         """
         # arrange the cubes horizontally from left to right with centres shifted by cube_delta
 
-        id_to_model_path_0: PolygonIdToVertexPathMapping = dict()
+        name_to_model_path_0: PolygonKeyToVertexPathMapping[Puzzle3DPolygonName] = dict()
         i: int
         cube_number: PuzzleCubeNumber
         for i, cube_number in enumerate(PuzzleCubeNumber):
@@ -121,24 +79,24 @@ class Puzzle3D(Polygons3D):
             vertex_path: VertexPath
             for face_plane, vertex_path in FACE_PLANE_TO_VERTEX_PATH.items():
                 face_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[face_plane]
-                polygon_id = Puzzle3D.name_to_id((cube_number, face_label))
-                id_to_model_path_0[polygon_id] = vertex_path + cube_centre_i
+                polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
+                name_to_model_path_0[polygon_name] = vertex_path + cube_centre_i
 
-        return id_to_model_path_0
+        return name_to_model_path_0
 
-    def get_polygon_settings(self, polygon_id: PolygonId) -> dict:
+    def get_polygon_settings(self, polygon_name: Puzzle3DPolygonName) -> dict:
         """
         Gets a dict of settings the polygon.
 
         Args:
-            polygon_id: a polygon id.
+            polygon_name: a polygon name tuple (cube_number, face_label).
 
         Returns:
             a dict of settings the polygon.
         """
         cube_number: PuzzleCubeNumber
         face_label: FaceLabel
-        cube_number, face_label = Puzzle3D.id_to_name(polygon_id)
+        cube_number, face_label = polygon_name
         puzzle_cube: PuzzleCube = self.puzzle.number_to_cube[cube_number]
         colour_name: FaceColour = puzzle_cube.face_label_to_colour[face_label]
         colour: ManimColor = MANIM_COLOUR_MAP[colour_name]
@@ -154,7 +112,7 @@ class Puzzle3D(Polygons3D):
         return colour_name
 
     def hide_cube(self, cube_number: PuzzleCubeNumber) -> None:
-        cube_ids: set[PolygonId] = {Puzzle3D.name_to_id((cube_number, face_label))
-                                    for face_label in FaceLabel}
-        visible_polygon_ids: set[PolygonId] = self.visible_polygon_ids - cube_ids
-        self.set_visible_polygon_ids(visible_polygon_ids)
+        cube_names: set[Puzzle3DPolygonName] = {(cube_number, face_label)
+                                                for face_label in FaceLabel}
+        visible_polygon_keys: set[Puzzle3DPolygonName] = self.visible_polygon_keys - cube_names
+        self.set_visible_polygon_keys(visible_polygon_keys)

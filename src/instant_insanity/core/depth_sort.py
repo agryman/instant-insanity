@@ -12,7 +12,7 @@ from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.geometry_types import *
 
-class DepthSort:
+class DepthSort[KeyType]:
     """
     This class performs a depth sort on a set of convex, planar polygons based
     on a projection onto a 2d space.
@@ -62,7 +62,7 @@ class DepthSort:
     def __init__(self, projection: Projection):
         self.projection = projection
 
-    def depth_sort(self, paths: PolygonIdToVertexPathMapping) -> SortedPolygonIdToVertexPathMapping:
+    def depth_sort(self, paths: PolygonKeyToVertexPathMapping[KeyType]) -> SortedPolygonKeyToVertexPathMapping[KeyType]:
         """
         This function performs a depth sort on a set of vertex paths that define
         convex, planar polygons.
@@ -81,43 +81,43 @@ class DepthSort:
             ValueError: if the input vertex paths do not define convex, planar polygons or cannot be depth-sorted.
         """
         # check that the input consists of convex, planar polygons
-        polygon_id: PolygonId
+        polygon_key: KeyType
         path: VertexPath
-        convex_planar_polygons: dict[PolygonId, ConvexPlanarPolygon] = {
-            polygon_id: ConvexPlanarPolygon(path)
-            for polygon_id, path in paths.items()
+        convex_planar_polygons: dict[KeyType, ConvexPlanarPolygon] = {
+            polygon_key: ConvexPlanarPolygon(path)
+            for polygon_key, path in paths.items()
         }
         # Note that we use ConvexPlanarPolygon to check that
         # each vertex path does in fact define a convex, planar polygon.
         # If not, then ConvexPlanarPolygon will raise an exception.
 
         # project each vertex path from model space to scene space
-        projected_paths: PolygonIdToVertexPathMapping = {
-            polygon_id: self.projection.project_points(path)
-            for polygon_id, path in paths.items()
+        projected_paths: PolygonKeyToVertexPathMapping[KeyType] = {
+            polygon_key: self.projection.project_points(path)
+            for polygon_key, path in paths.items()
         }
 
         # depth-sort the polygons by performing a topological sort on the directed graph for
         # the binary relation on polygons: A is_behind B
 
-        # initialize the graph by creating a node for each polygon id
+        # initialize the graph by creating a node for each polygon key
         graph: nx.DiGraph = nx.DiGraph()
-        polygon_ids: list[PolygonId] = list(paths.keys())
-        graph.add_nodes_from(polygon_ids)
+        polygon_keys: list[KeyType] = list(paths.keys())
+        graph.add_nodes_from(polygon_keys)
 
         # perform a pair-wise comparison of the projected polygons
         i: int
-        polygon_id_i: PolygonId
-        for i, polygon_id_i in enumerate(polygon_ids):
-            path_i: VertexPath = projected_paths[polygon_id_i]
+        polygon_key_i: KeyType
+        for i, polygon_key_i in enumerate(polygon_keys):
+            path_i: VertexPath = projected_paths[polygon_key_i]
             polygon_i: Polygon = Polygon(path_i)
 
             j: int
-            polygon_id_j: PolygonId
-            for j, polygon_id_j in enumerate(polygon_ids):
+            polygon_key_j: KeyType
+            for j, polygon_key_j in enumerate(polygon_keys):
                 if j <= i:
                     continue
-                path_j: np.ndarray = projected_paths[polygon_id_j]
+                path_j: np.ndarray = projected_paths[polygon_key_j]
                 polygon_j: Polygon = Polygon(path_j)
                 if not polygon_i.intersects(polygon_j):
                     continue
@@ -139,23 +139,23 @@ class DepthSort:
                 x: float = point_ij.x
                 y: float = point_ij.y
 
-                t_i: float = self.projection.polygon_t(convex_planar_polygons[polygon_id_i], x, y)
-                t_j: float = self.projection.polygon_t(convex_planar_polygons[polygon_id_j], x, y)
+                t_i: float = self.projection.polygon_t(convex_planar_polygons[polygon_key_i], x, y)
+                t_j: float = self.projection.polygon_t(convex_planar_polygons[polygon_key_j], x, y)
                 if np.isclose(t_i, t_j):
-                    raise ValueError(f'polygons {polygon_id_i} and {polygon_id_j} intersect in model space')
+                    raise ValueError(f'polygons {polygon_key_i} and {polygon_key_j} intersect in model space')
                 if t_i < t_j:
-                    graph.add_edge(polygon_id_i, polygon_id_j)
+                    graph.add_edge(polygon_key_i, polygon_key_j)
                 else:
-                    graph.add_edge(polygon_id_j, polygon_id_i)
+                    graph.add_edge(polygon_key_j, polygon_key_i)
 
         # we now have built the directed graph for is_behind so check if it's acyclic
         if not nx.is_directed_acyclic_graph(graph):
             raise ValueError('the is_behind relation has cycles')
 
-        sorted_ids: list[PolygonId] = list(nx.topological_sort(graph))
+        sorted_keys: list[KeyType] = list(nx.topological_sort(graph))
 
-        sorted_paths: SortedPolygonIdToVertexPathMapping = OrderedDict()
-        for polygon_id in sorted_ids:
-            sorted_paths[polygon_id] = projected_paths[polygon_id]
+        sorted_paths: SortedPolygonKeyToVertexPathMapping[KeyType] = OrderedDict()
+        for polygon_key in sorted_keys:
+            sorted_paths[polygon_key] = projected_paths[polygon_key]
 
         return sorted_paths

@@ -25,7 +25,7 @@ from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeExplosionAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.geometry_types import PolygonId, SortedPolygonIdToPolygonMapping, VertexPath
+from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping, VertexPath
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
@@ -36,7 +36,7 @@ from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosio
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data_from_cube, \
     mk_face_data_from_puzzle
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH, Puzzle3DPolygonName
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
@@ -127,37 +127,32 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         Returns:
             the (start, end) face data pair.
         """
-        # compute the polygon_id's of the axis
+        # compute the face labels of the axis
         face_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
-        face_label: FaceLabel
-        axis_polygon_id_list: list[PolygonId] = [PuzzleCube3D.name_to_id(face_label)
-                                                 for face_label in face_pair]
-        axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
+        axis_face_labels: set[FaceLabel] = set(face_pair)
 
         # get the polygons of the axis in depth-sorted order
-        id_to_scene_polygon: SortedPolygonIdToPolygonMapping = cube3d.id_to_scene_polygon
-        id_to_axis_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
-        polygon_id: PolygonId
+        key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[FaceLabel] = cube3d.key_to_scene_polygon
+        key_to_axis_polygon: SortedPolygonKeyToPolygonMapping[FaceLabel] = OrderedDict()
+        face_key: FaceLabel
         polygon: Polygon
         z_index: int = 1
-        for polygon_id in id_to_scene_polygon.keys():
-            if polygon_id in axis_polygon_ids:
-                polygon = id_to_scene_polygon[polygon_id]
+        for face_key in key_to_scene_polygon.keys():
+            if face_key in axis_face_labels:
+                polygon = key_to_scene_polygon[face_key]
                 polygon.set_z_index(z_index)
                 z_index += 1
-                id_to_axis_polygon[polygon_id] = polygon
+                key_to_axis_polygon[face_key] = polygon
 
         # hide the axis faces from the cube
-        visible_polygon_ids: set[PolygonId] = cube3d.visible_polygon_ids
-        updated_visible_polygon_ids: set[PolygonId] = visible_polygon_ids - axis_polygon_ids
-        cube3d.set_visible_polygon_ids(updated_visible_polygon_ids)
+        visible_polygon_keys: set[FaceLabel] = cube3d.visible_polygon_keys
+        updated_visible_polygon_keys: set[FaceLabel] = visible_polygon_keys - axis_face_labels
+        cube3d.set_visible_polygon_keys(updated_visible_polygon_keys)
 
         # make the face data pair
         data_list: list[FaceData] = []
-        i: int
-        for i, face_label in enumerate(face_pair):
-            polygon_id = axis_polygon_id_list[i]
-            polygon = id_to_axis_polygon[polygon_id]
+        for face_label in face_pair:
+            polygon = key_to_axis_polygon[face_label]
             data: FaceData = mk_face_data_from_cube(graph, cube3d, face_label, polygon)
             data_list.append(data)
 
@@ -190,37 +185,32 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         axis_label: AxisLabel
         cube_number, axis_label = cube_axis
 
-        # compute the polygon_id's of the axis
+        # compute the face names of the axis
         face_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
-        axis_polygon_id_list: list[PolygonId] = [Puzzle3D.name_to_id((cube_number, face_label))
-                                                 for face_label in face_pair]
-        axis_polygon_ids: set[PolygonId] = set(axis_polygon_id_list)
+        axis_face_names: set[Puzzle3DPolygonName] = {(cube_number, face_label) for face_label in face_pair}
 
         # get the polygons of the axis in depth-sorted order
-        id_to_scene_polygon: SortedPolygonIdToPolygonMapping = puzzle3d.id_to_scene_polygon
-        id_to_axis_polygon: SortedPolygonIdToPolygonMapping = OrderedDict()
-        polygon_id: PolygonId
+        key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[Puzzle3DPolygonName] = puzzle3d.key_to_scene_polygon
+        key_to_axis_polygon: SortedPolygonKeyToPolygonMapping[Puzzle3DPolygonName] = OrderedDict()
         polygon: Polygon
         z_index: int = 1
-        for polygon_id in id_to_scene_polygon.keys():
-            if polygon_id in axis_polygon_ids:
-                polygon = id_to_scene_polygon[polygon_id]
+        for face_name in key_to_scene_polygon.keys():
+            if face_name in axis_face_names:
+                polygon = key_to_scene_polygon[face_name]
                 polygon.set_z_index(z_index)
                 z_index += 1
-                id_to_axis_polygon[polygon_id] = polygon
+                key_to_axis_polygon[face_name] = polygon
 
         # hide the axis faces from the puzzle
-        visible_polygon_ids: set[PolygonId] = puzzle3d.visible_polygon_ids
-        updated_visible_polygon_ids: set[PolygonId] = visible_polygon_ids - axis_polygon_ids
-        puzzle3d.set_visible_polygon_ids(updated_visible_polygon_ids)
+        visible_polygon_keys: set[Puzzle3DPolygonName] = puzzle3d.visible_polygon_keys
+        updated_visible_polygon_keys: set[Puzzle3DPolygonName] = visible_polygon_keys - axis_face_names
+        puzzle3d.set_visible_polygon_keys(updated_visible_polygon_keys)
 
         # make the face data pair
         data_list: list[FaceData] = []
-        i: int
-        face_label: FaceLabel
-        for i, face_label in enumerate(face_pair):
-            polygon_id = axis_polygon_id_list[i]
-            polygon = id_to_axis_polygon[polygon_id]
+        for face_label in face_pair:
+            polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
+            polygon = key_to_axis_polygon[polygon_name]
             data: FaceData = mk_face_data_from_puzzle(graph, puzzle3d, cube_number, face_label, polygon)
             data_list.append(data)
 
@@ -391,7 +381,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         rotation: Vector3D
         translation: Vector3D
         animorph: Animorph
-        moveable_polygon_ids: set[PolygonId]
+        moveable_polygon_ids: set[Puzzle3DPolygonName]
 
         voiceover_3: str = '''
         We're going to add the edges to the graph one cube at a time.
@@ -408,21 +398,21 @@ class ConstructGraph(GridMixin, VoiceoverScene):
                 break
 
             # move the cube to the work area
-            moveable_polygon_ids = {
-                Puzzle3D.name_to_id((cube_number, face_label)) for face_label in FaceLabel
+            moveable_polygon_keys: set[Puzzle3DPolygonName] = {
+                (cube_number, face_label) for face_label in FaceLabel
             }
 
             # move the centre of the front face to the target
             front_target: Point3D = 6.0 * DOWN + 3.0 * LEFT
             front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
-            front_id: PolygonId = Puzzle3D.name_to_id((cube_number, front_label))
-            front_path: VertexPath = puzzle3d.id_to_model_path[front_id]
+            front_name: Puzzle3DPolygonName = (cube_number, front_label)
+            front_path: VertexPath = puzzle3d.key_to_model_path[front_name]
             front_centre: Point3D = np.mean(front_path, 0)
             translation = front_target - front_centre
 
             rotation = ORIGIN
 
-            animorph = RigidMotionPolygons3DAnimorph(puzzle3d, rotation, translation, moveable_polygon_ids)
+            animorph = RigidMotionPolygons3DAnimorph[Puzzle3DPolygonName](puzzle3d, rotation, translation, moveable_polygon_keys)
 
             self.wait()
 

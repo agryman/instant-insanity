@@ -1,15 +1,11 @@
-from math import degrees
-
 from manim import Scene, tempconfig, RIGHT, UP, BLACK, Text, Polygon, DOWN, LEFT, OUT, IN, ORIGIN
 from manim.typing import Point3D, Vector3D
 from scipy.spatial.transform import Rotation
 
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
-from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.geometry_types import PolygonId, VertexPath
 from instant_insanity.core.projection import OrthographicProjection, mk_standard_orthographic_projection
-from instant_insanity.core.puzzle import FaceLabel, PuzzleCube
+from instant_insanity.core.puzzle import FaceLabel
 from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -109,8 +105,7 @@ class CubeOrientations(GridMixin, Scene):
                 # add a text label
                 label = front_label.value + top_label.value
                 text: Text = Text(label, color=BLACK, font_size=18, font='sans-serif')
-                front_id: PolygonId = PuzzleCube3D.name_to_id(front_label)
-                front_polygon: Polygon = cube3d.id_to_scene_polygon[front_id]
+                front_polygon: Polygon = cube3d.key_to_scene_polygon[front_label]
                 text.next_to(front_polygon, DOWN, buff=0.15)
                 self.add(text)
 

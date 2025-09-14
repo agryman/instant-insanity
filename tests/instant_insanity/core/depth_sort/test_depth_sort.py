@@ -2,7 +2,7 @@ import numpy as np
 
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.projection import Projection, OrthographicProjection
-from instant_insanity.core.geometry_types import *
+from instant_insanity.core.geometry_types import VertexPath, PolygonKeyToVertexPathMapping, SortedPolygonKeyToVertexPathMapping
 
 
 def test_depth_sort():
@@ -19,14 +19,14 @@ def test_depth_sort():
 
     triangle_b: VertexPath = triangle_a + np.array([0.5, 0, -1])
 
-    id_a: PolygonId = PolygonId('a')
-    id_b: PolygonId = PolygonId('b')
-    polygons: PolygonIdToVertexPathMapping = {
-        id_a: triangle_a,
-        id_b: triangle_b,
+    key_a: str = 'a'
+    key_b: str = 'b'
+    polygons: PolygonKeyToVertexPathMapping[str] = {
+        key_a: triangle_a,
+        key_b: triangle_b,
     }
 
-    sorted_paths: SortedPolygonIdToVertexPathMapping = depth_sorter.depth_sort(polygons)
-    sorted_ids: list[PolygonId] = list(sorted_paths.keys())
-    assert sorted_ids == [id_b, id_a]
+    sorted_paths: SortedPolygonKeyToVertexPathMapping = depth_sorter.depth_sort(polygons)
+    sorted_keys: list[str] = list(sorted_paths.keys())
+    assert sorted_keys == [key_b, key_a]
     assert len(sorted_paths) == len(polygons)
