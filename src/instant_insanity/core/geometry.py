@@ -3,10 +3,9 @@ This module contains functions for the geometry of convex polygons in 2 and 3 di
 """
 
 import numpy as np
-from typing import TypeAlias
 from manim.typing import Point3D, Vector3D
 
-Triangle: TypeAlias = list[Point3D]
+type Triangle = list[Point3D]
 
 def check_triangle(triangle: Triangle) -> None:
     """Check that the triangle contains 3 vertices."""

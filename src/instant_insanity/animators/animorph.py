@@ -1,13 +1,13 @@
 """This module defines Animorph."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, TypeAlias
+from typing import Any, Callable
 
 import numpy as np
 from manim import Mobject, Animation, ValueTracker, Scene
 from manim.typing import Point3D
 
-Updater: TypeAlias = Callable[[Any], object]
+type Updater = Callable[[Any], object]
 
 
 def lerp(a_0: np.ndarray, a_1: np.ndarray, alpha: float) -> np.ndarray:

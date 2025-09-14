@@ -1,6 +1,6 @@
 """This module contains the Puzzle class which represents a single Instant Insanity puzzle."""
 
-from typing import TypeAlias, Self
+from typing import Self
 from enum import IntEnum, StrEnum
 from dataclasses import dataclass
 
@@ -134,13 +134,13 @@ class FaceColour(StrEnum):
 # use black as the default colour for cube face edges
 DEFAULT_EDGE_COLOUR: str = 'black'
 
-FaceColourPair: TypeAlias = tuple[FaceColour, FaceColour]
+type FaceColourPair = tuple[FaceColour, FaceColour]
 
 # PuzzleCubeSpec is a string of six characters.
 # Each character is the initial letter of a face colour.
 # The colours are listed in the Carteblache label order: x, x', y, y', z, z'.
 # This is the order of the enum FaceLabel.
-PuzzleCubeSpec: TypeAlias = str
+type PuzzleCubeSpec = str
 
 
 @dataclass
@@ -200,11 +200,11 @@ class PuzzleCubeNumber(IntEnum):
     THREE = 3
     FOUR = 4
 
-CubeAxis: TypeAlias = tuple[PuzzleCubeNumber, AxisLabel]
+type CubeAxis = tuple[PuzzleCubeNumber, AxisLabel]
 
 # PuzzleSpec is a list of four strings, one per cube.
 # Each string contains six characters that are the initial letters of the face colours.
-PuzzleSpec: TypeAlias = list[PuzzleCubeSpec]
+type PuzzleSpec = list[PuzzleCubeSpec]
 
 # The 1947 Carteblanche Tantalizer puzzle specification
 CARTEBLANCHE_PUZZLE_SPEC: PuzzleSpec = [
