@@ -5,13 +5,13 @@ This module defines the ConvexPlanarPolygon class.
 import numpy as np
 from shapely.geometry import Polygon
 from shapely.validation import explain_validity
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3D, Vector3D, Point2D_Array, Point3D_Array
 
 from instant_insanity.core.projection import Planar
 from instant_insanity.core.type_check import check_matrix_nx3_float64, check_array_float64
 
 
-def check_convex_polygon(points: np.ndarray) -> None:
+def check_convex_polygon(points: Point2D_Array) -> None:
     """Validate that a NumPy array of 2D points defines a valid, convex polygon.
 
     Args:
@@ -57,13 +57,13 @@ class ConvexPlanarPolygon(Planar):
         unit_k: unit vector perpendicular to the polygon plane forming a right-handed system.
     """
 
-    vertices: np.ndarray
+    vertices: Point3D_Array
     min_edge_length: float
-    unit_i: np.ndarray
-    unit_j: np.ndarray
-    unit_k: np.ndarray
+    unit_i: Vector3D
+    unit_j: Vector3D
+    unit_k: Vector3D
 
-    def __init__(self, vertices: np.ndarray, min_edge_length: float = MIN_EDGE_LENGTH) -> None:
+    def __init__(self, vertices: Point3D_Array, min_edge_length: float = MIN_EDGE_LENGTH) -> None:
 
         # validate min_edge_length
         if min_edge_length <= 0.0:
@@ -80,26 +80,26 @@ class ConvexPlanarPolygon(Planar):
         self.vertices = vertices
 
         # compute coordinate axes defined by the polygon
-        unit_i: np.ndarray = vertices[1] - vertices[0]
+        unit_i: Vector3D = vertices[1] - vertices[0]
         if np.allclose(unit_i, 0):
             raise ValueError('unit_i vector is ill-defined')
         unit_i = unit_i / np.linalg.norm(unit_i)
         self.unit_i = unit_i
 
-        unit_k: np.ndarray = np.cross(unit_i, vertices[2] - vertices[1])
+        unit_k: Vector3D = np.cross(unit_i, vertices[2] - vertices[1])
         if np.allclose(unit_k, 0):
             raise ValueError('unit_k vector is ill-defined')
         unit_k = unit_k / np.linalg.norm(unit_k)
         self.unit_k = unit_k
 
-        unit_j: np.ndarray = np.cross(unit_k, unit_i)
+        unit_j: Vector3D = np.cross(unit_k, unit_i)
         if np.allclose(unit_j, 0):
             raise ValueError('unit_j vector is ill-defined')
         unit_j = unit_j / np.linalg.norm(unit_j)
         self.unit_j = unit_j
 
         # Compute edge vectors using np.roll to wrap around the polygon
-        edges: np.ndarray = np.roll(vertices, -1, axis=0) - vertices  # shape (n, 3)
+        edges: Point3D_Array = np.roll(vertices, -1, axis=0) - vertices  # shape (n, 3)
 
         # Compute edge lengths
         edge_lengths: np.ndarray = np.linalg.norm(edges, axis=1)  # shape (n,)

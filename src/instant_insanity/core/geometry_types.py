@@ -5,27 +5,24 @@ data and related mappings, plus small runtime checkers/converters that you can
 reuse across your codebase.
 
 Conventions:
-    - Vertex: a single 3D point (float64), shape (3,)
-    - VertexPath: ordered polygon boundary vertices, shape (n, 3), start is not repeated
+    - a vertex is a polygon vertex of type Point3D
+    - a vertex path is an array of polygon boundary vertices of type Point3D_Array, start vertex is NOT repeated
     - PolygonKey: immutable unique identifier for a polygon (e.g., 'front_face', 'A12', UUID)
     - PolygonKeyToVertexPathMapping: mapping from PolygonKey -> VertexPath (data)
     - PolygonKeyToPolygonMapping: mapping from PolygonKey -> Manim Polygon (object)
 
 Notes:
-    - We use generic type PolygonKey in Polygons3D.
+    - We use generic type PolygonKey in Polygons3D and its subclasses.
 
 """
 from typing import OrderedDict
 
 import numpy as np
-from numpy.typing import NDArray
 
+from manim.typing import Point3D, Point3D_Array
 from manim import Polygon
 
 __all__ = [
-    'Vector',
-    'Vertex',
-    'VertexPath',
     'PolygonKeyToVertexPathMapping',
     'PolygonKeyToPolygonMapping', 
     'SortedPolygonKeyToVertexPathMapping',
@@ -38,15 +35,10 @@ __all__ = [
     'as_vertex_path',
 ]
 
-# --- Core data types ---
-type Vector = NDArray[np.float64]          # shape (3,)
-type Vertex = NDArray[np.float64]          # shape (3,)
-type VertexPath = NDArray[np.float64]      # shape (n, 3)
-
 # --- Generic Mappings ---
-type PolygonKeyToVertexPathMapping[KeyType] = dict[KeyType, VertexPath]
+type PolygonKeyToVertexPathMapping[KeyType] = dict[KeyType, Point3D_Array]
 type PolygonKeyToPolygonMapping[KeyType] = dict[KeyType, Polygon]
-type SortedPolygonKeyToVertexPathMapping[KeyType] = OrderedDict[KeyType, VertexPath]
+type SortedPolygonKeyToVertexPathMapping[KeyType] = OrderedDict[KeyType, Point3D_Array]
 type SortedPolygonKeyToPolygonMapping[KeyType] = OrderedDict[KeyType, Polygon]
 
 # --- Predicates and validators ---
@@ -129,7 +121,7 @@ def check_vertex_path(x: object, *, name: str = 'vertex_path') -> None:
 
 # --- Converters (convenience) ---
 
-def as_vertex(x: object, *, name: str = 'vertex') -> Vertex:
+def as_vertex(x: object, *, name: str = 'vertex') -> Point3D:
     """Convert ``x`` to a float64 (3,) array and validate.
 
     This is a small convenience to accept array-likes while enforcing the
@@ -153,7 +145,7 @@ def as_vertex(x: object, *, name: str = 'vertex') -> Vertex:
     check_vertex(arr, name=name)
     return arr
 
-def as_vertex_path(x: object, *, name: str = 'vertex_path') -> VertexPath:
+def as_vertex_path(x: object, *, name: str = 'vertex_path') -> Point3D_Array:
     """Convert ``x`` to a float64 (n, 3) array and validate.
 
     This accepts any array-like input and enforces the canonical dtype/shape,

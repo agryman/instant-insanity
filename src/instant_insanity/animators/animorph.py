@@ -5,12 +5,12 @@ from typing import Any, Callable
 
 import numpy as np
 from manim import Mobject, Animation, ValueTracker, Scene
-from manim.typing import Point3D
+from manim.typing import Point3D, Point3D_Array
 
 type Updater = Callable[[Any], object]
 
 
-def lerp(a_0: np.ndarray, a_1: np.ndarray, alpha: float) -> np.ndarray:
+def lerp(a_0: Point3D_Array, a_1: Point3D_Array, alpha: float) -> Point3D_Array:
     """
     Compute the linear interpolation between two arrays.
     Args:

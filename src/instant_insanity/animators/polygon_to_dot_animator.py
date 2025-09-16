@@ -9,7 +9,7 @@ from manim.typing import Point3D
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.force_ccw import force_ccw
-from instant_insanity.core.geometry_types import VertexPath
+from instant_insanity.core.geometry_types import Point3D_Array
 from instant_insanity.core.plane import xy_polar
 
 DEFAULT_MINIMUM_SECTOR_COUNT: int = 24
@@ -40,8 +40,8 @@ class PolygonToDotAnimorph(Animorph):
         force_ccw(polygon)
 
         polygon_centre: Point3D = polygon.get_center() # (3,)
-        v: VertexPath = polygon.get_vertices() # (m,3)
-        v0: VertexPath = v - polygon_centre # (m,3)
+        v: Point3D_Array = polygon.get_vertices() # (m,3)
+        v0: Point3D_Array = v - polygon_centre # (m,3)
 
         v0_radius: np.ndarray # (m,)
         v0_theta: np.ndarray # (m,)

@@ -5,7 +5,7 @@ from manim import Polygon, VGroup, WHITE, BLACK, LineJointType
 from instant_insanity.core.depth_sort import DepthSort
 from instant_insanity.core.geometry_types import (
     PolygonKeyToVertexPathMapping, SortedPolygonKeyToVertexPathMapping,
-    SortedPolygonKeyToPolygonMapping, VertexPath,
+    SortedPolygonKeyToPolygonMapping, Point3D_Array,
 )
 from instant_insanity.core.projection import Projection
 
@@ -106,7 +106,7 @@ class Polygons3D[KeyType](VGroup):
 
         # make the Polygon mobjects
         polygon: Polygon
-        scene_path: VertexPath
+        scene_path: Point3D_Array
         self.key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[KeyType] = OrderedDict()
         for polygon_key, scene_path in self.key_to_scene_path.items():
             polygon_settings: dict = self.get_polygon_settings(polygon_key)

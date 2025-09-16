@@ -11,7 +11,7 @@ from typing import Protocol
 
 import numpy as np
 from manim import RIGHT, UP, OUT
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3D, Vector3D, Point3D_Array
 
 from instant_insanity.core.type_check import check_vector3_float64, check_matrix_nx3_float64
 
@@ -104,36 +104,36 @@ class Projection(ABC):
         self.conversion = ModelToSceneConversion(scene_origin, scene_per_model)
 
     @abstractmethod
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
+    def compute_u(self, model_point: Point3D) -> Vector3D:
         pass
 
-    def project_point(self, model_point: np.ndarray) -> np.ndarray:
+    def project_point(self, model_point: Point3D) -> Point3D:
         """Projects the model point onto the camera plane and computes its parameter t along the projection line.
 
         Args:
             model_point: A point in model space.
 
         Returns:
-            A 3-vector containing (x, y, t) where (x, y, c) is the projection of the model point onto
-                the camera plane z=c and t is the parameter value of the model point along the projection line.
+            A NumPy array containing (x, y, mz) where (x, y, c) is the projection of the model point onto
+                the camera plane z=c.
 
         Raises:
             TypeError: if model_point is not a NumPy array of float64 values.
             ValueError: if model_point is not a 3-vector
         """
         check_vector3_float64(model_point)
-        u: np.ndarray = self.compute_u(model_point)
+        u: Vector3D = self.compute_u(model_point)
 
         return self._project_point_along_u(model_point, u)
 
-    def project_points(self, model_points: np.ndarray) -> np.ndarray:
+    def project_points(self, model_points: Point3D_Array) -> Point3D_Array:
         check_matrix_nx3_float64(model_points)
 
-        projected_points: list[np.ndarray] = [self.project_point(model_point)
+        projected_points: list[Point3D] = [self.project_point(model_point)
                                               for model_point in model_points]
         return np.array(projected_points, dtype=np.float64)
 
-    def _project_point_along_u(self, model_point: np.ndarray, u: np.ndarray) -> np.ndarray:
+    def _project_point_along_u(self, model_point: Point3D, u: Vector3D) -> Point3D:
         """Projects the model point onto the camera plane along the direction given by the unit vector u.
 
         This is a protected method. It is the responsibility of callers to ensure that u is a unit vector.
@@ -168,7 +168,7 @@ class Projection(ABC):
         x: float = m_x - t * u_x
         y: float = m_y - t * u_y
 
-        p: np.ndarray = np.array((x, y, m_z), dtype=np.float64)
+        p: Point3D = np.array((x, y, m_z), dtype=np.float64)
 
         return self.conversion.convert_model_to_scene(p)
 
@@ -205,14 +205,14 @@ class Projection(ABC):
         """
 
         # we are not given the z-coordinate of the point in scene space so set it to 0.0
-        scene_point: np.ndarray = np.array([x, y, 0.0], dtype=np.float64)
-        p: np.ndarray = self.conversion.convert_scene_to_model(scene_point)
+        scene_point: Point3D = np.array([x, y, 0.0], dtype=np.float64)
+        p: Point3D = self.conversion.convert_scene_to_model(scene_point)
         # we want the corresponding point in model space to lie on the camera plane
         p[2] = self.camera_z
 
-        unit_u: np.ndarray = self.compute_u(p)
-        b: np.ndarray = polygon.get_point()
-        n: np.ndarray = polygon.get_normal()
+        unit_u: Vector3D = self.compute_u(p)
+        b: Point3D = polygon.get_point()
+        n: Vector3D = polygon.get_normal()
         t: float = np.dot(b - p, n) / np.dot(unit_u, n)
 
         return t
@@ -225,9 +225,9 @@ class PerspectiveProjection(Projection):
         camera_z: A float that specifies the position of the camera plane.
         viewpoint: A 3d point that specifies the position of the viewpoint in model space.
     """
-    viewpoint: np.ndarray
+    viewpoint: Point3D
 
-    def __init__(self, viewpoint: np.ndarray, **kwargs) -> None:
+    def __init__(self, viewpoint: Point3D, **kwargs) -> None:
         """Initialize the projection.
 
         Args:
@@ -243,15 +243,15 @@ class PerspectiveProjection(Projection):
         super().__init__(**kwargs)
         self.viewpoint = viewpoint
 
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
+    def compute_u(self, model_point: Point3D) -> Vector3D:
         check_vector3_float64(model_point)
 
         # compute the unit vector u pointing from the model point to the viewpoint
-        direction: np.ndarray = self.viewpoint - model_point
+        direction: Vector3D = self.viewpoint - model_point
         norm: np.floating = np.linalg.norm(direction)
         if np.isclose(norm, 0.0):
             raise ValueError('model point is too close to viewpoint')
-        u: np.ndarray = direction / norm
+        u: Vector3D = direction / norm
 
         return u
 
@@ -263,9 +263,9 @@ class OrthographicProjection(Projection):
         u: A unit vector that specifies the direction of the projection.
     """
 
-    u: np.ndarray
+    u: Vector3D
 
-    def __init__(self, u: np.ndarray, **kwargs) -> None:
+    def __init__(self, u: Vector3D, **kwargs) -> None:
         """Initializes an orthographic projection object.
 
         Args:
@@ -290,7 +290,7 @@ class OrthographicProjection(Projection):
 
         self.u = u
 
-    def compute_u(self, model_point: np.ndarray) -> np.ndarray:
+    def compute_u(self, model_point: Point3D) -> Vector3D:
         check_vector3_float64(model_point)
 
         return self.u

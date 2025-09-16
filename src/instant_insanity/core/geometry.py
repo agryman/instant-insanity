@@ -3,7 +3,7 @@ This module contains functions for the geometry of convex polygons in 2 and 3 di
 """
 
 import numpy as np
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3D, Vector3D, Point3D_Array
 
 type Triangle = list[Point3D]
 
@@ -31,15 +31,15 @@ def overlap(triangle1, triangle2) -> int:
 
     return 0
 
-def get_translation(v1: np.ndarray, v2: np.ndarray) -> Vector3D:
+def get_translation(v1: Point3D_Array, v2: Point3D_Array) -> Vector3D:
     """Check if v2 is a translation of v1 by some vector t.
 
     Args:
-        v1 (np.ndarray): A (4, 3) array of floats.
-        v2 (np.ndarray): A (4, 3) array of floats.
+        v1: A (4, 3) array of floats.
+        v2: A (4, 3) array of floats.
 
     Returns:
-        np.ndarray: A (3,) translation vector t such that v2 ≈ v1 + t.
+        A (3,) translation vector t such that v2 ≈ v1 + t.
 
     Raises:
         ValueError: If no such translation vector exists.

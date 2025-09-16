@@ -2,7 +2,7 @@ import numpy as np
 
 
 def xy_polar(v0: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Project 3D vectors to the XY-plane and compute polar coords.
+    """Project 3D vectors to the XY-plane and compute polar coordinates.
 
     Given an array of 3D vectors (x, y, z) shaped (n, 3), projects each
     vector to (x, y) and returns the polar angle and radius for each point.

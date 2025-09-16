@@ -25,7 +25,7 @@ from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeExplosionAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping, VertexPath
+from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping, Point3D_Array
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
@@ -65,7 +65,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
     @staticmethod
     def mk_perspective_projection() -> PerspectiveProjection:
         camera_z: float = 2.0
-        viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
+        viewpoint: Point3D = np.array([2, 2, 6], dtype=np.float64)
         projection: PerspectiveProjection = PerspectiveProjection(viewpoint,
                                                        scene_x=-1.0,
                                                        scene_y=0.0,
@@ -236,7 +236,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
     def animate_shift_cube(self, cube3d: PuzzleCube3D) -> None:
         # animate movement of exploded cube to the left
-        cube_shift: np.ndarray = 3 * LEFT
+        cube_shift: Vector3D = 3 * LEFT
         self.play(cube3d.animate.shift(cube_shift), run_time=1.0)
 
     def morph_opposite_faces_to_dots(self,
@@ -263,15 +263,15 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             start: FaceData,
             end: FaceData) -> None:
         # connect the start-end dots with a graph edge
-        start_point_0: np.ndarray = start.dot.get_center()
-        end_point_0: np.ndarray = end.dot.get_center()
+        start_point_0: Point3D = start.dot.get_center()
+        end_point_0: Point3D = end.dot.get_center()
         point_pair_0: PointPair = (start_point_0, end_point_0)
 
         start_dot_1: Dot = graph.node_to_mobject[start.quadrant]
         end_dot_1: Dot = graph.node_to_mobject[end.quadrant]
 
-        start_point_1: np.ndarray = start_dot_1.get_center()
-        end_point_1: np.ndarray = end_dot_1.get_center()
+        start_point_1: Point3D = start_dot_1.get_center()
+        end_point_1: Point3D = end_dot_1.get_center()
         point_pair_1: PointPair = (start_point_1, end_point_1)
 
         edge: LabelledEdge = graph.copy_edge_from_to(cube_axis, point_pair_0, point_pair_1, point_pair_0)
@@ -288,15 +288,15 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             start: FaceData,
             end: FaceData) -> None:
 
-        start_point_0: np.ndarray = start.dot.get_center().copy()
-        end_point_0: np.ndarray = end.dot.get_center().copy()
+        start_point_0: Point3D = start.dot.get_center().copy()
+        end_point_0: Point3D = end.dot.get_center().copy()
         point_pair_0: PointPair = (start_point_0, end_point_0)
 
         start_dot_1: Dot = graph.node_to_mobject[start.quadrant]
         end_dot_1: Dot = graph.node_to_mobject[end.quadrant]
 
-        start_point_1: np.ndarray = start_dot_1.get_center()
-        end_point_1: np.ndarray = end_dot_1.get_center()
+        start_point_1: Point3D = start_dot_1.get_center()
+        end_point_1: Point3D = end_dot_1.get_center()
         point_pair_1: PointPair = (start_point_1, end_point_1)
 
         # move the dots to the graph and always redraw the moving edge to connect their centres
@@ -406,7 +406,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
             front_target: Point3D = 6.0 * DOWN + 3.0 * LEFT
             front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
             front_name: Puzzle3DPolygonName = (cube_number, front_label)
-            front_path: VertexPath = puzzle3d.key_to_model_path[front_name]
+            front_path: Point3D_Array = puzzle3d.key_to_model_path[front_name]
             front_centre: Point3D = np.mean(front_path, 0)
             translation = front_target - front_centre
 

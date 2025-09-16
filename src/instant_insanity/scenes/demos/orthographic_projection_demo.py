@@ -1,6 +1,6 @@
 import numpy as np
 
-from manim.typing import Vector3D
+from manim.typing import Vector3D, Point3D
 from manim import Scene, Polygon, Text, tempconfig, DOWN, BLACK
 
 from instant_insanity.core.config import LINEN_CONFIG
@@ -44,7 +44,7 @@ class OrthographicProjectionDemo(GridMixin, Scene):
         # find the scene coordinates of the centre of the front face
         front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
         front_face: Polygon = cube.key_to_scene_polygon[front_label]
-        centre: np.ndarray = front_face.get_center()
+        centre: Point3D = front_face.get_center()
         centre_str: str = f'front face centre = ({centre[0]:.2f}, {centre[1]:.2f}, {centre[2]:.2f})'
         centre_text: Text = Text(centre_str, color=BLACK, font_size=24)
         centre_text.move_to(1.5 * DOWN)

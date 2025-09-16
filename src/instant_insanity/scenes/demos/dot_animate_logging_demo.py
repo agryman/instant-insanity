@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from manim import logger, Scene, console, Dot, RED, BLACK, LEFT, Mobject, RIGHT, tempconfig
+from manim.typing import Point3D
 
 from instant_insanity.core.config import LINEN_CONFIG
 
@@ -28,7 +29,7 @@ class DotAnimateLoggingDemo(Scene):
             nonlocal elapsed
             elapsed += dt
             if elapsed >= throttle_every:
-                p: np.ndarray = mob.get_center()
+                p: Point3D = mob.get_center()
                 logger.debug(f'dot center ≈ {p.tolist()}')
                 elapsed = 0.0
 

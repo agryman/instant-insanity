@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from manim import CubicBezier, StealthTip, BLACK
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3D, Vector3D, Point3D_Array
 
 from instant_insanity.core.puzzle import PuzzleCubeNumber
 
@@ -36,7 +36,7 @@ def get_cubic_bezier_point_tangent(curve: CubicBezier, t: float) -> tuple[Point3
     """
     assert 0.0 <= t <= 1.0
 
-    points: np.ndarray = curve.points
+    points: Point3D_Array = curve.points
     assert len(points) == 4
 
     p0: Point3D = points[0]

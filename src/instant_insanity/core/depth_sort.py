@@ -7,6 +7,7 @@ import numpy as np
 import networkx as nx
 from shapely.geometry import Point, Polygon
 from shapely.geometry.base import BaseGeometry
+from manim.typing import Point3D_Array
 
 from instant_insanity.core.convex_planar_polygon import ConvexPlanarPolygon
 from instant_insanity.core.projection import Projection
@@ -82,7 +83,7 @@ class DepthSort[KeyType]:
         """
         # check that the input consists of convex, planar polygons
         polygon_key: KeyType
-        path: VertexPath
+        path: Point3D_Array
         convex_planar_polygons: dict[KeyType, ConvexPlanarPolygon] = {
             polygon_key: ConvexPlanarPolygon(path)
             for polygon_key, path in paths.items()
@@ -109,7 +110,7 @@ class DepthSort[KeyType]:
         i: int
         polygon_key_i: KeyType
         for i, polygon_key_i in enumerate(polygon_keys):
-            path_i: VertexPath = projected_paths[polygon_key_i]
+            path_i: Point3D_Array = projected_paths[polygon_key_i]
             polygon_i: Polygon = Polygon(path_i)
 
             j: int
@@ -117,7 +118,7 @@ class DepthSort[KeyType]:
             for j, polygon_key_j in enumerate(polygon_keys):
                 if j <= i:
                     continue
-                path_j: np.ndarray = projected_paths[polygon_key_j]
+                path_j: Point3D_Array = projected_paths[polygon_key_j]
                 polygon_j: Polygon = Polygon(path_j)
                 if not polygon_i.intersects(polygon_j):
                     continue

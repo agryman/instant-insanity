@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from manim import Dot, VGroup, Polygon, CubicBezier, StealthTip
-from manim.typing import Point3D
+from manim.typing import Point3D, Point3D_Array
 
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.object_count import ObjectToCountMapping
@@ -202,7 +202,7 @@ class OppositeFaceGraph(VGroup):
         empty_subgraph: EdgeToSubgraphMapping = self.mk_subgraph_for_flag(False)
         self.set_subgraph(empty_subgraph)
 
-    def mk_node_at(self, quadrant: Quadrant, point: np.ndarray) -> Dot:
+    def mk_node_at(self, quadrant: Quadrant, point: Point3D) -> Dot:
         """
         Creates a node for a given quadrant at a given point.
         Args:
@@ -222,8 +222,8 @@ class OppositeFaceGraph(VGroup):
         self.node_to_mobject = {}
         quadrant: Quadrant
         for quadrant in Quadrant:
-            position: np.ndarray = QUADRANT_TO_POSITION[quadrant]
-            point: np.ndarray = position + self.centre
+            position: Point3D = QUADRANT_TO_POSITION[quadrant]
+            point: Point3D = position + self.centre
             self.node_to_mobject[quadrant] = self.mk_node_at(quadrant, point)
 
     def init_edge_to_mobject(self) -> None:
@@ -256,8 +256,8 @@ class OppositeFaceGraph(VGroup):
             start_quadrant, end_quadrant = node_pair
 
             sequence_number: int = self.node_pair_to_count.post_increment(node_pair)
-            start_point: np.ndarray = self.node_to_mobject[start_quadrant].get_center()
-            end_point: np.ndarray = self.node_to_mobject[end_quadrant].get_center()
+            start_point: Point3D = self.node_to_mobject[start_quadrant].get_center()
+            end_point: Point3D = self.node_to_mobject[end_quadrant].get_center()
             point_pair: PointPair = (start_point, end_point)
             self.edge_to_mobject[cube_axis] = LabelledEdge(node_pair,
                                                            text,
@@ -352,8 +352,8 @@ def mk_face_data_from_puzzle(graph: OppositeFaceGraph,
 
 def mk_face_data(graph: OppositeFaceGraph, colour: FaceColour, polygon: Polygon) -> FaceData:
     quadrant: Quadrant = graph.colour_to_node[colour]
-    vertices: np.ndarray = polygon.get_vertices()
-    centroid: np.ndarray = np.mean(vertices, axis=0)
+    vertices: Point3D_Array = polygon.get_vertices()
+    centroid: Point3D = np.mean(vertices, axis=0)
     dot: Dot = graph.mk_node_at(quadrant, centroid)
     return FaceData(colour, quadrant, polygon, dot)
 

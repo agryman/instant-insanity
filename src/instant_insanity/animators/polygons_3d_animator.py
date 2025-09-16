@@ -2,7 +2,7 @@ from manim import Mobject
 from manim.typing import Vector3D
 
 from instant_insanity.animators.animorph import Animorph
-from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, Point3D_Array
 from instant_insanity.core.transformation import RigidMotion
 from instant_insanity.mobjects.polygons_3d import Polygons3D
 
@@ -59,9 +59,9 @@ class RigidMotionPolygons3DAnimorph[KeyType](Polygons3DAnimorph[KeyType]):
 
         key_to_model_path: PolygonKeyToVertexPathMapping[KeyType] = {}
         polygon_key: KeyType
-        model_path_0: VertexPath
+        model_path_0: Point3D_Array
         for polygon_key, model_path_0 in key_to_model_path_0.items():
-            model_path: VertexPath
+            model_path: Point3D_Array
             if polygon_key in self.moveable_polygon_keys:
                 model_path = alpha_motion.transform_path(model_path_0)
             else:

@@ -1,5 +1,5 @@
 from typing import Type
-import numpy as np
+from manim.typing import Point3D, Vector3D
 from manim import *
 
 from instant_insanity.core.config import LINEN_CONFIG
@@ -26,7 +26,7 @@ class BeziersWithEndpointArrows(Scene):
 
         y_levels: list[float] = [2.5, 0.5, -1.5]
 
-        shapes: list[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = [
+        shapes: list[tuple[Point3D, Point3D, Point3D, Point3D]] = [
             (LEFT * 4, LEFT * 1 + UP * 2, RIGHT * 1 + DOWN * 1, RIGHT * 4),
             (LEFT * 4, LEFT * 2 + DOWN * 2, RIGHT * 2 + UP * 3, RIGHT * 4),
             (LEFT * 4, LEFT * 2 + UP * 1, RIGHT * 3 + UP * 1, RIGHT * 4),
@@ -34,7 +34,7 @@ class BeziersWithEndpointArrows(Scene):
 
         curves: list[VMobject] = []
         for (p0, p1, p2, p3), y in zip(shapes, y_levels):
-            dy: np.ndarray = y * UP
+            dy: Vector3D = y * UP
             curve: VMobject = CubicBezier(
                 p0 + dy, p1 + dy, p2 + dy, p3 + dy,
                 color=BLACK,
@@ -54,31 +54,31 @@ class BeziersWithEndpointArrows(Scene):
                 A VGroup containing the (shaftless) arrow and its label.
             """
             u_end: float = 1.0
-            end_point: np.ndarray = curve.point_from_proportion(u_end)
+            end_point: Point3D = curve.point_from_proportion(u_end)
 
             u_before: float = 1.0 - 1e-3
-            before_point: np.ndarray = curve.point_from_proportion(u_before)
+            before_point: Point3D = curve.point_from_proportion(u_before)
 
-            tangent: np.ndarray = before_point - end_point
+            tangent: Vector3D = before_point - end_point
             L: float = float(np.linalg.norm(tangent))
             if L < 1e-9:
                 tangent = LEFT
                 L = 1.0
 
-            t_hat: np.ndarray = tangent / L
+            t_hat: Vector3D = tangent / L
 
             # Tip point b lands on the dot perimeter where the curve first meets the dot.
-            b: np.ndarray = end_point + DOT_RADIUS * t_hat
+            b: Point3D = end_point + DOT_RADIUS * t_hat
 
             # Create a hidden short shaft so only the tip renders.
             arrow_length: float = 0.5
-            a: np.ndarray = b + arrow_length * t_hat
+            a: Point3D = b + arrow_length * t_hat
             arrow: Line = Line(a, b, color=BLACK, stroke_width=0)
             arrow.set_stroke(opacity=0)
             arrow.add_tip(tip_shape=tip_shape, tip_length=0.3)
 
             # Label placed slightly offset using a left-normal relative to t_hat.
-            n_hat: np.ndarray = np.array([-t_hat[1], t_hat[0], 0.0])
+            n_hat: Vector3D = np.array([-t_hat[1], t_hat[0], 0.0])
             label: Text = Text(name, font_size=24, color=BLACK)
             label.move_to(b + 0.22 * n_hat - 0.05 * t_hat)
 
@@ -88,8 +88,8 @@ class BeziersWithEndpointArrows(Scene):
         dots: list[Dot] = []
         for curve, (name, cls) in zip(curves, tip_styles):
             arrow_groups.append(arrow_at_end(curve, cls, name))
-            p0: np.ndarray = curve.point_from_proportion(0.0)
-            p3: np.ndarray = curve.point_from_proportion(1.0)
+            p0: Point3D = curve.point_from_proportion(0.0)
+            p3: Point3D = curve.point_from_proportion(1.0)
             dots.extend([
                 Dot(p0, radius=DOT_RADIUS, color=BLACK),
                 Dot(p3, radius=DOT_RADIUS, color=BLACK),
