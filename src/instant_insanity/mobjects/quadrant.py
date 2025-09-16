@@ -6,8 +6,8 @@ We use quadrants to identify the nodes of an opposite-face graph.
 """
 
 from enum import StrEnum
-import numpy as np
 from manim import RIGHT, UP, LEFT, DOWN
+from manim.typing import Point3D, Vector3D
 
 
 class Quadrant(StrEnum):
@@ -17,13 +17,13 @@ class Quadrant(StrEnum):
     IV = "IV"
 
 
-QUADRANT_TO_POSITION: dict[Quadrant, np.ndarray] = {
+QUADRANT_TO_POSITION: dict[Quadrant, Point3D] = {
     Quadrant.I: RIGHT + UP,
     Quadrant.II: LEFT + UP,
     Quadrant.III: LEFT + DOWN,
     Quadrant.IV: RIGHT + DOWN
 }
-QUADRANT_TO_BASIS: dict[Quadrant, tuple[np.ndarray, np.ndarray]] = {
+QUADRANT_TO_BASIS: dict[Quadrant, tuple[Vector3D, Vector3D]] = {
     Quadrant.I: (RIGHT, UP),
     Quadrant.II: (UP, LEFT),
     Quadrant.III: (LEFT, DOWN),

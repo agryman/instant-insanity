@@ -1,11 +1,12 @@
 from typing import cast
 import numpy as np
+from manim.typing import Point3D_Array, Vector3D
 from scipy.spatial.transform import Rotation as R
 import matplotlib.animation as animation
 from matplotlib.artist import Artist
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from instant_insanity.animator import Animator, VideoSpec, MpegSpec
+from instant_insanity.matplotlib.animator import Animator, VideoSpec, MpegSpec
 from datetime import datetime
 
 DEFAULT_CUBE_LENGTH: float = 1.0
@@ -33,7 +34,7 @@ class Cube:
     
     length: float
     colours: list[str]
-    vertices: np.ndarray
+    vertices: Point3D_Array
     faces: list[list[int]]
 
     def __init__(self, length: float | None = None, colours: list[str] | None = None):
@@ -66,7 +67,7 @@ class Cube:
             [0, 1, 2, 3],  # Bottom face
         ]
 
-    def mk_poly_verts(self, rotation: R | None = None, translation: np.ndarray | None = None) -> list[np.ndarray]:
+    def mk_poly_verts(self, rotation: R | None = None, translation: Vector3D | None = None) -> list[np.ndarray]:
         """
         Make a list of the cube's polygons from the rotated and translated vertices.
 
@@ -84,12 +85,12 @@ class Cube:
         if translation is None:
             translation = np.array([0, 0, 0])
 
-        vertices: np.ndarray = rotation.apply(self.vertices) + translation
+        vertices: Point3D_Array = rotation.apply(self.vertices) + translation
         poly_verts: list[np.ndarray] = list(vertices[self.faces])
 
         return poly_verts
 
-    def mk_poly_collection(self, rotation: R | None = None, translation: np.ndarray | None = None) -> Poly3DCollection:
+    def mk_poly_collection(self, rotation: R | None = None, translation: Vector3D | None = None) -> Poly3DCollection:
         """Make a Poly3DCollection of the cube's rotated and translated faces.
         Args:
             rotation: A 3x3 SciPy rotation matrix.

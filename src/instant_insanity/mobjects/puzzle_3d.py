@@ -5,7 +5,7 @@ of all 24 faces of the 4 puzzle cubes.
 from manim.typing import Point3D, Vector3D
 from manim import RIGHT, ManimColor, ORIGIN
 
-from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, Point3D_Array
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, PuzzleCube, FaceColour, FaceLabel, \
@@ -76,7 +76,7 @@ class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
         for i, cube_number in enumerate(PuzzleCubeNumber):
             cube_centre_i: Point3D = puzzle_centre + (i - 2.5) * cube_delta
             face_plane: FacePlane
-            vertex_path: VertexPath
+            vertex_path: Point3D_Array
             for face_plane, vertex_path in FACE_PLANE_TO_VERTEX_PATH.items():
                 face_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[face_plane]
                 polygon_name: Puzzle3DPolygonName = (cube_number, face_label)

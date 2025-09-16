@@ -10,6 +10,9 @@ then polygon A is rendered before polygon B.
 
 import numpy as np
 from manim import *
+from manim.typing import Vector3D, Point3D_Array
+from sympy import Point3D
+
 from instant_insanity.core.projection import PerspectiveProjection
 
 class ThreeDSceneEmulation(Scene):
@@ -18,25 +21,25 @@ class ThreeDSceneEmulation(Scene):
         # create a perspective projection
         camera_z: float = 0
         #viewpoint: np.ndarray = np.array([0, 0, 10], dtype=np.float64)
-        viewpoint: np.ndarray = np.array([2, 2, 6], dtype=np.float64)
+        viewpoint: Point3D = np.array([2, 2, 6], dtype=np.float64)
         projection: PerspectiveProjection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         def mk_polygons(alpha: float) -> list[Polygon]:
             """Makes the triangle corresponding to the animation parameter alpha"""
 
-            translation_vector: np.ndarray = np.array([2, 3, -4], dtype=np.float64)
-            alpha_translation: np.ndarray = alpha * translation_vector
+            translation_vector: Vector3D = np.array([2, 3, -4], dtype=np.float64)
+            alpha_translation: Vector3D = alpha * translation_vector
 
             # create a triangle
-            model_vertices: np.ndarray = np.array([
+            model_vertices: Point3D_Array = np.array([
                 [0, 0, -1],
                 [1, 0, -2],
                 [1, 1, -3]
             ], dtype=np.float64)
-            transformed_vertices: np.ndarray = model_vertices + alpha_translation
+            transformed_vertices: Point3D_Array = model_vertices + alpha_translation
 
             # project the vertices
-            scene_vertices: np.ndarray = projection.project_points(transformed_vertices)
+            scene_vertices: Point3D_Array = projection.project_points(transformed_vertices)
 
             # create a manim polygon
             polygon: Polygon = Polygon(

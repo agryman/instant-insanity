@@ -1,11 +1,12 @@
 import numpy as np
 
+from manim.typing import Vector3D, Point3D, Point3D_Array
 from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempconfig, RIGHT, PI, LineJointType, FadeIn, \
     FadeOut, ValueTracker, UP
 
 from instant_insanity.animators.animorph import Updater
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
-from instant_insanity.core.geometry_types import Vector, SortedPolygonKeyToPolygonMapping
+from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
@@ -21,15 +22,15 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
         self.add_grid(False)
 
         camera_z: float = 8.0
-        viewpoint: np.ndarray = np.array([5, 5, 20], dtype=np.float64)
+        viewpoint: Point3D = np.array([5, 5, 20], dtype=np.float64)
         projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
 
         cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
         cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
 
         # set up the rigid motion animation
-        rotation: Vector = ORIGIN
-        translation: Vector = 7 * LEFT  # + DOWN
+        rotation: Vector3D = ORIGIN
+        translation: Vector3D = 7 * LEFT  # + DOWN
         animorph: CubeRigidMotionAnimorph = CubeRigidMotionAnimorph(cube, rotation, translation)
 
         # draw the outlines of the front and right faces at some points in the animation
@@ -44,7 +45,7 @@ class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
             colour: ManimColor
             for face_label, colour in zip(face_labels, colours):
                 polygon: Polygon = key_to_scene_polygon[face_label]
-                vertices: np.ndarray = polygon.get_vertices()
+                vertices: Point3D_Array = polygon.get_vertices()
                 alpha_polygon_outline: Polygon = Polygon(*vertices,
                                                          stroke_color=colour,
                                                          joint_type=LineJointType.ROUND)

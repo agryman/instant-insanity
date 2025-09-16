@@ -1,5 +1,6 @@
 import numpy as np
 from manim import Polygon
+from manim.typing import Point3D_Array
 from shapely import is_ccw, LinearRing
 from shapely.geometry import LinearRing
 
@@ -20,18 +21,18 @@ def force_ccw(poly: Polygon) -> Polygon:
         - Assumes standard Cartesian coordinates (y up).
         - For convex polygons this test is unambiguous.
     """
-    verts3d: np.ndarray = poly.get_vertices()  # shape (N, 3)
+    verts3d: Point3D_Array = poly.get_vertices()  # shape (N, 3)
 
     if not is_ccw_vertices(verts3d):
         # Update THIS polygon in place; no new Polygon is created.
-        reversed_verts: np.ndarray = verts3d[::-1]
+        reversed_verts: Point3D_Array = verts3d[::-1]
         poly.set_points_as_corners(reversed_verts)
         poly.close_path()
 
     return poly
 
 
-def is_ccw_vertices(vertices3d: np.ndarray) -> bool:
+def is_ccw_vertices(vertices3d: Point3D_Array) -> bool:
     """Return True if the vertex loop is counterclockwise (y-up convention).
 
     Args:

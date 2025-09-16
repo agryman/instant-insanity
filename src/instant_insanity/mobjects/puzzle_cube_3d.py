@@ -2,7 +2,7 @@ from manim import ManimColor, ORIGIN
 from manim.typing import Point3D
 
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
-from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, Point3D_Array
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, PuzzleCube, FaceColour, FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.mobjects.coloured_cube import MANIM_COLOUR_MAP
@@ -55,7 +55,7 @@ class PuzzleCube3D(Polygons3D[FaceLabel]):
         face_label: FaceLabel
         for face_label in FaceLabel:
             face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
-            vertex_path: VertexPath = FACE_PLANE_TO_VERTEX_PATH[face_plane]
+            vertex_path: Point3D_Array = FACE_PLANE_TO_VERTEX_PATH[face_plane]
             face_to_model_path_0[face_label] = vertex_path + cube_centre
         return face_to_model_path_0
 

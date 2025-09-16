@@ -1,12 +1,12 @@
 from abc import ABC
 
 import numpy as np
-from manim import Mobject
-from manim.typing import Vector3D
+from manim import Mobject, ORIGIN, X_AXIS, Y_AXIS, Z_AXIS
+from manim.typing import Vector3D, Point3D, Point3D_Array, MatrixMN
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_UNIT_NORMAL, RBF, LBF, LTF, FACE_PLANE_TO_VERTEX_PATH
-from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath, Vertex, Vector
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping
 from instant_insanity.core.puzzle import FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.core.transformation import transform_vertex_path, rotation_matrix_about_line, \
     apply_linear_transform
@@ -57,11 +57,11 @@ class CubeRigidMotionAnimorph(CubeAnimorph):
         super().morph_to(alpha)
         cube: PuzzleCube3D = self.get_cube3d()
 
-        alpha_rotation: np.ndarray = alpha * self.rotation
-        alpha_translation: np.ndarray = alpha * self.translation
+        alpha_rotation: Vector3D = alpha * self.rotation
+        alpha_translation: Vector3D = alpha * self.translation
         key_to_model_path_0: PolygonKeyToVertexPathMapping[FaceLabel] = cube.key_to_model_path_0
         face_label: FaceLabel
-        model_path_0: VertexPath
+        model_path_0: Point3D_Array
         key_to_model_path: PolygonKeyToVertexPathMapping[FaceLabel] = {
             face_label: transform_vertex_path(alpha_rotation, alpha_translation, model_path_0)
             for face_label, model_path_0 in key_to_model_path_0.items()
@@ -90,10 +90,10 @@ class CubeExplosionAnimorph(CubeAnimorph):
         face_label: FaceLabel
         for face_label in FaceLabel:
             face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
-            standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
-                                                                                  self.expansion_factor,
-                                                                                  alpha)
-            model_path_0: VertexPath = cube3d.key_to_model_path_0[face_label]
+            standard_model_path: Point3D_Array = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
+                                                                                              self.expansion_factor,
+                                                                                              alpha)
+            model_path_0: Point3D_Array = cube3d.key_to_model_path_0[face_label]
             translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_plane][0]
             key_to_model_path[face_label] = standard_model_path + translation
 
@@ -102,7 +102,7 @@ class CubeExplosionAnimorph(CubeAnimorph):
     @staticmethod
     def morph_standard_face_to(name: FacePlane,
                                expansion_factor: float,
-                               alpha: float) -> np.ndarray:
+                               alpha: float) -> Point3D_Array:
         """
         Makes the NumPy array of face vertices corresponding to the animation parameter alpha
         applied to the standard cube, namely the unrotated cube centered at the origin.
@@ -123,19 +123,19 @@ class CubeExplosionAnimorph(CubeAnimorph):
             the model path corresponding to alpha.
         """
 
-        origin: Vertex = np.zeros(3, dtype=np.float64)
-        unit_i: Vector = np.array([1, 0, 0], dtype=np.float64)
-        unit_j: Vector = np.array([0, 1, 0], dtype=np.float64)
-        unit_k: Vector = np.array([0, 0, 1], dtype=np.float64)
+        origin: Point3D = ORIGIN
+        unit_i: Vector3D = X_AXIS
+        unit_j: Vector3D = Y_AXIS
+        unit_k: Vector3D = Z_AXIS
         quarter_turn: float = np.pi / 2.0
 
         # compute the point p, unit vector u, and angle theta that define a rotation about a line
-        p: Vertex = origin
-        u: Vector = unit_k
+        p: Point3D = origin
+        u: Vector3D = unit_k
         theta_max: float = 0.0
         z_max: float = -(3.0 + expansion_factor) / 2.0
-        face_normal: Vector = FACE_PLANE_TO_UNIT_NORMAL[name]
-        translation_max: Vector = z_max * unit_k + (expansion_factor - 1.0) * face_normal
+        face_normal: Vector3D = FACE_PLANE_TO_UNIT_NORMAL[name]
+        translation_max: Vector3D = z_max * unit_k + (expansion_factor - 1.0) * face_normal
 
         match name:
             case FacePlane.RIGHT:
@@ -160,11 +160,11 @@ class CubeExplosionAnimorph(CubeAnimorph):
                 translation_max = -(expansion_factor - 1.0) * unit_k
 
         theta: float = alpha * theta_max
-        rot_mat: np.ndarray = rotation_matrix_about_line(p, u, theta)
-        standard_model_path_0: VertexPath = FACE_PLANE_TO_VERTEX_PATH[name]
-        rotated_model_path: VertexPath = apply_linear_transform(rot_mat, standard_model_path_0)
+        rot_mat: MatrixMN = rotation_matrix_about_line(p, u, theta)
+        standard_model_path_0: Point3D_Array = FACE_PLANE_TO_VERTEX_PATH[name]
+        rotated_model_path: Point3D_Array = apply_linear_transform(rot_mat, standard_model_path_0)
 
-        translation: Vector = alpha * translation_max
-        model_path: np.ndarray = rotated_model_path + translation
+        translation: Vector3D = alpha * translation_max
+        model_path: Point3D_Array = rotated_model_path + translation
 
         return model_path

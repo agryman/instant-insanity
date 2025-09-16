@@ -5,7 +5,7 @@ from numpy.random import standard_t
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.cube_animators import CubeExplosionAnimorph
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
-from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, VertexPath
+from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, Point3D_Array
 from instant_insanity.core.puzzle import PuzzleCubeNumber, FaceLabel, INITIAL_FACE_LABEL_TO_PLANE
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, Puzzle3DPolygonName
 
@@ -54,10 +54,10 @@ class Puzzle3DCubeExplosionAnimorph(Puzzle3DAnimorph):
         for face_label in FaceLabel:
             polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
             face_plane: FacePlane = INITIAL_FACE_LABEL_TO_PLANE[face_label]
-            standard_model_path: VertexPath = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
-                                                                                  self.expansion_factor,
-                                                                                  alpha)
-            model_path_0: VertexPath = puzzle3d.key_to_model_path_0[polygon_name]
+            standard_model_path: Point3D_Array = CubeExplosionAnimorph.morph_standard_face_to(face_plane,
+                                                                                              self.expansion_factor,
+                                                                                              alpha)
+            model_path_0: Point3D_Array = puzzle3d.key_to_model_path_0[polygon_name]
             translation: Vector3D = model_path_0[0] - FACE_PLANE_TO_VERTEX_PATH[face_plane][0]
             key_to_model_path[polygon_name] = standard_model_path + translation
 

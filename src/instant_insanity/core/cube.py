@@ -20,8 +20,10 @@ of the standard cube using the standard coordinate system.
 
 from enum import IntEnum, StrEnum
 import numpy as np
+from manim import X_AXIS, Y_AXIS, Z_AXIS
+from manim.typing import Point3D, Vector3D
 
-from instant_insanity.core.geometry_types import VertexPath
+from instant_insanity.core.geometry_types import Point3D_Array
 
 
 class FacePlane(StrEnum):
@@ -75,24 +77,24 @@ INITIAL_FACE_NUMBER_TO_PLANE: dict[FaceNumber, FacePlane] = {
     FaceNumber.FOUR: FacePlane.BACK
 }
 
-def mk_point(point: list[float]) -> np.ndarray:
+def mk_point(point: list[float]) -> Point3D:
     return np.array(point, dtype=np.float64)
 
 # 3D coordinates of standard cube vertices
-RTF: np.ndarray = mk_point([1.0, 1.0, 1.0])
-RTB: np.ndarray = mk_point([1.0, 1.0, -1.0])
-RBF: np.ndarray = mk_point([1.0, -1.0, 1.0])
-RBB: np.ndarray = mk_point([1.0, -1.0, -1.0])
-LTF: np.ndarray = mk_point([-1.0, 1.0, 1.0])
-LTB: np.ndarray = mk_point([-1.0, 1.0, -1.0])
-LBF: np.ndarray = mk_point([-1.0, -1.0, 1.0])
-LBB: np.ndarray = mk_point([-1.0, -1.0, -1.0])
+RTF: Point3D = mk_point([1.0, 1.0, 1.0])
+RTB: Point3D = mk_point([1.0, 1.0, -1.0])
+RBF: Point3D = mk_point([1.0, -1.0, 1.0])
+RBB: Point3D = mk_point([1.0, -1.0, -1.0])
+LTF: Point3D = mk_point([-1.0, 1.0, 1.0])
+LTB: Point3D = mk_point([-1.0, 1.0, -1.0])
+LBF: Point3D = mk_point([-1.0, -1.0, 1.0])
+LBB: Point3D = mk_point([-1.0, -1.0, -1.0])
 
-def mk_points(points: list[np.ndarray]) -> np.ndarray:
+def mk_points(points: list[Point3D]) -> Point3D_Array:
     return np.array(points, dtype=np.float64)
 
 # vertex paths of standard cube faces
-FACE_PLANE_TO_VERTEX_PATH: dict[FacePlane, VertexPath] = {
+FACE_PLANE_TO_VERTEX_PATH: dict[FacePlane, Point3D_Array] = {
     FacePlane.RIGHT: mk_points([RTF, RTB, RBB, RBF]),
     FacePlane.LEFT: mk_points([LTF, LTB, LBB, LBF]),
     FacePlane.TOP: mk_points([RTF, RTB, LTB, LTF]),
@@ -102,11 +104,11 @@ FACE_PLANE_TO_VERTEX_PATH: dict[FacePlane, VertexPath] = {
 }
 
 # outward-pointing unit normals of standard cube faces
-FACE_PLANE_TO_UNIT_NORMAL: dict[FacePlane, np.ndarray] = {
-    FacePlane.RIGHT: mk_point([1.0, 0.0, 0.0]),
-    FacePlane.LEFT: mk_point([-1.0, 0.0, 0.0]),
-    FacePlane.TOP: mk_point([0.0, 1.0, 0.0]),
-    FacePlane.BOTTOM: mk_point([0.0, -1.0, 0.0]),
-    FacePlane.FRONT: mk_point([0.0, 0.0, 1.0]),
-    FacePlane.BACK: mk_point([0.0, 0.0, -1.0])
+FACE_PLANE_TO_UNIT_NORMAL: dict[FacePlane, Vector3D] = {
+    FacePlane.RIGHT: X_AXIS,
+    FacePlane.LEFT: -1.0 * X_AXIS,
+    FacePlane.TOP: Y_AXIS,
+    FacePlane.BOTTOM: -1.0 * Y_AXIS,
+    FacePlane.FRONT: Z_AXIS,
+    FacePlane.BACK: -1.0 * Z_AXIS,
 }

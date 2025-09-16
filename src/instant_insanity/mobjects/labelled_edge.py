@@ -5,7 +5,7 @@ from typing import Self
 import numpy as np
 
 from manim import CubicBezier, Text, VGroup, ManimColor, BLACK, OUT
-from manim.typing import Point3D
+from manim.typing import Point3D, Vector3D
 
 from instant_insanity.mobjects.quadrant import Quadrant, NodePair, QUADRANT_TO_BASIS
 
@@ -19,10 +19,10 @@ DEFAULT_EDGE_STROKE_WIDTH: float = 2.0
 DEFAULT_EDGE_STROKE_COLOUR: ManimColor = BLACK
 
 
-def mk_cubic_bezier(start_point: np.ndarray,
-                    start_handle: np.ndarray,
-                    end_handle: np.ndarray,
-                    end_point: np.ndarray,
+def mk_cubic_bezier(start_point: Point3D,
+                    start_handle: Point3D,
+                    end_handle: Point3D,
+                    end_point: Point3D,
                     colour: ManimColor = BLACK,
                     stroke_width: float = DEFAULT_EDGE_STROKE_WIDTH) -> CubicBezier:
     curve: CubicBezier = CubicBezier(start_point,
@@ -33,7 +33,7 @@ def mk_cubic_bezier(start_point: np.ndarray,
                                      stroke_width=stroke_width)
     return curve
 
-def mk_text(text: str, point: np.ndarray) -> Text:
+def mk_text(text: str, point: Point3D) -> Text:
     label: Text = Text(text,
                        font=DEFAULT_EDGE_FONT,
                        font_size=DEFAULT_EDGE_FONT_SIZE,
@@ -160,12 +160,12 @@ class LabelledEdge(VGroup):
             raise ValueError(f'Expected start_node == end_node but got {start_node} != {end_node}')
 
         # create the loop
-        start_anchor_alpha: np.ndarray
-        end_anchor_alpha: np.ndarray
+        start_anchor_alpha: Point3D
+        end_anchor_alpha: Point3D
         start_anchor_alpha, end_anchor_alpha = self.point_pair_alpha
 
-        start_tangent_1: np.ndarray
-        end_tangent_1: np.ndarray
+        start_tangent_1: Vector3D
+        end_tangent_1: Vector3D
         start_tangent_1, end_tangent_1 = QUADRANT_TO_BASIS[start_node]
 
         velocity_base: float = 1.5
@@ -180,9 +180,9 @@ class LabelledEdge(VGroup):
         self.set_curve(curve)
 
         # create the label
-        curve_midpoint: np.ndarray = curve.point_from_proportion(0.5)
+        curve_midpoint: Point3D = curve.point_from_proportion(0.5)
         label: Text = mk_text(self.text, curve_midpoint)
-        outward_direction_1: np.ndarray = start_tangent_1 + end_tangent_1
+        outward_direction_1: Vector3D = start_tangent_1 + end_tangent_1
         label.move_to(curve_midpoint + 0.125 * outward_direction_1)
         self.set_label(label)
 
@@ -197,9 +197,9 @@ class LabelledEdge(VGroup):
         end_alpha: Point3D
         start_alpha, end_alpha = self.point_pair_alpha
 
-        direction_alpha: np.ndarray = end_alpha - start_alpha
-        unit_tangent_alpha: np.ndarray = direction_alpha / np.linalg.norm(direction_alpha)
-        unit_normal_alpha: np.ndarray = np.cross(unit_tangent_alpha, OUT)
+        direction_alpha: Vector3D = end_alpha - start_alpha
+        unit_tangent_alpha: Vector3D = direction_alpha / np.linalg.norm(direction_alpha)
+        unit_normal_alpha: Vector3D = np.cross(unit_tangent_alpha, OUT)
 
         # special case treatment: reverse the normal for (I,IV) edges so it points outward
         if start_node == Quadrant.I and end_node == Quadrant.IV:
@@ -214,13 +214,13 @@ class LabelledEdge(VGroup):
         b: float
         a, b = (0.5, 0.5) if self.node_pair in diagonals else (0.5, 0.6)
 
-        tangent_displacement_alpha: np.ndarray = a * unit_tangent_alpha
-        normal_displacement_alpha: np.ndarray = b * self.alpha * self.sequence_number * unit_normal_alpha
+        tangent_displacement_alpha: Vector3D = a * unit_tangent_alpha
+        normal_displacement_alpha: Vector3D = b * self.alpha * self.sequence_number * unit_normal_alpha
 
         start_point_alpha, end_point_alpha = self.point_pair_alpha
 
-        start_handle_alpha: np.ndarray = start_point_alpha + tangent_displacement_alpha + normal_displacement_alpha
-        end_handle_alpha: np.ndarray = end_point_alpha - tangent_displacement_alpha + normal_displacement_alpha
+        start_handle_alpha: Point3D = start_point_alpha + tangent_displacement_alpha + normal_displacement_alpha
+        end_handle_alpha: Point3D = end_point_alpha - tangent_displacement_alpha + normal_displacement_alpha
 
         curve: CubicBezier = mk_cubic_bezier(start_point_alpha,
                                              start_handle_alpha,
@@ -230,7 +230,7 @@ class LabelledEdge(VGroup):
         self.set_curve(curve)
 
         # create the label
-        curve_midpoint: np.ndarray = curve.point_from_proportion(0.5)
+        curve_midpoint: Point3D = curve.point_from_proportion(0.5)
         label: Text = mk_text(self.text, curve_midpoint)
         label.move_to(curve_midpoint + 0.15 * unit_normal_alpha)
 
