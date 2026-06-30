@@ -31,7 +31,7 @@ Python 3.13.3
 ```
 ### pyenv
 
-I believe that the recommended may to manage Python versions is
+I believe that the recommended way to manage Python versions is
 to use the `pyenv` command which I can install using `brew`
 
 This webpage describes how to manage Python versions:

@@ -10,7 +10,8 @@ It describes the main parts of the video and each of its scenes.
 
 ## Part 1 - Introduction
 
-- describe the goal of the puzzle and that it was invented in 1907 (?)
+- describe the goal of the puzzle
+- say that it was invented in 1907 (?)
 - explain that the puzzle is difficult to solve by trial and error
 - state that an ingenious graph theory solution was discovered in 1947 by some Cambridge math students
 - they were known as the Trinity Four

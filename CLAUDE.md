@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This project creates animations showing how to solve the Instant Insanity puzzle using Graph Theory. It uses Manim Community Edition for mathematical animations and includes multiple Python packages for cube geometry, puzzle solving, and visualization.
+This project creates animations showing how to solve the Instant Insanity puzzle using Graph Theory. 
+It uses Manim Community Edition to create mathematical animations
+It includes Python packages for cube geometry, puzzle solving, and visualization.
 
 ## Development Commands
 
@@ -67,9 +69,9 @@ Each scene directory may have its own `manim.cfg` configuration file.
 
 ### Coordinate System
 Uses standard 3D coordinate system where:
-- x-axis: horizontal, left to right
-- y-axis: vertical, bottom to top  
-- z-axis: perpendicular to screen, back to front
+- x-axis: horizontal, increasing from left to right
+- y-axis: vertical, increasing from bottom to top  
+- z-axis: perpendicular to screen, increasing from back to front
 - Standard cube occupies `[-1,1]³`
 
 ### Graph Theory Approach
@@ -107,9 +109,17 @@ The puzzle is solved using an "opposite-face graph" where each cube contributes 
 
 - Python 3.11.11+ required (Google Colab compatibility)
 - Avoid directory names conflicting with package names (especially `manim`)
-- Use Cairo renderer for 2D scenes, OpenGL for 3D scenes (due to Cairo 3D rendering bugs)
-- Voiceover text stored in `notebooks/voiceovers/` subdirectories
+- Use Cairo renderer for 2D scenes
+- Do not use Cairo or OpenGL renderer for 3D scenes
+- Cairo 3D has rendering bugs
+- Always use Cairo 2D scenes since the code is stable
+- Use custom `core.depth_sort.py` and `core.projection.py` modules to render 3D scenes in 2D Cairo
+- Voiceover text is stored in `notebooks/voiceovers/` subdirectories
 
 ## Development Environment
 
-The project is set up to work in PyCharm and Google Colab. Manim configuration files are distributed throughout scene directories to customize rendering settings per use case.
+The project is set up to work in PyCharm and Google Colab. 
+Google Colab was used in the initial stages of development for sharing content with Will but
+is now no longer needed since I am working alone and using manim.
+
+Manim configuration files are distributed throughout scene directories to customize rendering settings per use case.
