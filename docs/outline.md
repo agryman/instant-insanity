@@ -79,34 +79,44 @@ It describes the main parts of the video and each of its scenes.
 
 ## Part 5 - Epilogue
 
-- Arthur was one of those teenagers that got fascinated by Instant Insanity
-- He attended Northview Heights SS which had just installed an IBM 1130 computer
-- Arthur wrote a Fortran program that did a brute-force search of 331,776 combinations and found 8 solutions
-which were all essentially the same modulo rotations
-- One day Prof. Ross Honsberger from U. Waterloo gave a lecture on Graph Theory where he used it to solve Instant Insanity
-- Honsberger had previously been the head of the math department at Northview Heights
-- Arthur was blown away by the elegance of the solution and showed it to whoever would listen
+- Arthur was one of those teenagers that got hooked by Instant Insanity
+- In 1967, he entered Northview Heights S.S. which had just acquired a new IBM 1130 computer
+  - The 1130 was the first computer installed in a Canadian high school for educational purposes
+- Arthur wrote a Fortran program for the 1130 to do a brute-force search of all 331,776 combinations 
+  - the program found 8 solutions which were all related to each other by the rotations we discussed above
+- One day in 1968 Prof. Ross Honsberger from U. Waterloo, Dept. of Combinatorics and Optimizatiobn,
+gave a lecture on Graph Theory which ended with him showing how to use it to solve Instant Insanity
+  - Honsberger had been the head of the math department at Northview Heights 1958-1963
+- Arthur was blown away by the elegance of the solution and showed it to anyone who would listen
+  - he found Graph Theory to be very useful throughout his career
 
 ## Part 6 - History
-- US Patent 646463 issued to Frederick A. Schossow, 1900-04-03
-- state that an ingenious graph theory solution was discovered in 1947 by some Cambridge math students
-- they were known as the Trinity Four
+- in 1900 US Patent 646463 issued to Frederick A. Schossow, 1900-04-03
+- in 1935 Bill Tutte entered Trinity College, Cambridge in 1935 where he became close friends with three other students 
+  - they became known as the Trinity Four
   - show an image of the Trinity Four
-  - they wrote under the pseudonym Carteblanche
-- Carteblanche was a group of Cambridge undergraduates known as the Trinity Four
-- Bill Tutte was one of them
-- In 1943 he was recruited to Bletchley Park and assigned to crack the Lorenz Cipher 
-- Lorenz was much more difficult than Enigma, which was cracked by Alan Turing and stimulated the development
-of the first digital computer
-- Tutte returned to Cambridge and became an eminent graph theorist
-- Tutte was probably the main author of the 1947 Eureka paper
-- Tutte then moved to University of Toronto and then to University of Waterloo
-- It is likely that Tutte showed the solution to Honsberger who showed it to Arthur who is showing it to you
+  - they published recreational mathematical papers under the pseudonyms Blanche Descartes and Filet de Carteblanche
+- in 1941, during the Second World War, he was recruited to break ciphers at Bletchley Park where Alan Turing had just cracked the Enigma cipher
+  - Tutte was assigned to crack the much more difficult Lorenz cipher
+  - this has been described as one of the greatest intellectual feats of World War II
+- in 1944 the ability to decipher Lorenz saved the lives of thousands of Allied soldiers who took part in the Normandy Invasion,
+  - one of those soldiers would become Arthur's father
+- in 1945 Tutte returned to Cambridge to resume his graph theory research
+- in 1947 Filet de Carteblanche published The Coloured Cubes Problem in Eureka, the Cambridge Mathematical Society journal. 
+  The Coloured Cubes Problem is now called Instant Insanity. The paper presented the graph theory solution shown in this video.
+- in 1948 Tutte moved to the Department of Mathematics, University of Toronto at the invitation of the great geometer Donald Coxeter
+- in 1962 Tutte moved to the Department of Mathematics, University of Waterloo
+- in 1967 Tutte helps found the Department of Combinatorics and Optimization
+- in 1967 Ross Honsberger becomes a colleague of Bill Tutte in the newly formed Department of Combinatorics and Optimization
+- in 1968 Ross Honsberger returns to Northview Heights S.S. and gives his lecture on Graph Theory and Instant Insanity
+  - Tutte probably showed the solution to Honsberger, who showed it to Arthur, who is now showing it to you!
 
 ## Acknowledgements
-- Will, a fellow Northview Heights student became an animator and encouraged me the create this video.
-  - He prototyped many animation scenes using Houdini and selected Google text-to-speech and the Aeode voice
-- Grant Sanderson for creating manim and running the SoME event
-- the Manim Community for maintaining and enhancing manim which I used to generate the animations
-- Google Cloud Platform for providing the text-to-speech service and the Aeode voice
-- Claude Code for being my tireless coding partner
+- Will Anielewicz, who, after attending Northview Heights, went on to become a professional animator.
+  - Will catalyzed Arthur into creating this video.
+  - Will prototyped many animation scenes using Houdini in the formative stages of this project.
+  - Will also dug into Google Cloud Text-to-Speech AI and selected the Aoede voice which is what you are listening to now.
+- Grant Sanderson of 3blue1brown, for creating the manim mathematical animation Python package and for fostering the Summer of Math Exposition (SoME) event
+- the Manim Community, for maintaining and enhancing manim which was used to generate all the animations
+- Google Cloud Platform, for providing the Text-to-Speech service and the Aoede voice
+- Claude Code, for being a tireless coding partner

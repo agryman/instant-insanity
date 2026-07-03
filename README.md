@@ -129,6 +129,12 @@ with spaces since the latter cause anomalies in the synthesized speech.
 You must install the `gcloud` CLI, create a GCP account and project, and initialize
 your development machine as described in the GCP documentation.
 
+Run the following command to authenticate:
+
+```shell
+gcloud auth application-default login
+```
+
 ## Manim Community Edition
 
 I am using Manim to generate animations.
