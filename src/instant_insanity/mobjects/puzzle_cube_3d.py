@@ -16,7 +16,7 @@ class PuzzleCube3D(Polygons3D[FaceLabel]):
     Attributes:
         cube_spec: the puzzle cube specification which gives the colours of all faces.
         puzzle_cube: the PuzzleCube object which provides the colours of all faces.
-        cube_centre: the center of the cube in model space?
+        cube_centre: the centre of the cube in model space
     """
     cube_spec: PuzzleCubeSpec
     puzzle_cube: PuzzleCube
@@ -46,7 +46,7 @@ class PuzzleCube3D(Polygons3D[FaceLabel]):
         Makes the initial model space vertex paths.
 
         Args:
-            cube_centre: the center of the cube in model space.
+            cube_centre: the centre of the cube in model space.
 
         Returns:
             the initial model space vertex paths.

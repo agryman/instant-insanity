@@ -2,14 +2,16 @@
 This module implements the Puzzle3D class which is a Polygon3D that consists
 of all 24 faces of the 4 puzzle cubes.
 """
+import numpy as np
+
 from manim.typing import Point3D, Vector3D
-from manim import RIGHT, ManimColor, ORIGIN
+from manim import RIGHT, ManimColor, ORIGIN, IN, UP, DOWN
 
 from instant_insanity.core.geometry_types import PolygonKeyToVertexPathMapping, Point3D_Array
 from instant_insanity.core.cube import FacePlane, FACE_PLANE_TO_VERTEX_PATH
 from instant_insanity.core.projection import Projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, PuzzleCube, FaceColour, FaceLabel, \
-    INITIAL_FACE_PLANE_TO_LABEL
+    INITIAL_FACE_PLANE_TO_LABEL, PuzzleSpec
 from instant_insanity.mobjects.polygons_3d import Polygons3D, DEFAULT_POLYGON_SETTINGS
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.mobjects.coloured_cube import MANIM_COLOUR_MAP
@@ -54,6 +56,27 @@ class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
 
         super().__init__(projection, key_to_model_path_0)
 
+    @staticmethod
+    def mk_cube_centre(cube_number: PuzzleCubeNumber, puzzle_centre: Point3D, cube_delta: Vector3D) -> Point3D:
+        """
+        This method makes the cube centre for a given cube number.
+        The cubes are numbered from 1 to 4.
+        The centre corresponds to cube number 2.5.
+        The cubes are laid out in a line and centred on the given puzzle centre.
+        The offset from cube to cube is the given cube delta vector.
+
+        Args:
+            cube_number: The puzzle cube number.
+            puzzle_centre: The centre of the puzzle.
+            cube_delta: The change in centres between cubes.
+
+        Returns:
+            the centre of the cube.
+        """
+        n: int = cube_number.value
+        cube_centre: Point3D = puzzle_centre + (n - 2.5) * cube_delta
+
+        return cube_centre
 
     @staticmethod
     def mk_name_to_model_path_0(puzzle_centre: Point3D,
@@ -71,16 +94,15 @@ class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
         # arrange the cubes horizontally from left to right with centres shifted by cube_delta
 
         name_to_model_path_0: PolygonKeyToVertexPathMapping[Puzzle3DPolygonName] = dict()
-        i: int
         cube_number: PuzzleCubeNumber
-        for i, cube_number in enumerate(PuzzleCubeNumber):
-            cube_centre_i: Point3D = puzzle_centre + (i - 2.5) * cube_delta
+        for cube_number in PuzzleCubeNumber:
+            cube_centre_n: Point3D = Puzzle3D.mk_cube_centre(cube_number, puzzle_centre, cube_delta)
             face_plane: FacePlane
             vertex_path: Point3D_Array
             for face_plane, vertex_path in FACE_PLANE_TO_VERTEX_PATH.items():
                 face_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[face_plane]
                 polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
-                name_to_model_path_0[polygon_name] = vertex_path + cube_centre_i
+                name_to_model_path_0[polygon_name] = vertex_path + cube_centre_n
 
         return name_to_model_path_0
 
@@ -116,3 +138,26 @@ class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
                                                 for face_label in FaceLabel}
         visible_polygon_keys: set[Puzzle3DPolygonName] = self.visible_polygon_keys - cube_names
         self.set_visible_polygon_keys(visible_polygon_keys)
+
+
+def mk_standard_puzzle3d(puzzle_spec: PuzzleSpec, projection: Projection, centre: bool = False) -> Puzzle3D:
+    """
+    Makes a puzzle in the top half of the scene.
+
+    Args:
+        puzzle_spec: the puzzle spec.
+        projection: the projection.
+        centre: shift the puzzle down to the centre of the screen
+
+    Returns:
+        the 3D puzzle.
+    """
+    puzzle: Puzzle = Puzzle(puzzle_spec)
+    buff: float = DEFAULT_CUBE_SIDE_LENGTH * 2.0 * (np.sqrt(2.0) - 1.0)
+    puzzle_centre: Point3D = 2 * IN + 1.0 * RIGHT + 1.0 * UP
+    if centre:
+        puzzle_centre += 4.5 * DOWN
+    cube_delta: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + buff) * RIGHT
+    puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle, puzzle_centre, cube_delta)
+
+    return puzzle3d

@@ -27,7 +27,12 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping, Point3D_Array
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.core.projection import Projection, PerspectiveProjection, OrthographicProjection
+from instant_insanity.core.projection import (
+    Projection,
+    PerspectiveProjection,
+    OrthographicProjection,
+    mk_standard_orthographic_projection,
+)
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel,
                                           FaceColour, AXIS_TO_FACE_LABEL_PAIR, FaceLabelPair, FaceLabel,
@@ -36,7 +41,7 @@ from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosio
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data_from_cube, \
     mk_face_data_from_puzzle
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH, Puzzle3DPolygonName
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH, Puzzle3DPolygonName, mk_standard_puzzle3d
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
@@ -50,17 +55,7 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
     @staticmethod
     def mk_orthographic_projection() -> OrthographicProjection:
-        direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
-        u: Vector3D = direction / np.linalg.norm(direction)
-        projection: OrthographicProjection = OrthographicProjection(
-            u,
-            camera_z=1.0,
-            scene_x=2.0,
-            scene_y=-3.0,
-            scene_z=0.0,
-            scene_per_model=0.5
-        )
-        return projection
+        return mk_standard_orthographic_projection()
 
     @staticmethod
     def mk_perspective_projection() -> PerspectiveProjection:
@@ -102,13 +97,8 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         Returns:
             the 3D puzzle.
         """
-        # create the 3D puzzle
-        buff: float = DEFAULT_CUBE_SIDE_LENGTH * 2.0 * (np.sqrt(2.0) - 1.0)
-        puzzle_centre: Point3D = 2 * IN + 4.5 * RIGHT + 1.0 * UP
-        cube_delta: Vector3D = (DEFAULT_CUBE_SIDE_LENGTH + buff) * RIGHT
-        puzzle3d: Puzzle3D = Puzzle3D(projection, puzzle, puzzle_centre, cube_delta)
 
-        return puzzle3d
+        return mk_standard_puzzle3d(puzzle, projection)
 
     @staticmethod
     def detach_axis_from_cube(cube3d: PuzzleCube3D,
