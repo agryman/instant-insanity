@@ -1,13 +1,17 @@
-from pathlib import Path
+from typing import cast
 
-from manim import Tex, BLACK, tempconfig, FadeIn
+from manim import tempconfig, PI, UP, DOWN, LEFT, RIGHT
+from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
+from instant_insanity.animators.puzzle_3d_animators import (Puzzle3DAnimorph,
+                                                            Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph)
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
-from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d
+from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber
+from instant_insanity.core.voiceover import voiceover_wait
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 voiceover_text_1: str = """
@@ -48,49 +52,237 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
     """
     This scene shows the puzzle cubes and explains the goal of the puzzle.
     """
+
+    puzzle3d: Puzzle3D
+    initial_gap: float
+    min_gap: float
+
+    def morph_and_checkpoint(self, animorph: Puzzle3DAnimorph) -> None:
+        """
+        This method conceals the puzzle, morphs it, and then checkpoints it.
+        It is the generic puzzle animation sequence.
+        Args:
+            animorph: the animorph
+        """
+        self.puzzle3d.conceal_polygons()
+        animorph.play(self, run_time=1.0)
+        self.puzzle3d.checkpoint()
+        self.wait()
+
+    def describe_puzzle(self):
+        with self.voiceover(text="""
+        The Instant Insanity puzzle consists of four cubes whose faces are coloured 
+        red, white, blue, or green.
+        """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+        Let's rotate the puzzle so we can see the colours of all the faces.
+        """) as tracker:
+            voiceover_wait(self, tracker)
+
+        self.wait()
+
+        rotation_axes: list[Vector3D] = [RIGHT, DOWN]
+        rotation_voiceovers: list[str] = [
+            "First, we'll rotate the cubes around the horizontal axis.",
+            "Next, we'll rotate each cube around its vertical axis."
+        ]
+
+        rotation_axis: Vector3D
+        rotation_voiceover: str
+        for rotation_axis, rotation_voiceover in zip(rotation_axes, rotation_voiceovers):
+            with self.voiceover(text=rotation_voiceover) as tracker:
+                voiceover_wait(self, tracker)
+            # rotate the puzzle
+            rotation: Vector3D = cast(Vector3D, rotation_axis * PI / 2.0)
+            rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+            n: int
+            for n in range(4):
+                self.morph_and_checkpoint(rotation_animorph)
+
+        with self.voiceover(text="""
+            Now that you've seen all the faces of all the cubes
+            you're ready to be told the goal of the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        self.wait()
+
+    def describe_goal(self):
+        with self.voiceover(text="""
+            The goal of the puzzle is to arrange the cubes in a row so that no colour is
+            repeated along each of the four sides.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+            Let's move the cubes together so they form a row.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        # set the cube gap
+        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
+        self.morph_and_checkpoint(gap_animorph)
+
+        self.wait()
+
+        with self.voiceover(text="""
+            As you can see, the front faces are green, red, white, and blue so 
+            this combination of colours satisfies the goal of the puzzle.
+            We need to check the top, back, and bottom faces.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+            Rotate the row so that the top faces become the front faces.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        right_rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
+        right_rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, right_rotation)
+        self.morph_and_checkpoint(right_rotation_animorph)
+
+        with self.voiceover(text="""
+            Here the faces are red, white, green, and blue so 
+            this combination of colours also satisfies the goal of the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+            Rotate again.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+        self.morph_and_checkpoint(right_rotation_animorph)
+
+        with self.voiceover(text="""
+            Here the faces are white, green, red, and red.
+            The colour red is repeated so 
+            this combination does not satisfy the goal of the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+            Rotate one more time.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+        self.morph_and_checkpoint(right_rotation_animorph)
+
+        with self.voiceover(text="""
+            Finally, the faces are red, green, red, and white.
+            Once again, the colour red is repeated so 
+            this combination also does not satisfy the goal of the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        self.wait()
+
+        with self.voiceover(text="""
+            One more rotation brings us back to the starting position.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+        self.morph_and_checkpoint(right_rotation_animorph)
+
+        self.wait()
+
+        with self.voiceover(text="""
+            You now know the rules of Instant Insanity.
+            Simple, aren't they?
+            Although the rules are simple, it's very challenging to find the solution. 
+            There are thousands of ways to arrange the cubes but only one solution. 
+            At this point, you may want to pause the video and
+            try to solve the puzzle for yourself so you can see how challenging it is. 
+            You can buy the puzzle online, or you can make one from cardboard.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        self.wait()
+
+    def exhibit_solution(self):
+        with self.voiceover(text="""
+            If you tried to solve the puzzle yourself but couldn't find a solution,
+            you might be wondering if a solution actually exists.
+            Yes, it exists and we'll exhibit it next to prove that.
+            Start by spreading out the cubes again so we can rotate them freely.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
+        self.morph_and_checkpoint(gap_animorph)
+        self.wait()
+
+        with self.voiceover(text="""
+            Now we'll rotate each cube into the orientation that solves the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        solution_rotation_axes: dict[PuzzleCubeNumber, list[Vector3D]] = {
+            PuzzleCubeNumber.ONE: [RIGHT, DOWN],
+            PuzzleCubeNumber.TWO: [DOWN, DOWN, LEFT],
+            PuzzleCubeNumber.THREE: [UP, LEFT],
+            PuzzleCubeNumber.FOUR: [DOWN, DOWN, LEFT],
+        }
+
+        cube_number: PuzzleCubeNumber
+        for cube_number in PuzzleCubeNumber:
+            key_cube_number: PuzzleCubeNumber
+            mask: dict[PuzzleCubeNumber, bool] = {
+                key_cube_number: key_cube_number == cube_number for key_cube_number in PuzzleCubeNumber
+            }
+            with self.voiceover(text=f"Rotate cube {cube_number}.") as tracker:
+                voiceover_wait(self, tracker, 2.0)
+            cube_rotation_axes: list[Vector3D] = solution_rotation_axes[cube_number]
+            cube_rotation_axis: Vector3D
+            for cube_rotation_axis in cube_rotation_axes:
+                rotation: Vector3D = cast(Vector3D, cube_rotation_axis * PI / 2.0)
+                animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation, mask)
+                self.morph_and_checkpoint(animorph)
+
+        with self.voiceover(text="""
+            Now let's bring the cubes back together and check each of the four sides.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        gap_animorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
+        self.morph_and_checkpoint(gap_animorph)
+        self.wait()
+
+        with self.voiceover(text="""
+            We'll rotate the row along its horizontal axis to confirm that each side contains all four colours.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        # rotate the puzzle
+        rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
+        rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+        n: int
+        for n in range(4):
+            self.morph_and_checkpoint(rotation_animorph)
+
+        with self.voiceover(text="""
+            Next we'll show an ingenious approach to finding the solution.
+            This approach makes use of techniques from the branch of mathematics called Graph Theory.
+            We'll start by explaining a few key concepts from Graph Theory and 
+            then apply them to the solution of the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
     def construct(self):
         self.set_speech_service(GCPTextToSpeechService())
-        self.add_grid(True)
+        self.add_grid(False)
 
         # create and display the 3D puzzle
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
         projection: Projection = mk_standard_orthographic_projection()
-        puzzle3d: Puzzle3D = mk_standard_puzzle3d(puzzle_spec, projection, centre=True)
-        self.add(puzzle3d)
-        self.wait()
 
-        placeholder: Tex
-        voiceover_text: str
+        self.puzzle3d = mk_standard_puzzle3d(puzzle_spec, projection, centre=True)
+        self.initial_gap = self.puzzle3d.get_cube_gap()
+        self.min_gap = DEFAULT_BUFF
+        self.add(self.puzzle3d)
 
-        voiceover_text = """
-        The Instant Insanity puzzle consists of four cubes whose faces are coloured red, white, blue, or green.
-        """
-
-        # rotate the whole puzzle along the horizontal axis
-        # do a series of quarter-turn rotations, pausing after each one
-
-        # start with one cube
-
-        # rotate each cube along its vertical axis
-        # do a series of quarter-turn rotations, pausing after each one
-
-        # placeholder = Tex("Show the cubes and rotate them.", color=BLACK, font_size=72)
-        # self.add(placeholder)
-        with self.voiceover(text=voiceover_text) as tracker:
-            self.wait(3)
-        # self.remove(placeholder)
-
-
-
-        placeholder = Tex("Show the solution and rotate it.", color=BLACK, font_size=72)
-        voiceover_text = """
-        The goal of the puzzle is to arrange the cubes in a row so that no colour is
-        repeated along each of the four sides.
-        """
-        self.add(placeholder)
-        with self.voiceover(text=voiceover_text) as tracker:
-            self.wait(3)
-        self.remove(placeholder)
+        self.describe_puzzle()
+        self.describe_goal()
+        self.exhibit_solution()
 
 
 if __name__ == "__main__":

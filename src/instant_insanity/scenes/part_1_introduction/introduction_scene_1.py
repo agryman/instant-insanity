@@ -2,18 +2,17 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, SVGMobject, ImageMobject, tempconfig
-from manim_voiceover import VoiceoverScene
+from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
+from instant_insanity.core.voiceover import voiceover_wait
 
 IMAGE_PATH = "~/Documents/repositories/GitHub/agryman/instant-insanity/notebooks/images/scenes/part_1_introduction/"
 
 # Wait time between puzzles
 WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
 
-# Minimum time in seconds that each puzzle's voiceover block (and image) stays on screen.
-MIN_VOICEOVER_DURATION: float = 3.0
 
 # Fade-in and Fade-out duration
 FADE_DURATION: float = 1.5
@@ -150,10 +149,12 @@ class IntroductionScene1(VoiceoverScene):
                           attribution.animate.set_opacity(1),
                           run_time=FADE_DURATION)
 
+            tracker: VoiceoverTracker
             with self.voiceover(text=info.voiceover) as tracker:
                 # keep the image on screen for at least MIN_VOICEOVER_DURATION seconds
-                elapsed: float = tracker.duration - tracker.get_remaining_duration()
-                self.safe_wait(MIN_VOICEOVER_DURATION - elapsed)
+                # elapsed: float = tracker.duration - tracker.get_remaining_duration()
+                # self.safe_wait(MIN_VOICEOVER_DURATION - elapsed)
+                voiceover_wait(self, tracker)
 
             # leave the last item on screen, else fade out
             if info == info_list[-1]:

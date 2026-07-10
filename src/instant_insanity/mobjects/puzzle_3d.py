@@ -139,6 +139,68 @@ class Puzzle3D(Polygons3D[Puzzle3DPolygonName]):
         visible_polygon_keys: set[Puzzle3DPolygonName] = self.visible_polygon_keys - cube_names
         self.set_visible_polygon_keys(visible_polygon_keys)
 
+    def get_face_min_max(self, cube_number: PuzzleCubeNumber, face_label: FaceLabel) -> tuple[Point3D, Point3D]:
+        """
+        This function returns the min and max of the vertex path of a cube face.
+
+        Args:
+            cube_number: the cube number.
+            face_label: the face label.
+
+        Returns:
+            (min_vertex: Point3D, max_vertex: Point3D)
+        """
+        face_name: Puzzle3DPolygonName = (cube_number, face_label)
+        path: Point3D_Array = self.key_to_model_path_0[face_name]
+        path_min: Point3D = np.min(path, axis=0)
+        path_max: Point3D = np.max(path, axis=0)
+
+        return path_min, path_max
+
+    def get_cube_width(self) -> float:
+        """
+        This function returns the width of the cube.
+        Assume that all cubes have the same width and are arranged along the x-axis.
+
+        Returns:
+            width: the width of the cube.
+        """
+        cube_1_right_max: Point3D
+        _, cube_1_right_max = self.get_face_min_max(PuzzleCubeNumber.ONE, FaceLabel.X)
+        cube_1_right_max_x: float = cube_1_right_max[0]
+
+        cube_1_left_min: Point3D
+        cube_1_left_min, _ = self.get_face_min_max(PuzzleCubeNumber.ONE, FaceLabel.X_PRIME)
+        cube_1_left_min_x: float = cube_1_left_min[0]
+
+        assert cube_1_left_min_x < cube_1_right_max_x
+
+        width: float = cube_1_right_max_x - cube_1_left_min_x
+        return width
+
+
+    def get_cube_gap(self) -> float:
+        """
+        This function returns the gap between two cubes.
+        Assume that the puzzle is arranged in a row along the x-axis.
+
+        Returns:
+            gap: the gap between two cubes.
+        """
+        cube_1_right_max: Point3D
+        _, cube_1_right_max = self.get_face_min_max(PuzzleCubeNumber.ONE, FaceLabel.X)
+        cube_1_right_max_x: float = cube_1_right_max[0]
+
+        cube_2_left_min: Point3D
+        cube_2_left_min, _ = self.get_face_min_max(PuzzleCubeNumber.TWO, FaceLabel.X_PRIME)
+        cube_2_left_min_x: float = cube_2_left_min[0]
+
+        assert cube_1_right_max_x < cube_2_left_min_x
+
+        gap: float = cube_2_left_min_x - cube_1_right_max_x
+
+        return gap
+
 
 def mk_standard_puzzle3d(puzzle_spec: PuzzleSpec, projection: Projection, centre: bool = False) -> Puzzle3D:
     """
