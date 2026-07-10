@@ -21,7 +21,7 @@ from instant_insanity.solvers.graph_solver import GraphSolver, Grid, GridValue
 
 class CubesFromSubgraphs(GridMixin, Scene):
     def construct(self):
-        self.add_grid(True)
+        self.add_grid(False)
 
         puzzle: Puzzle =  WINNING_MOVES_PUZZLE
         front_graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * LEFT + 1.5 * DOWN)
@@ -32,11 +32,11 @@ class CubesFromSubgraphs(GridMixin, Scene):
             FacePlane.TOP: top_graph,
         }
 
-        front_text: Tex = Tex("front-back", color=BLACK, font_size=36)
-        top_text: Tex = Tex("top-bottom", color=BLACK, font_size=36)
+        front_text: Tex = Tex(r"front $\rightarrow$ back", color=BLACK, font_size=36)
+        top_text: Tex = Tex(r"top $\rightarrow$ bottom", color=BLACK, font_size=36)
 
-        front_text.next_to(front_graph, DOWN, buff=0.5)
-        top_text.next_to(top_graph, DOWN, buff=0.5)
+        front_text.next_to(front_graph, DOWN, buff=0.75)
+        top_text.next_to(top_graph, DOWN, buff=0.75)
 
         self.add(front_graph, top_graph, front_text, top_text)
 
@@ -70,7 +70,7 @@ class CubesFromSubgraphs(GridMixin, Scene):
         have solved the puzzle.
 
         The procedure for assigning consistent edge directions is simple.
-        Recall that each each has degree two which means that either two distinct edges
+        Recall that each node has degree two which means that either two distinct edges
         are incident on it, or that the node has a loop edge.
         This means that once we give an edge a direction, it forces the directions of the other
         edges that are incident on it.

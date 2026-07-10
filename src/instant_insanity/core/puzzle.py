@@ -284,6 +284,7 @@ class Puzzle:
                                            for colour in cube_colour_list}
         return list(puzzle_colours)
 
+
 WINNING_MOVES_PUZZLE: Puzzle = Puzzle(WINNING_MOVES_PUZZLE_SPEC)
 WINNING_MOVES_COLOURS: set[FaceColour] = WINNING_MOVES_PUZZLE.mk_colours()
 

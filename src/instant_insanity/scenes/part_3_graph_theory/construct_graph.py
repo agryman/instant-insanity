@@ -97,8 +97,9 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         Returns:
             the 3D puzzle.
         """
+        puzzle_spec: PuzzleSpec = puzzle.puzzle_spec
 
-        return mk_standard_puzzle3d(puzzle, projection)
+        return mk_standard_puzzle3d(puzzle_spec, projection)
 
     @staticmethod
     def detach_axis_from_cube(cube3d: PuzzleCube3D,

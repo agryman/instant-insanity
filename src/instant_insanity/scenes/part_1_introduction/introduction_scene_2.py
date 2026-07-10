@@ -1,6 +1,6 @@
 from typing import cast
 
-from manim import tempconfig, PI, UP, DOWN, LEFT, RIGHT
+from manim import tempconfig, PI, UP, DOWN, LEFT, RIGHT, IN, OUT
 from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
@@ -102,8 +102,8 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
                 self.morph_and_checkpoint(rotation_animorph)
 
         with self.voiceover(text="""
-            Now that you've seen all the faces of all the cubes
-            you're ready to be told the goal of the puzzle.
+            Now you've seen all the faces of all the cubes.
+            You're ready to be told the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -111,7 +111,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
 
     def describe_goal(self):
         with self.voiceover(text="""
-            The goal of the puzzle is to arrange the cubes in a row so that no colour is
+            The puzzle challenges you to arrange the cubes in a row so that no colour is
             repeated along each of the four sides.
             """) as tracker:
             voiceover_wait(self, tracker)
@@ -135,7 +135,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             voiceover_wait(self, tracker)
 
         with self.voiceover(text="""
-            Rotate the row so that the top faces become the front faces.
+            Rotate the row so that the top side becomes the front side.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -169,7 +169,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.morph_and_checkpoint(right_rotation_animorph)
 
         with self.voiceover(text="""
-            Finally, the faces are red, green, red, and white.
+            Here the faces are red, green, red, and white.
             Once again, the colour red is repeated so 
             this combination also does not satisfy the goal of the puzzle.
             """) as tracker:
@@ -217,10 +217,10 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             voiceover_wait(self, tracker)
 
         solution_rotation_axes: dict[PuzzleCubeNumber, list[Vector3D]] = {
-            PuzzleCubeNumber.ONE: [RIGHT, DOWN],
-            PuzzleCubeNumber.TWO: [DOWN, DOWN, LEFT],
-            PuzzleCubeNumber.THREE: [UP, LEFT],
-            PuzzleCubeNumber.FOUR: [DOWN, DOWN, LEFT],
+            PuzzleCubeNumber.ONE: [OUT],
+            PuzzleCubeNumber.TWO: [OUT, OUT],
+            PuzzleCubeNumber.THREE: [DOWN, OUT, OUT],
+            PuzzleCubeNumber.FOUR: [OUT, OUT],
         }
 
         cube_number: PuzzleCubeNumber
@@ -255,15 +255,29 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         # rotate the puzzle
         rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
         rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+        solution_texts: list[str] = [
+            "No colour is repeated on the front side.",
+            "No repeats here either.",
+            "Still looking good.",
+            "Eureka!"
+        ]
         n: int
         for n in range(4):
+            with self.voiceover(text=solution_texts[n])as tracker:
+                voiceover_wait(self, tracker)
             self.morph_and_checkpoint(rotation_animorph)
 
         with self.voiceover(text="""
-            Next we'll show an ingenious approach to finding the solution.
-            This approach makes use of techniques from the branch of mathematics called Graph Theory.
-            We'll start by explaining a few key concepts from Graph Theory and 
-            then apply them to the solution of the puzzle.
+            No colour was repeated on any of the four sides.
+            This arrangement of the cubes therefore solves the puzzle.
+            """) as tracker:
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="""
+            Next we'll show an ingenious approach to solving the puzzle.
+            This approach makes use of techniques from the branch of mathematics called graph theory.
+            We'll start by explaining a few key concepts from graph theory and 
+            then apply them to solving the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
