@@ -30,3 +30,6 @@ package-dir = {"" = "src"}    # Specifies that the packages are located in the '
 
 [tool.setuptools.packages.find]
 where = ["src"]              # Search for packages in the 'src' directory
+
+[tool.setuptools.package-data]
+"instant_insanity" = ["resources/images/**/*.png", "resources/images/**/*.svg"]

@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from importlib.resources import files, as_file
+from importlib.resources.abc import Traversable
 from pathlib import Path
 
 from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, SVGMobject, ImageMobject, tempconfig
@@ -8,14 +10,20 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.voiceover import voiceover_wait
 
-IMAGE_PATH = "~/Documents/repositories/GitHub/agryman/instant-insanity/notebooks/images/scenes/part_1_introduction/"
+# IMAGE_PATH = "~/Documents/repositories/GitHub/agryman/instant-insanity/notebooks/images/scenes/part_1_introduction/"
 
 # Wait time between puzzles
 WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
 
-
 # Fade-in and Fade-out duration
 FADE_DURATION: float = 1.5
+
+
+def image_file_path(filename: str) -> Path:
+    resource: Traversable = files("instant_insanity.resources.images") / filename
+    path: Path
+    with as_file(resource) as path:
+        return path
 
 @dataclass
 class PuzzleInfo:
@@ -28,10 +36,11 @@ class PuzzleInfo:
     image_height: float
 
     def get_image(self) -> Mobject:
-        # Define the path to images
-        image_path = Path(IMAGE_PATH).expanduser()
         filename: str = self.image_filename
-        full_path: Path = image_path / filename
+        # Define the path to images
+        # image_path = Path(IMAGE_PATH).expanduser()
+        # full_path: Path = image_path / filename
+        full_path: Path = image_file_path(filename)
         image: Mobject
         if filename.endswith('.svg'):
             image = SVGMobject(full_path)

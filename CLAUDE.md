@@ -122,4 +122,10 @@ The project is set up to work in PyCharm and Google Colab.
 Google Colab was used in the initial stages of development for sharing content with Will but
 is now no longer needed since I am working alone and using manim.
 
+As of 2026-07-10, Google Colab uses Python 3.12 as the default version.
+Try to avoid features that do not work in Python 3.12.
+However, Colab compatibility is not a hard requirement anymore.
+It may be useful later in the project if I made any Jupyter notebooks publicly available.
+
+
 Manim configuration files are distributed throughout scene directories to customize rendering settings per use case.
