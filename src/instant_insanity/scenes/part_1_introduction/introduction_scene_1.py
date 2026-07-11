@@ -1,16 +1,12 @@
 from dataclasses import dataclass
-from importlib.resources import files, as_file
-from importlib.resources.abc import Traversable
-from pathlib import Path
 
-from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, SVGMobject, ImageMobject, tempconfig
+from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.voiceover import voiceover_wait
-
-# IMAGE_PATH = "~/Documents/repositories/GitHub/agryman/instant-insanity/notebooks/images/scenes/part_1_introduction/"
+from instant_insanity.mobjects.image import ImagesPath
 
 # Wait time between puzzles
 WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
@@ -18,12 +14,8 @@ WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
 # Fade-in and Fade-out duration
 FADE_DURATION: float = 1.5
 
+IMAGES_SUBPACKAGE = 'introduction'
 
-def image_file_path(filename: str) -> Path:
-    resource: Traversable = files("instant_insanity.resources.images") / filename
-    path: Path
-    with as_file(resource) as path:
-        return path
 
 @dataclass
 class PuzzleInfo:
@@ -35,29 +27,11 @@ class PuzzleInfo:
     image_attribution: str
     image_height: float
 
-    def get_image(self) -> Mobject:
-        filename: str = self.image_filename
-        # Define the path to images
-        # image_path = Path(IMAGE_PATH).expanduser()
-        # full_path: Path = image_path / filename
-        full_path: Path = image_file_path(filename)
-        image: Mobject
-        if filename.endswith('.svg'):
-            image = SVGMobject(full_path)
-        else:
-            image = ImageMobject(full_path)
-        image.height = self.image_height
-
-        return image
-
 
 class IntroductionScene1(VoiceoverScene):
     def construct(self):
         # Set up the Google TTS service
         self.set_speech_service(GCPTextToSpeechService())
-
-        # # Define the path to images
-        # image_path = Path(IMAGE_PATH).expanduser()
 
         wordle_info: PuzzleInfo = PuzzleInfo(
             name='Wordle',
@@ -121,9 +95,11 @@ class IntroductionScene1(VoiceoverScene):
         # Display the initial year
         self.add(year_text)
 
+        images_path: ImagesPath = ImagesPath()
         info: PuzzleInfo
         for info in info_list:
-            image: Mobject = info.get_image()
+            image: Mobject = images_path.get_image(IMAGES_SUBPACKAGE, info.image_filename)
+            image.height = info.image_height
 
             name: Tex = Tex(info.name,
                               font_size=48,

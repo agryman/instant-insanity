@@ -1,0 +1,31 @@
+\documentclass[preview, border=2mm]{standalone}
+\usepackage{booktabs}
+\usepackage{caption}
+
+\begin{document}
+
+{\sffamily\everymath{\sf}
+
+\vspace*{\fill}
+
+\begin{table}[h]
+\centering
+
+\begin{tabular}{l|c|c|c}
+\multicolumn{1}{c|}{} & \multicolumn{3}{c}{\textbf{Bob}} \\
+\hline
+\textbf{Alice} & \textbf{Rock} & \textbf{Scissors} & \textbf{Paper} \\
+\hline
+\textbf{Rock}     & (0, 0)     & (+1, -1)   & (-1, +1)   \\
+\textbf{Paper}    & (+1, -1)   & (-1, +1)   & (0, 0)     \\
+\textbf{Scissors} & (-1, +1)   & (0, 0)     & (+1, -1)   \\
+\end{tabular}
+
+\caption*{{\sffamily Payoff Matrix for (Alice, Bob)}}
+
+\end{table}
+
+\vspace*{\fill}
+
+}
+\end{document}

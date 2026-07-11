@@ -1,0 +1,69 @@
+\documentclass[preview, border=2mm]{standalone}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+
+% Define color cell macros
+\newcommand{\R}{\cellcolor{red}\textcolor{white}{R}}
+\newcommand{\B}{\cellcolor{blue}\textcolor{white}{B}}
+\newcommand{\G}{\cellcolor{green}\textcolor{white}{G}}
+\newcommand{\W}{\cellcolor{white}\textcolor{black}{W}}
+
+\begin{document}
+
+{\sffamily\everymath{\sf}
+
+\vspace*{\fill}
+
+\centering
+
+\begin{tabular}{cc}
+
+\begin{minipage}{0.45\textwidth}
+\begin{table}
+\centering
+\begin{tabular}{l|c|c|c}
+\multicolumn{1}{c|}{} & \multicolumn{3}{c}{\textbf{Bob}} \\
+\hline
+\textbf{Alice} & \textbf{Rock} & \textbf{Scissors} & \textbf{Paper} \\
+\hline
+\textbf{Rock}     & (0, 0)     & (+1, -1)   & (-1, +1)   \\
+\textbf{Paper}    & (+1, -1)   & (-1, +1)   & (0, 0)     \\
+\textbf{Scissors} & (-1, +1)   & (0, 0)     & (+1, -1)   \\
+\end{tabular}
+\caption*{{\sffamily Payoff Matrix for (Alice, Bob)}}
+\end{table}
+\end{minipage}
+
+&
+
+\begin{minipage}{0.45\textwidth}
+\begin{table}
+\centering
+\begin{tabular}{l|c|c|c|c}
+\multicolumn{1}{c|}{} & \multicolumn{4}{c}{\textbf{Cube number}} \\
+\hline
+\textbf{Face} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} \\
+\hline
+\textbf{x (front)}     & \G & \R & \W & \B \\
+\textbf{x' (back)}     & \W & \G & \R & \R \\
+\hline
+\textbf{y (right)}     & \B & \B & \W & \G \\
+\textbf{y' (left)}     & \R & \B & \B & \W \\
+\hline
+\textbf{z (top)}       & \R & \W & \G & \B \\
+\textbf{z' (bottom)}   & \R & \G & \R & \W \\
+\end{tabular}
+\caption*{{\sffamily Instant Insanity Face Colours}}
+\end{table}
+\end{minipage}
+
+\end{tabular}
+
+\vspace*{\fill}
+
+}
+
+\end{document}

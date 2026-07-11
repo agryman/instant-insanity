@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+% Triangle component
+\node (A) at (1,2) [circle,fill=black,inner sep=2pt,label=below left:A] {};
+\node (B) at (3,3.5) [circle,fill=black,inner sep=2pt,label=above:B] {};
+\node (C) at (4,1.5) [circle,fill=black,inner sep=2pt,label=right:C] {};
+
+\draw (A) -- node[above left] {1} (B);
+\draw (B) -- node[above right] {2} (C);
+\draw (C) -- node[below right] {3} (A);
+
+% Proper circular loop at C (edge 5)
+\draw (C) ++(0:0.4) circle (0.4) node[shift={(0:0.6)}] {5};
+
+% Two-node component
+\node (D) at (6,2) [circle,fill=black,inner sep=2pt,label=below:D] {};
+\node (E) at (7.5,3) [circle,fill=black,inner sep=2pt,label=above right:E] {};
+
+\draw (D) -- node[above] {4} (E);
+\draw (D) to[bend right=40] node[below] {6} (E);
+
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,23 @@
+\documentclass[preview, border=2mm]{standalone}
+
+\renewcommand{\rmdefault}{\sfdefault}	% sets main text to sans-serif
+\usepackage{mathastext}				% makes math use the text font
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\vspace*{\fill}
+
+{\fontsize{32pt}{40pt}\selectfont
+    \begin{align*}
+        seconds/combination &= 5 \\
+        seconds/day &= 60 \times 60 \times 24 = 86{,}400 \\
+        combinations/day &= \frac{seconds/day}{seconds/combination} \\
+        &= 86{,}400/5 = 17{,}280
+    \end{align*}
+}
+
+\vspace*{\fill}
+
+\end{document}
