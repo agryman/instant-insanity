@@ -1,6 +1,6 @@
 from typing import cast
 
-from manim import tempconfig, PI, UP, DOWN, LEFT, RIGHT, IN, OUT
+from manim import tempconfig, PI, UP, DOWN, LEFT, RIGHT, IN, OUT, FadeIn, FadeOut, Mobject
 from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
@@ -11,8 +11,11 @@ from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechServic
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber
 from instant_insanity.core.voiceover import voiceover_wait
+from instant_insanity.mobjects.image import ImagesPath
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.scenes.coordinate_grid import GridMixin
+
+INTRODUCTION = "introduction"
 
 voiceover_text_1: str = """
 The Instant Insanity puzzle consists of four cubes whose faces are coloured either red, white, blue, or green.
@@ -53,9 +56,30 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
     This scene shows the puzzle cubes and explains the goal of the puzzle.
     """
 
+    images_path: ImagesPath = ImagesPath()
     puzzle3d: Puzzle3D
     initial_gap: float
     min_gap: float
+
+    def get_image(self, subpackages: str, filename: str, height: float = 6.0) -> Mobject:
+        image: Mobject = self.images_path.get_image(subpackages, filename)
+        image.height = height
+
+        return image
+
+    def say(self, text: str) -> None:
+        """
+        Says text in the scene.
+        Args:
+            text: The text to say.
+        """
+        with self.voiceover(text=text) as tracker:
+            voiceover_wait(self, tracker)
+
+    def discuss_mobject(self, mobject: Mobject, discussion: str) -> None:
+        self.play(FadeIn(mobject))
+        self.say(discussion)
+        self.play(FadeOut(mobject))
 
     def morph_and_checkpoint(self, animorph: Puzzle3DAnimorph) -> None:
         """
@@ -128,8 +152,8 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.wait()
 
         with self.voiceover(text="""
-            As you can see, the front faces are green, red, white, and blue so 
-            this combination of colours satisfies the goal of the puzzle.
+            As you can see, the front faces have all four colours so
+            this combination satisfies the goal of the puzzle.
             We need to check the top, back, and bottom faces.
             """) as tracker:
             voiceover_wait(self, tracker)
@@ -144,8 +168,8 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.morph_and_checkpoint(right_rotation_animorph)
 
         with self.voiceover(text="""
-            Here the faces are red, white, green, and blue so 
-            this combination of colours also satisfies the goal of the puzzle.
+            Again we have all four colours so 
+            this combination also satisfies the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -156,8 +180,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.morph_and_checkpoint(right_rotation_animorph)
 
         with self.voiceover(text="""
-            Here the faces are white, green, red, and red.
-            The colour red is repeated so 
+            Now the colour red is repeated so 
             this combination does not satisfy the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
@@ -169,7 +192,6 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.morph_and_checkpoint(right_rotation_animorph)
 
         with self.voiceover(text="""
-            Here the faces are red, green, red, and white.
             Once again, the colour red is repeated so 
             this combination also does not satisfy the goal of the puzzle.
             """) as tracker:
@@ -188,14 +210,32 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         with self.voiceover(text="""
             You now know the rules of Instant Insanity.
             Simple, aren't they?
-            Although the rules are simple, it's very challenging to find the solution. 
-            There are thousands of ways to arrange the cubes but only one solution. 
-            At this point, you may want to pause the video and
-            try to solve the puzzle for yourself so you can see how challenging it is. 
-            You can buy the puzzle online, or you can make one from cardboard.
             """) as tracker:
             voiceover_wait(self, tracker)
+        self.wait()
 
+    def show_box_front(self):
+        # remove the puzzle
+        # get the box front image
+        # fade in the image
+        # say the number of combinations
+        # fade out the image
+        # add the puzzle
+        self.wait()
+        self.remove(self.puzzle3d)
+        self.wait()
+        image: Mobject = self.get_image(INTRODUCTION, "instant-insanity-box-front.png")
+        discussion:str = """
+            Although the rules are simple, it's very challenging to find the solution. 
+            The Instant Insanity box claims there are eighty-two thousand nine hundred
+            and forty-four combinations but only one solution. 
+            At this point, you may want to pause the video and
+            try to solve the puzzle for yourself so you can see how challenging it is. 
+            You can buy the puzzle online, or you can make one from stiff paper.
+        """
+        self.discuss_mobject(image, discussion)
+        self.wait()
+        self.add(self.puzzle3d)
         self.wait()
 
     def exhibit_solution(self):
@@ -296,6 +336,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
 
         self.describe_puzzle()
         self.describe_goal()
+        self.show_box_front()
         self.exhibit_solution()
 
 
