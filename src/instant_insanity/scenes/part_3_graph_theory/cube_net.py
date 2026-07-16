@@ -1,6 +1,9 @@
 from manim import Scene, Square, UP, DOWN, LEFT, RIGHT, ORIGIN, VGroup, Create
 
 class CubeNet(Scene):
+    """
+    This scene draws the outline of a cube net.
+    """
     def construct(self):
         square_size = 1
 

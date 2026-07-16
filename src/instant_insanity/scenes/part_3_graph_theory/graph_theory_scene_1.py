@@ -1,38 +1,16 @@
-from manim import tempconfig, Mobject, Tex, BLACK, FadeIn, FadeOut, ORIGIN
+from manim import tempconfig, Mobject, ORIGIN
 from manim_voiceover import VoiceoverScene
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE
-from instant_insanity.core.voiceover import voiceover_wait
-from instant_insanity.mobjects.image import ImagesPath
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import DiscussionMixin
 
+GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 
-class GraphTheoryScene1(GridMixin, VoiceoverScene):
-    images_path: ImagesPath = ImagesPath()
-    subpackages: str = "graph_theory.latex"
-
-    def get_image(self, filename: str, height: float = 6.0) -> Mobject:
-        image: Mobject = self.images_path.get_image(self.subpackages, filename)
-        image.height = height
-
-        return image
-
-    def say(self, text: str) -> None:
-        """
-        Says text in the scene.
-        Args:
-            text: The text to say.
-        """
-        with self.voiceover(text=text) as tracker:
-            voiceover_wait(self, tracker)
-
-    def discuss_mobject(self, mobject: Mobject, discussion: str) -> None:
-        self.play(FadeIn(mobject))
-        self.say(discussion)
-        self.play(FadeOut(mobject))
+class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
 
     def construct(self):
         self.set_speech_service(GCPTextToSpeechService())
@@ -43,7 +21,7 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         discussion: str
 
         # the opposite-face graph
-        topic = Tex("the opposite-face graph of Instant Insanity", font_size=48, color=BLACK)
+        topic = self.mk_topic("the opposite-face graph of Instant Insanity")
         discussion = """
         Our goal is to represent the Instant Insanity puzzle as a graph and use it to solve the puzzle.
         We refer to this graph as the opposite-face graph for reasons which will become apparent.
@@ -65,7 +43,7 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(wm_graph, discussion)
 
         # What is a graph?
-        topic = Tex("What is a graph?", font_size=48, color=BLACK)
+        topic = self.mk_topic("What is a graph?")
         discussion = """
         Let's get started with some graph theory!
         We'll begin by establishing some terminology.
@@ -77,14 +55,14 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(topic, discussion)
 
         # graphs of functions
-        topic = Tex("graphs of functions", font_size=48, color=BLACK)
+        topic = self.mk_topic("graphs of functions")
         discussion = """
         In high school we learn that a graph is an x-y plot of some function or relation.
         """
         self.discuss_mobject(topic, discussion)
 
         # parabola graph
-        image = self.get_image("parabola-graph.png")
+        image = self.get_image("parabola-graph.png", GRAPH_THEORY_LATEX)
         image.height = 6.0
         discussion = """
         For example, here's the graph of the function y equals x squared which produces a parabola.
@@ -93,28 +71,29 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(image, discussion)
 
         # points, lines
-        topic = Tex("points, lines", font_size=48, color=BLACK)
+        topic = self.mk_topic("points, lines")
         discussion = """
         Mathematicians also give the name graph to any collection of points
         interconnected by lines.
-        Every line must begin on some point and must end on some point.
-            
-        This type of graph is used to represent pairwise relationships between objects.
-        We represent each object by a point and each pairwise relationship between objects by a line
-        that interconnects the corresponding points.
         """
         self.discuss_mobject(topic, discussion)
 
         # example simple graph
-        toy_graph = self.get_image("example-simple-graph.png")
+        toy_graph = self.get_image("example-simple-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's a toy example graph. It has five points and four lines.
         This kind of graph is the subject of graph theory, and the topic of this video.
+        
+        Every line must begin on some point and must end on some point.
+        This kind of graph is used to represent pairwise relationships between objects.
+        Each point represents an object.
+        Each line represents a pairwise relationship between the objects corresponding to the points
+        that the line connects.
         """
         self.discuss_mobject(toy_graph, discussion)
 
         # simple graphs
-        topic = Tex("simple graphs", font_size=48, color=BLACK)
+        topic = self.mk_topic("simple graphs")
         discussion = """
         If no line connects a point to itself and there is at most one line connecting any two
         distinct points then the graph is called a simple graph.
@@ -131,15 +110,16 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(toy_graph, discussion)
 
         # graph = network
-        topic = Tex("graph = network", font_size=48, color=BLACK)
+        topic = self.mk_topic("graph = network")
         discussion = """
         Mathematicians sometimes use the name network instead of graph.
-        The preferred name depends on the historical development of the subject matter being studied.
+        The choice of name varies with the subject area where
+        graph theory is being applied.
         """
         self.discuss_mobject(topic, discussion)
 
         # point = dot = vertex = node
-        topic = Tex("point = dot = vertex = node", font_size=48, color=BLACK)
+        topic = self.mk_topic("point = dot = vertex = node")
         discussion = """
         Mathematicians may also give different names to points.
         Some common alternate names for a point are dot, vertex, and node.
@@ -147,35 +127,35 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(topic, discussion)
 
         # line = link = edge = arc
-        topic = Tex("line = link = edge = arc", font_size=48, color=BLACK)
+        topic = self.mk_topic("line = link = edge = arc")
         discussion = """
         Similarly, some common alternate names for a line are link, edge, and arc.
         """
         self.discuss_mobject(topic, discussion)
 
         # use graph, node, edge
-        topic = Tex("graphs, nodes, edges", font_size=48, color=BLACK)
+        topic = self.mk_topic("graphs, nodes, edges")
         discussion = """
         From now on, we'll consistently use the names graph, node, and edge.
         """
         self.discuss_mobject(topic, discussion)
 
         # graph layout
-        topic = Tex("graph layouts", font_size=48, color=BLACK)
+        topic = self.mk_topic("graph layouts")
         discussion = """
         Two graphs are considered to be essentially the same if they contain the same number of nodes
         and those nodes are interconnected in the same way. 
         The positions of the nodes and the paths of the edges
         are not essential features of the graph - 
         they just define a particular layout of the graph. 
-        We can lay out any graph in many ways. 
-        We seek layouts that make the structure of the graph easier to understand.
         """
         self.discuss_mobject(topic, discussion)
 
         # example crossover graph
-        image = self.get_image("example-crossover-graph.png")
+        image = self.get_image("example-crossover-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
+        We can lay out any graph in many ways. 
+        We seek layouts that make the structure of the graph easier to understand.
         Here is another layout of our toy graph. 
         This layout is less clear because two of its edges cross each other.
         """
@@ -184,13 +164,13 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         # this is a natural break point for the scene
 
         # labelled graph
-        topic = Tex("labelled graphs", font_size=48, color=BLACK)
+        topic = self.mk_topic("labelled graphs")
         discussion = """It is often useful to associate data with the nodes and edges of a graph.
         A graph with associated data is called a labelled graph."""
         self.discuss_mobject(topic, discussion)
 
         # example labelled graph
-        image = self.get_image("example-labelled-graph.png")
+        image = self.get_image("example-labelled-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's our toy graph with labels added.
         The nodes are labelled A, B, C, D, and E.
@@ -202,13 +182,13 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         discussion = """
         Here's the opposite-face graph again.
         Its nodes are labelled by the face colours.
-        Its edges are labelled by a combination of the cube number and axis name of the face pair.
+        Its edges are labelled by a combination of the cube number and axis name of the opposite face pair.
         We'll explain this in more detail later.
         """
         self.discuss_mobject(wm_graph, discussion)
 
         # multigraph
-        topic = Tex("loops, parallel edges, multigraphs", font_size=48, color=BLACK)
+        topic = self.mk_topic("loops, parallel edges, multigraphs")
         discussion = """
         An edge that connects a node to itself is called a loop.
         Two edges that connect the same pair of distinct nodes are called parallel edges.
@@ -217,7 +197,7 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(topic, discussion)
 
         # example multigraph
-        image = self.get_image("example-multigraph.png")
+        image = self.get_image("example-multigraph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's our toy graph with two more edges.
         Edge 5 is a loop at node B.
@@ -237,7 +217,7 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(wm_graph, discussion)
 
         # directed graphs
-        topic = Tex("directed graphs", font_size=48, color=BLACK)
+        topic = self.mk_topic("directed graphs")
         discussion = """
         Each edge of a graph represents a relationship between the pair of nodes it interconnects.
         
@@ -255,7 +235,7 @@ class GraphTheoryScene1(GridMixin, VoiceoverScene):
         self.discuss_mobject(topic, discussion)
 
         # example directed graph
-        image = self.get_image("example-directed-graph.png")
+        image = self.get_image("example-directed-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's our toy graph with directions added to its edges.
         It is therefore a directed graph.

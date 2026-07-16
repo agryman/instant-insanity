@@ -15,8 +15,8 @@ from collections import OrderedDict
 import numpy as np
 
 from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, LEFT, RIGHT, FadeIn,
-                   always_redraw, Create, DOWN, IN, ORIGIN, UP)
-from manim.typing import Point3D, Vector3D
+                   always_redraw, Create, DOWN, ORIGIN)
+from manim.typing import Point3D, Vector3D, Point3D_Array
 from manim_voiceover import VoiceoverScene
 
 from instant_insanity.animators.animorph import Animorph
@@ -25,7 +25,7 @@ from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeExplosionAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping, Point3D_Array
+from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import (
     Projection,
@@ -41,12 +41,12 @@ from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosio
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data_from_cube, \
     mk_face_data_from_puzzle
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH, Puzzle3DPolygonName, mk_standard_puzzle3d
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, Puzzle3DPolygonName, mk_standard_puzzle3d
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
-class ConstructGraph(GridMixin, VoiceoverScene):
+class GraphTheoryScene3(GridMixin, VoiceoverScene):
     """
     This scene animates the construction of the opposite-face graph of a puzzle.
     Each cube of the puzzle is exploded into opposite-face pairs.
@@ -331,12 +331,12 @@ class ConstructGraph(GridMixin, VoiceoverScene):
         self.set_speech_service(GCPTextToSpeechService())
         self.add_grid(False)
 
-        projection: Projection = ConstructGraph.mk_orthographic_projection()
+        projection: Projection = GraphTheoryScene3.mk_orthographic_projection()
 
         # create and display the 3D puzzle
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
         puzzle: Puzzle = Puzzle(puzzle_spec)
-        puzzle3d: Puzzle3D = ConstructGraph.mk_puzzle3d(puzzle, projection)
+        puzzle3d: Puzzle3D = GraphTheoryScene3.mk_puzzle3d(puzzle, projection)
         self.add(puzzle3d)
 
         voiceover_1: str = '''
@@ -489,5 +489,5 @@ class ConstructGraph(GridMixin, VoiceoverScene):
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = ConstructGraph()
+        scene = GraphTheoryScene3()
         scene.render()

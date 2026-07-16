@@ -15,11 +15,11 @@ from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, Edg
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D
 from instant_insanity.mobjects.stealth_tip import CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.scenes.part_3_graph_theory.construct_graph import ConstructGraph
+from instant_insanity.scenes.part_3_graph_theory.graph_theory_scene_3 import GraphTheoryScene3
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid, GridValue
 
 
-class CubesFromSubgraphs(GridMixin, Scene):
+class GraphTheoryScene5(GridMixin, Scene):
     def construct(self):
         self.add_grid(False)
 
@@ -117,12 +117,12 @@ class CubesFromSubgraphs(GridMixin, Scene):
         projection: Projection = mk_standard_orthographic_projection()
 
         # create and display the 3D puzzle
-        puzzle3d: Puzzle3D = ConstructGraph.mk_puzzle3d(puzzle, projection)
+        puzzle3d: Puzzle3D = GraphTheoryScene3.mk_puzzle3d(puzzle, projection)
         self.add(puzzle3d)
         self.wait(4)
 
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = CubesFromSubgraphs()
+        scene = GraphTheoryScene5()
         scene.render()

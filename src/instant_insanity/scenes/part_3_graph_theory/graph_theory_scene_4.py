@@ -17,7 +17,7 @@ from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid
 
-class FindSubgraphs(GridMixin, Scene):
+class GraphTheoryScene4(GridMixin, Scene):
     def construct(self):
         puzzle: Puzzle =  WINNING_MOVES_PUZZLE
 
@@ -132,5 +132,5 @@ class FindSubgraphs(GridMixin, Scene):
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = FindSubgraphs()
+        scene = GraphTheoryScene4()
         scene.render()
