@@ -14,34 +14,6 @@ GRAPH_THEORY: str = "graph_theory"
 GRAPH_THEORY_LATEX: str = GRAPH_THEORY + ".latex"
 
 class GraphTheoryScene2(GridMixin, DiscussionMixin, VoiceoverScene):
-    # images_path: ImagesPath = ImagesPath()
-    #
-    # @staticmethod
-    # def mk_topic(topic: str) -> Mobject:
-    #     mobject: Mobject = Tex(topic, font_size=48, color=BLACK)
-    #
-    #     return mobject
-    #
-    # def get_image(self, subpackages: str, filename: str, height: float = 6.0) -> Mobject:
-    #     image: Mobject = self.images_path.get_image(subpackages, filename)
-    #     image.height = height
-    #
-    #     return image
-    #
-    # def say(self, text: str) -> None:
-    #     """
-    #     Says text in the scene.
-    #     Args:
-    #         text: The text to say.
-    #     """
-    #     with self.voiceover(text=text) as tracker:
-    #         voiceover_wait(self, tracker)
-    #
-    # def discuss_mobject(self, mobject: Mobject, discussion: str) -> None:
-    #     self.play(FadeIn(mobject))
-    #     self.say(discussion)
-    #     self.play(FadeOut(mobject))
-
     def construct(self):
         self.set_speech_service(GCPTextToSpeechService())
         self.add_grid(False)
