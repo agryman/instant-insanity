@@ -1,7 +1,7 @@
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 # Minimum time in seconds that each voiceover block stays on screen.
-DEFAULT_MIN_VOICEOVER_DURATION: float = 3.0
+DEFAULT_MIN_VOICEOVER_DURATION: float = 1.0
 
 def voiceover_wait(
         scene: VoiceoverScene,

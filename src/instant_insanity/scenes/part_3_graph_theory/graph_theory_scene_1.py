@@ -255,26 +255,6 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_mobject(wm_graph, discussion)
 
-        # TODO: move the discussion of node degrees to where it is used. We'll define subgraphs there too.
-        # in-degree, out-degree, total degree
-        # topic = Tex("in-degree, out-degree, total degree", font_size=48, color=BLACK)
-        # discussion = """
-        # We often need to talk about the number of edges that enter or exit a node.
-        # This number is called the total degree of the node, or simply its degree.
-        # In a directed graph, the number of edges that exit a node is called its out-degree
-        # and the number of edges that enter a node is called its in-degree.
-        # The sum of the in-degree and the out-degree equals the total degree.
-        # """
-        # self.discuss_mobject(topic, discussion)
-
-        # example-degree-table.png
-        # image = self.get_image("example-degree-table.png")
-        # discussion = """
-        # We can summarize the degree information in a table with one row for each node.
-        # Here's the degree table for our example directed graph.
-        # """
-        # self.discuss_mobject(image, discussion)
-
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

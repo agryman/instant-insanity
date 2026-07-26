@@ -19,9 +19,9 @@ class FaceLabel(StrEnum):
 # there is one opposite face pair for each axis
 class AxisLabel(StrEnum):
     """Labels that appear on cube axes that connect pairs of opposite faces."""
-    X = 'x'
-    Y = 'y'
-    Z = 'z'
+    X = 'X'
+    Y = 'Y'
+    Z = 'Z'
 
 FACE_LABEL_AXIS: dict[FaceLabel, AxisLabel] = {
     FaceLabel.X: AxisLabel.X,
@@ -66,6 +66,7 @@ INITIAL_FACE_PLANE_TO_LABEL: dict[FacePlane, FaceLabel] = {
     FacePlane.LEFT: FaceLabel.Y_PRIME,
     FacePlane.BACK: FaceLabel.X_PRIME
 }
+
 
 # map face labels to face planes
 INITIAL_FACE_LABEL_TO_PLANE: dict[FaceLabel, FacePlane] = {

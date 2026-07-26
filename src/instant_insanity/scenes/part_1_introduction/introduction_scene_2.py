@@ -14,6 +14,7 @@ from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.image import ImagesPath
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.helpers import morph_and_checkpoint
 
 INTRODUCTION = "introduction"
 
@@ -81,18 +82,6 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
         self.say(discussion)
         self.play(FadeOut(mobject))
 
-    def morph_and_checkpoint(self, animorph: Puzzle3DAnimorph) -> None:
-        """
-        This method conceals the puzzle, morphs it, and then checkpoints it.
-        It is the generic puzzle animation sequence.
-        Args:
-            animorph: the animorph
-        """
-        self.puzzle3d.conceal_polygons()
-        animorph.play(self, run_time=1.0)
-        self.puzzle3d.checkpoint()
-        self.wait()
-
     def describe_puzzle(self):
         with self.voiceover(text="""
         The Instant Insanity puzzle consists of four cubes whose faces are coloured 
@@ -109,7 +98,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
 
         rotation_axes: list[Vector3D] = [RIGHT, DOWN]
         rotation_voiceovers: list[str] = [
-            "First, we'll rotate the cubes around the horizontal axis.",
+            "First, we'll rotate the cubes around their horizontal axis.",
             "Next, we'll rotate each cube around its vertical axis."
         ]
 
@@ -123,7 +112,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
             n: int
             for n in range(4):
-                self.morph_and_checkpoint(rotation_animorph)
+                morph_and_checkpoint(self, rotation_animorph)
 
         with self.voiceover(text="""
             Now you've seen all the faces of all the cubes.
@@ -147,14 +136,12 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
 
         # set the cube gap
         gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
-        self.morph_and_checkpoint(gap_animorph)
-
-        self.wait()
+        morph_and_checkpoint(self, gap_animorph)
 
         with self.voiceover(text="""
-            As you can see, the front faces have all four colours so
-            this combination satisfies the goal of the puzzle.
-            We need to check the top, back, and bottom faces.
+            As you can see, the front side has all four colours so
+            it satisfies the goal of the puzzle.
+            We need to check the top, back, and bottom sides.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -165,11 +152,11 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
 
         right_rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
         right_rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, right_rotation)
-        self.morph_and_checkpoint(right_rotation_animorph)
+        morph_and_checkpoint(self, right_rotation_animorph)
 
         with self.voiceover(text="""
             Again we have all four colours so 
-            this combination also satisfies the goal of the puzzle.
+            this side also satisfies the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -177,11 +164,11 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             Rotate again.
             """) as tracker:
             voiceover_wait(self, tracker)
-        self.morph_and_checkpoint(right_rotation_animorph)
+        morph_and_checkpoint(self, right_rotation_animorph)
 
         with self.voiceover(text="""
             Now the colour red is repeated so 
-            this combination does not satisfy the goal of the puzzle.
+            this side does not satisfy the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -189,11 +176,11 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             Rotate one more time.
             """) as tracker:
             voiceover_wait(self, tracker)
-        self.morph_and_checkpoint(right_rotation_animorph)
+        morph_and_checkpoint(self, right_rotation_animorph)
 
         with self.voiceover(text="""
             Once again, the colour red is repeated so 
-            this combination also does not satisfy the goal of the puzzle.
+            this side also does not satisfy the goal of the puzzle.
             """) as tracker:
             voiceover_wait(self, tracker)
 
@@ -203,7 +190,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             One more rotation brings us back to the starting position.
             """) as tracker:
             voiceover_wait(self, tracker)
-        self.morph_and_checkpoint(right_rotation_animorph)
+        morph_and_checkpoint(self, right_rotation_animorph)
 
         self.wait()
 
@@ -248,8 +235,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             voiceover_wait(self, tracker)
 
         gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
-        self.morph_and_checkpoint(gap_animorph)
-        self.wait()
+        morph_and_checkpoint(self, gap_animorph)
 
         with self.voiceover(text="""
             Now we'll rotate each cube into the orientation that solves the puzzle.
@@ -263,6 +249,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             PuzzleCubeNumber.FOUR: [OUT, OUT],
         }
 
+        rotation: Vector3D
         cube_number: PuzzleCubeNumber
         for cube_number in PuzzleCubeNumber:
             key_cube_number: PuzzleCubeNumber
@@ -274,9 +261,9 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             cube_rotation_axes: list[Vector3D] = solution_rotation_axes[cube_number]
             cube_rotation_axis: Vector3D
             for cube_rotation_axis in cube_rotation_axes:
-                rotation: Vector3D = cast(Vector3D, cube_rotation_axis * PI / 2.0)
+                rotation = cast(Vector3D, cube_rotation_axis * PI / 2.0)
                 animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation, mask)
-                self.morph_and_checkpoint(animorph)
+                morph_and_checkpoint(self, animorph)
 
         with self.voiceover(text="""
             Now let's bring the cubes back together and check each of the four sides.
@@ -284,7 +271,7 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             voiceover_wait(self, tracker)
 
         gap_animorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
-        self.morph_and_checkpoint(gap_animorph)
+        morph_and_checkpoint(self, gap_animorph)
         self.wait()
 
         with self.voiceover(text="""
@@ -293,19 +280,19 @@ class IntroductionScene2(GridMixin, VoiceoverScene):
             voiceover_wait(self, tracker)
 
         # rotate the puzzle
-        rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
+        rotation = cast(Vector3D, RIGHT * PI / 2.0)
         rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
         solution_texts: list[str] = [
             "No colour is repeated on the front side.",
             "No repeats here either.",
             "Still looking good.",
-            "Eureka!"
+            "Eureka! We have exhibited the solution.",
         ]
         n: int
         for n in range(4):
             with self.voiceover(text=solution_texts[n])as tracker:
                 voiceover_wait(self, tracker)
-            self.morph_and_checkpoint(rotation_animorph)
+            morph_and_checkpoint(self, rotation_animorph)
 
         with self.voiceover(text="""
             No colour was repeated on any of the four sides.
