@@ -47,6 +47,20 @@ Key scene directories:
 
 Each scene directory may have its own `manim.cfg` configuration file.
 
+## Git
+
+Arthur performs all git operations himself using GitHub Desktop. Do not run any git
+command unless he explicitly asks for it in that request. This includes, but is not
+limited to, `git commit`, `git add`, `git mv`, `git rm`, `git checkout`, `git branch`,
+`git merge`, `git push`, and `git pull`. Do not offer to run them either.
+
+When a change would normally involve git, such as renaming or deleting a file, make the
+change with ordinary file operations and let Arthur stage and commit it in GitHub Desktop.
+Describe what changed in terms of files rather than suggesting git commands to run.
+
+Read-only inspection is fine, such as `git status`, `git diff`, and `git log`, when it
+helps answer a question or verify work.
+
 ## Architecture
 
 ### Core Structure
@@ -107,7 +121,7 @@ The puzzle is solved using an "opposite-face graph" where each cube contributes 
 
 ## Important Notes
 
-- Python 3.11.11+ required (Google Colab compatibility)
+- Python 3.12+ required (Google Colab compatibility)
 - Avoid directory names conflicting with package names (especially `manim`)
 - Use Cairo renderer for 2D scenes
 - Do not use Cairo or OpenGL renderer for 3D scenes

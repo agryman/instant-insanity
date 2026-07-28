@@ -12,7 +12,8 @@ from manim.typing import Vector3D
 from scipy.spatial.transform import Rotation
 
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.puzzle import FaceLabel
+from instant_insanity.core.puzzle import FaceLabel, DEFAULT_EDGE_COLOUR
+from instant_insanity.mobjects.labelled_edge import DEFAULT_EDGE_FONT, DEFAULT_EDGE_FONT_COLOR, DEFAULT_EDGE_FONT_SIZE
 
 type PlaneToLabelMapping = dict[FacePlane, FaceLabel]
 
@@ -86,7 +87,12 @@ def mk_label_from_str(text: str) -> Text:
     Returns:
         a Text label with the standard cube label styling
     """
-    return Text(text, font='sans-serif', color=BLACK, font_size=24)
+    return Text(text,
+                font=DEFAULT_EDGE_FONT,
+                color=DEFAULT_EDGE_FONT_COLOR,
+                font_size=DEFAULT_EDGE_FONT_SIZE
+                )
+
 
 def make_visible_cube_labels(front: str, right: str, top: str) -> VisibleCubeTexts:
     """

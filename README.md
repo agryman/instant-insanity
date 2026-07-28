@@ -99,15 +99,10 @@ https://discord.com/channels/581738731934056449/1019649969596153968/threads/1395
 
 This project contains Jupyter notebooks.
 It is convenient to run these notebooks in Google Colab, which at present
-uses Python 3.11.11.
-The code in this project will therefore run in Python 3.11.11.
-
-I've installed Python 3.11.11 using homebrew on my Mac.
-To invoke Python 3.11.11, I use the following command:
-
-```shell
-/opt/homebrew/opt/python@3.11/bin/python3.11
-```
+uses Python 3.12.
+This project therefore requires Python 3.12 or later, as declared by
+`requires-python` in `pyproject.toml`.
+The code uses the `type` alias statement, which was introduced in Python 3.12.
 
 ## Google Cloud Platform Text-to-Speech
 

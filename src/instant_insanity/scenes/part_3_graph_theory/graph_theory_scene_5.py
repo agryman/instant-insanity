@@ -4,7 +4,7 @@ The scene starts with the two subgraphs on the bottom half the of the frame and 
 in the top half. The state of the scene is determined by the puzzle and the solution number.
 Recall that Carteblanche's puzzle has two solutions.
 """
-from typing import cast
+from typing import cast, Sequence
 
 from manim import Scene, tempconfig, LEFT, DOWN, RIGHT, Tex, BLACK, FadeIn, PI
 from manim.typing import Point3D, Vector3D
@@ -17,6 +17,9 @@ from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechServic
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, WINNING_MOVES_PUZZLE, PuzzleCubeNumber, AxisLabel, PuzzleSpec, \
     WINNING_MOVES_PUZZLE_SPEC
+from instant_insanity.mobjects import labelled_subgraph
+from instant_insanity.mobjects.labelled_subgraph import LabelledSubgraph, LabelledSubgraphPair
+from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, mk_edge_directions
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_BUFF
 from instant_insanity.mobjects.stealth_tip import CubeEdgeTip
@@ -24,64 +27,20 @@ from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin
 from instant_insanity.scenes.helpers import morph_and_checkpoint
 from instant_insanity.scenes.part_3_graph_theory.graph_theory_scene_3 import GraphTheoryScene3
-from instant_insanity.solvers.graph_solver import GraphSolver, Grid, GridValue
+from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
 
-class GraphTheoryScene5(GridMixin, DiscussionMixin, VoiceoverScene):
-    playlist: list[object]
+class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
+    """
+    This scene shows how to convert the subgraph pair into puzzle solutions.
+    """
     puzzle: Puzzle
     start_centre: Point3D
     end_centre: Point3D
 
-    def skip(self, method: object) -> bool:
-        return len(self.playlist) > 0 and method not in self.playlist
-
-    def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
-        self.add_grid(False)
-        self.playlist = [
-        ]
-
-        puzzle: Puzzle =  WINNING_MOVES_PUZZLE
-        front_graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * LEFT + 1.5 * DOWN)
-        top_graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT + 1.5 * DOWN)
-
-        subgraphs: dict[FacePlane, OppositeFaceGraph] = {
-            FacePlane.FRONT: front_graph,
-            FacePlane.TOP: top_graph,
-        }
-
-        front_text: Tex = Tex(r"front $\rightarrow$ back", color=BLACK, font_size=36)
-        top_text: Tex = Tex(r"top $\rightarrow$ bottom", color=BLACK, font_size=36)
-
-        front_text.next_to(front_graph, DOWN, buff=0.75)
-        top_text.next_to(top_graph, DOWN, buff=0.75)
-
-        self.add(front_graph, top_graph, front_text, top_text)
-
-        graph_solver: GraphSolver = GraphSolver(puzzle)
-        graph_solver.solve()
-        solution: Grid = graph_solver.solutions[0]
-
-        # compute the edges in the solution of each subgraph.
-        for face_name, graph in subgraphs.items():
-            edge_to_subgraph: EdgeToSubgraphMapping = graph.edge_to_subgraph.copy()
-            for cube_number in PuzzleCubeNumber:
-                grid_value: GridValue = solution[(face_name, cube_number)]
-                assert isinstance(grid_value, AxisLabel)
-                axis_label: AxisLabel = grid_value
-                edge_to_subgraph[(cube_number, axis_label)] = True
-            graph.set_subgraph(edge_to_subgraph)
-
-        # assign directions to the edges of the subgraphs
-        subgraph: OppositeFaceGraph
-        for subgraph in (front_graph, top_graph):
-            cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
-            for edge_tip in cube_edge_tips.values():
-                self.add(edge_tip.tip)
-
-        # wait to force a redraw of the final frame of the previous scene
-        self.wait(0.5)
+    def subscene_1_introduction(self) -> None:
+        if self.skip(self.subscene_1_introduction):
+            return
 
         voiceover: str = """
         The final step of the process is to convert these subgraphs
@@ -89,20 +48,119 @@ class GraphTheoryScene5(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.say(voiceover)
 
+    def subscene_2_show_puzzle(self) -> None:
+        if self.skip(self.subscene_2_show_puzzle):
+            return
+
+        voiceover: str = """
+        Here's the puzzle with its cubes in their starting positions.
+        Recall that this arrangement is not a solution.
+        Let's rotate it to show that two sides repeat red.
+        """
+        self.say(voiceover)
+
+    def subscene_3_describe_face_labels(self) -> None:
+        if self.skip(self.subscene_3_describe_face_labels):
+            return
+
+        voiceover:str = """
+        The starting position for each cube has 
+        the face labelled x on the front,
+        y on the right, and z on the top.
+        """
+        self.say(voiceover)
+
+    def subscene_4_discuss_cube_1(self) -> None:
+        if self.skip(self.subscene_4_discuss_cube_1):
+            return
+
+        voiceover: str = """
+        We need to rotate each cube to match the subgraphs.
+        We'll match the front-back subgraph first and 
+        then match the top-bottom subgraph.
+        For each subgraph, we'll match one cube at a time.
+
+        Let's start with cube 1 in the front-back subgraph. 
+        Look for the edge labelled 1x which connects green to white.
+        The starting position for each cube has its face labelled x
+        facing front. Therefore, the starting position of cube 1
+        already matches the front-back subgraph. No further rotation is needed.
+        """
+        self.say(voiceover)
+
+    def subscene_5_discuss_cube_2(self) -> None:
+        if self.skip(self.subscene_5_discuss_cube_2):
+            return
+
+        voiceover: str = """
+        Next consider cube 2. It's front-back edge is labelled 2x which
+        also matches its starting position. Therefore, no further rotation is needed.
+        """
+        self.say(voiceover)
+
+    def subscene_6_discuss_cube_3(self) -> None:
+        if self.skip(self.subscene_5_discuss_cube_2):
+            return
+
+        voiceover: str = """
+        Now look at cube 3. It's front-back edge is labelled 3y so we
+        need to rotate the right face into the front position.
+        """
+        self.say(voiceover)
+
+    def subscene_7_discuss_cube_4(self) -> None:
+        if self.skip(self.subscene_7_discuss_cube_4):
+            return
+
+        voiceover: str = """
+        Wrapping up the front-back subgraph, we see that the cube 4 edge
+        is labelled 4x, which is its starting position. No rotation is needed.
+
+        At this point we have half of a solution since no colour is repeated
+        on the front and back sides.
+        """
+        self.say(voiceover)
+
+    def subscene_8_discuss_top_bottom_subgraph(self) -> None:
+        if self.skip(self.subscene_8_discuss_top_bottom_subgraph):
+            return
+
+        voiceover: str = """
+        Now let's work on the top-bottom subgraph. 
+        The edge for cube 1 is labelled 1y.
+        Rotate the right face to the top.
+        """
+        self.say(voiceover)
+
+    def construct(self):
+        self.set_speech_service(GCPTextToSpeechService())
+        self.add_grid(False)
+
+        # recreate the final content of the previous scene
+        puzzle: Puzzle =  WINNING_MOVES_PUZZLE
+        labelled_subgraph_pair: LabelledSubgraphPair = LabelledSubgraphPair(puzzle)
+        labelled_subgraph_pair.add_to_scene(self)
+        labelled_subgraph_pair.add_solution_edges()
+        labelled_subgraph_pair.add_edge_directions(self)
+
+        self.subscene_1_introduction()
+
         # create and display the 3D puzzle
         self.wait(0.5)
         projection: Projection = mk_standard_orthographic_projection()
         puzzle3d: Puzzle3D = GraphTheoryScene3.mk_puzzle3d(puzzle, projection)
         self.add(puzzle3d)
+
+        # add the cube visible face labels
+        puzzle_face_labeller: PuzzleFaceLabeller = PuzzleFaceLabeller(self, puzzle3d)
+        puzzle_face_labeller.update_puzzle_texts()
         self.wait(0.5)
-        voiceover = """
-        Here's the puzzle with its cubes in their starting positions.
-        Recall that this arrangement is not a solution.
-        Let's rotate it to confirm that some sides have repeated colours.
-        """
-        self.say(voiceover)
+
+        self.subscene_2_show_puzzle()
 
         initial_gap: float = puzzle3d.get_cube_gap()
+
+        puzzle_face_labeller.remove_puzzle_texts()
 
         # contract the puzzle
         min_gap: float = DEFAULT_BUFF
@@ -119,64 +177,32 @@ class GraphTheoryScene5(GridMixin, DiscussionMixin, VoiceoverScene):
         expand_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(puzzle3d, initial_gap)
         morph_and_checkpoint(self, expand_animorph)
 
-        voiceover = """
-        The starting position for each cube has 
-        the face labelled x on the front,
-        y on the right, and z on the top.
-        """
-        self.say(voiceover)
+        puzzle_face_labeller.update_puzzle_texts()
 
-        voiceover = """
-        We need to rotate each cube to match the subgraphs.
-        We'll match the front-back subgraph first and 
-        then match the top-bottom subgraph.
-        For each subgraph, we'll match one cube at a time.
-        """
+        self.subscene_3_describe_face_labels()
 
-        voiceover = """
-        Let's start with cube 1 in the front-back subgraph. 
-        Look for the edge labelled 1x which connects green to white.
-        The starting position for each cube has its face labelled x
-        facing front. Therefore, the starting position of cube 1
-        already matches the front-back subgraph. No further rotation is needed.
-        """
-        self.say(voiceover)
+        self.subscene_4_discuss_cube_1()
 
-        voiceover = """
-        Next consider cube 2. It's front-back edge is labelled 2x which
-        also matches its starting position. Therefore, no further rotation is needed.
-        """
-        self.say(voiceover)
+        self.subscene_5_discuss_cube_2()
 
-        voiceover = """
-        Now look at cube 3. It's front-back edge is labelled 3y so we
-        need to rotate the right face into the front position.
-        """
-        self.say(voiceover)
+        self.subscene_6_discuss_cube_3()
 
-        # rotate cube 3 90 degrees about the DOWN axis.
+        # TO DO: rotate cube 3 90 degrees about the DOWN axis.
 
-        voiceover = """
-        Wrapping up the front-back subgraph, we see that the cube 4 edge
-        is labelled 4x, which is its starting position. No rotation is needed.
-        """
-        self.say(voiceover)
+        self.subscene_7_discuss_cube_4()
 
-        voiceover = """
-        At this point we have half of a solution since no colour is repeated
-        on the front and back sides.
-        """
+        # TO DO: rotate the puzzle twice by 180 degrees, pausing.
 
-        # TO DO: rotate the puzzle twice be 180 degrees, pausing.
-
-        voiceover = """
-        Now let's work on the top-bottom subgraph. 
-        The edge for cube 1 is labelled 1y.
-        Rotate the right face to the top.
-        """
-        self.say(voiceover)
+        self.subscene_8_discuss_top_bottom_subgraph()
 
         # TO DO: rotate cube 1 by 90 degrees about OUT
+
+        # TO DO: discuss top-bottom cubes 2, 3, 4 then rotate all to confirm
+
+    def get_playlist(self) -> Sequence[Subscene]:
+        return [
+            self.subscene_1_introduction,
+        ]
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

@@ -67,7 +67,9 @@ class DiscussionMixin:
         """
         assert isinstance(self, Scene)
         self.play(FadeIn(mobject))
+
         assert isinstance(self, DiscussionMixin)
         self.say(discussion)
+
         assert isinstance(self, Scene)
         self.play(FadeOut(mobject))

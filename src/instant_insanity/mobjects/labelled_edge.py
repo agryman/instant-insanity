@@ -12,7 +12,7 @@ from instant_insanity.mobjects.quadrant import Quadrant, NodePair, QUADRANT_TO_B
 type PointPair = tuple[Point3D, Point3D]
 
 DEFAULT_EDGE_FONT: str = 'sans-serif'
-DEFAULT_EDGE_FONT_SIZE: int = 15
+DEFAULT_EDGE_FONT_SIZE: int = 18    # was 15
 DEFAULT_EDGE_FONT_COLOR: ManimColor = BLACK
 
 DEFAULT_EDGE_STROKE_WIDTH: float = 2.0

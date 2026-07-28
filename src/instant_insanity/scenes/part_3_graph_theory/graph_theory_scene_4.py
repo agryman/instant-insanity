@@ -2,6 +2,8 @@
 This module animates the search for the two subgraphs of the opposite-face graph of a puzzle.
 """
 
+from typing import Sequence
+
 from manim import tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot, FadeIn, FadeOut, Mobject, Animation, AnimationGroup
 from manim.typing import Vector3D, Point3D
 from manim.utils.color.X11 import BLACK
@@ -17,19 +19,17 @@ from instant_insanity.mobjects.stealth_tip import CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid
 
 GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 
-class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
+class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
-    playlist: list[object]
     puzzle: Puzzle
     start_centre: Point3D
     end_centre: Point3D
-
-    def skip(self, method: object) -> bool:
-        return len(self.playlist) > 0 and method not in self.playlist
+    total_graph: OppositeFaceGraph
 
     def subscene_1a_discuss_opposite_face_graph(self) -> None:
         if self.skip(self.subscene_1a_discuss_opposite_face_graph):
@@ -46,7 +46,7 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_1b_discuss_opposite_face_graph):
             return
 
-        voiceover:str  = """
+        voiceover: str = """
         The reason that we created the graph is that it makes solving the puzzle easy.
         The solution proceeds in two stages.
         First, we'll solve the front-back side, and then we'll solve the top-bottom side.
@@ -143,7 +143,7 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_5_discuss_solving_the_puzzle):
             return
 
-        voiceover:str = """
+        voiceover: str = """
                 Our next step is to solve the front-back and top-bottom sides.
                 Solving a pair of opposite sides requires us to select one opposite-face pair from each cube
                 such that no colour is repeated along each side. 
@@ -157,7 +157,7 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_6_discuss_2_factors):
             return
         topic: Mobject = self.mk_topic("spanning subgraphs, 2-factors")
-        discussion:str = """
+        discussion: str = """
         A spanning subgraph is a subgraph that contains all the nodes of a graph.
         A 2-factor is a spanning subgraph such that each node has degree 2.
 
@@ -172,7 +172,7 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_7_discuss_finding_2_factors):
             return
 
-        voiceover:str = """
+        voiceover: str = """
         A pair of 2-factors is said to be independent if they have no edges in common.
         Our task now is to find two independent 2-factors of the full opposite-face graph,
         one for the front-back side and another for the top-bottom side.
@@ -270,7 +270,7 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_11_convert_subgraphs_to_solution):
             return
 
-        voiceover:str = """
+        voiceover: str = """
         We now have found two independent 2-factors of the full opposite-face graph
         and given them directions.
         Our final step is to convert this information into cube orientations which,
@@ -355,12 +355,9 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
     def construct(self):
         self.set_speech_service(GCPTextToSpeechService())
         self.add_grid(False)
-        self.playlist = [
-            self.subscene_11_convert_subgraphs_to_solution,
-        ]
 
         # add the total graph at the initial position from the end of previous scene
-        self.puzzle =  WINNING_MOVES_PUZZLE
+        self.puzzle = WINNING_MOVES_PUZZLE
         self.start_centre = 4 * RIGHT + DOWN
         self.end_centre = 2 * UP
         self.total_graph = OppositeFaceGraph(self.puzzle, self.start_centre)
@@ -423,6 +420,11 @@ class GraphTheoryScene4(GridMixin, DiscussionMixin, VoiceoverScene):
 
         # fade out the total graph in preparation for entry to the next scene CubesFromSubgraphs
         self.play(FadeOut(self.total_graph))
+
+    def get_playlist(self) -> Sequence[Subscene]:
+        return [
+            self.subscene_11_convert_subgraphs_to_solution,
+        ]
 
 
 if __name__ == "__main__":

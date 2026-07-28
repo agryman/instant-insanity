@@ -1,10 +1,11 @@
-from manim import tempconfig, RIGHT, DOWN, ORIGIN, FadeIn, FadeOut
+from manim import tempconfig, RIGHT, DOWN, ORIGIN, FadeIn, FadeOut, Mobject, Blink, Text, Indicate, BLACK
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE
+from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, AxisLabel, PuzzleCubeNumber
 from instant_insanity.core.voiceover import voiceover_wait
+from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
@@ -32,6 +33,13 @@ class OppositeFaceGraphDemo(GridMixin, VoiceoverScene):
             # elapsed: float = tracker.duration - tracker.get_remaining_duration()
             # self.safe_wait(MIN_VOICEOVER_DURATION - elapsed)
             voiceover_wait(self, tracker)
+
+        # test how to draw attention to edge X1 using Blink
+        edge_1x: LabelledEdge = wm_graph.edge_to_mobject[(PuzzleCubeNumber.ONE, AxisLabel.X)]
+        label_1x: Text = edge_1x.label
+        # self.play(Blink(label_1x, blinks=3))
+        for _ in range(3):
+            self.play(Indicate(label_1x, scale_factor=2.0, color=BLACK))
 
         self.wait(3.0)
         self.play(FadeOut(wm_graph))
