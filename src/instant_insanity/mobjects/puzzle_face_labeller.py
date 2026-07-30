@@ -19,15 +19,19 @@ faces are visible.
 The face labels are manim Text objects. We remove them from the scenebefore an animated rotation and
 add them back to the scene after the rotations is completed.
 """
-from manim import Scene, Text, Polygon, DOWN, RIGHT, UP
+from typing import cast
+
+from manim import Scene, Text, Polygon, DOWN, RIGHT, UP, PI
 from manim.typing import Vector3D
 
+from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeRotationAnimorph, \
+    Puzzle3DSetCubeGapAnimorph
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.cube_rotations import VisibleCubeTexts, PlaneToLabelMapping, INITIAL_PLANE_TO_LABEL_MAPPING, \
     mk_label_from_str, rotate_by_vector
 from instant_insanity.core.puzzle import PuzzleCubeNumber, FaceLabel
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, Puzzle3DPolygonName
-
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, Puzzle3DPolygonName, DEFAULT_BUFF
+from instant_insanity.scenes.helpers import morph_and_checkpoint
 
 # only front, right, and top cube faces are visible in the standard orthographic projection
 VISIBLE_PLANES: list[FacePlane] = [FacePlane.FRONT, FacePlane.RIGHT, FacePlane.TOP]
@@ -57,6 +61,10 @@ class PuzzleFaceLabeller:
             cube_number: VisibleCubeTexts(front=Text(""), right=Text(""), top=Text(""))
             for cube_number in PuzzleCubeNumber
         }
+
+    def get_face_label(self, cube: PuzzleCubeNumber, plane: FacePlane) -> Text:
+        visible_texts: VisibleCubeTexts = self.cube_to_visible_texts[cube]
+        return visible_texts.get_label(plane)
 
     def update_cube_texts(
             self,
@@ -128,3 +136,53 @@ class PuzzleFaceLabeller:
         plane_to_label_mapping: PlaneToLabelMapping = self.cube_to_mapping[cube_number]
         plane_to_label_mapping = rotate_by_vector(cube_rotation_axis, plane_to_label_mapping)
         self.cube_to_mapping[cube_number] = plane_to_label_mapping
+
+    def rotate_cube_ccw_90(self, cube: PuzzleCubeNumber, unit_normal: Vector3D) -> None:
+        """
+        Rotate the cube counter-clockwise by 90 degrees about the
+        axis defined by a unit normal vector. Checkpoint the puzzle
+        in the rotated position.
+
+        Args:
+            cube: The cube to rotate.
+            unit_normal: The unit normal vector.
+        """
+
+        self.remove_cube_texts(cube)
+
+        rotation: Vector3D = cast(Vector3D, unit_normal * PI / 2.0)
+        mask: dict[PuzzleCubeNumber, bool] = {
+            cube_number: cube_number == cube for cube_number in PuzzleCubeNumber
+        }
+        animorph: Puzzle3DAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation, mask)
+        morph_and_checkpoint(self.scene, animorph)
+
+        # rotate the cube plane-to-label mapping
+        self.rotate_plane_to_label_mapping(cube, unit_normal)
+        self.update_cube_texts(cube)
+
+    def roll_puzzle(self) -> None:
+        """
+        Roll the puzzle by 4 quarter turns along the y-axis to show all
+        faces.
+        """
+        initial_gap: float = self.puzzle3d.get_cube_gap()
+        min_gap: float = DEFAULT_BUFF
+
+        self.remove_puzzle_texts()
+
+        # contract the puzzle
+        contract_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, min_gap)
+        morph_and_checkpoint(self.scene, contract_animorph)
+
+        # rotate the puzzle
+        rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
+        rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+        for _ in range(4):
+            morph_and_checkpoint(self.scene, rotation_animorph)
+
+        # expand the puzzle
+        expand_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, initial_gap)
+        morph_and_checkpoint(self.scene, expand_animorph)
+
+        self.update_puzzle_texts()

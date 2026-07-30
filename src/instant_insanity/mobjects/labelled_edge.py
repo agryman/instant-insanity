@@ -148,6 +148,9 @@ class LabelledEdge(VGroup):
         self.label = label
         self.add(label)
 
+    def get_label(self) -> Text:
+        return self.label
+
     def set_curve(self, curve: CubicBezier) -> None:
         self.curve = curve
         self.add(curve)

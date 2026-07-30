@@ -1,7 +1,7 @@
 """
 This class models a labelled subgraph of the opposite-face graph.
 """
-from manim import Tex, BLACK, LEFT, RIGHT, DOWN, Scene
+from manim import Tex, BLACK, LEFT, RIGHT, DOWN, Scene, Text, Indicate
 from manim.typing import Point3D, Vector3D
 
 from instant_insanity.core.cube import FacePlane
@@ -46,6 +46,10 @@ class LabelledSubgraph:
         self.to_plane = to_plane
         self.label_tex = label_tex
         self.subgraph = subgraph
+
+    def get_edge_label(self, cube: PuzzleCubeNumber, axis: AxisLabel) -> Text:
+        subgraph: OppositeFaceGraph = self.subgraph
+        return subgraph.get_edge_label(cube, axis)
 
     def add_to_scene(self, scene: Scene) -> None:
         """
@@ -95,6 +99,18 @@ class LabelledSubgraphPair:
         }
         self.puzzle = puzzle
         self.plane_to_subgraph = plane_to_subgraph
+
+    def get_subgraph_label(self, plane: FacePlane) -> Tex:
+        labelled_subgraph: LabelledSubgraph = self.plane_to_subgraph[plane]
+        return labelled_subgraph.label_tex
+
+    def indicate_label(self, scene: Scene, plane: FacePlane) -> None:
+        label: Tex = self.get_subgraph_label(plane)
+        scene.play(Indicate(label, scale_factor=1.5, color=BLACK))
+
+    def get_edge_label(self, plane: FacePlane, cube: PuzzleCubeNumber, axis: AxisLabel) -> Text:
+        subgraph: LabelledSubgraph = self.plane_to_subgraph[plane]
+        return subgraph.get_edge_label(cube, axis)
 
     def add_to_scene(self, scene: Scene) -> None:
         """
