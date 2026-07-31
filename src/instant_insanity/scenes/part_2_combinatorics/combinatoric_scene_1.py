@@ -11,7 +11,7 @@ from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 
-class CubeOrientations(GridMixin, Scene):
+class CombinatoricsScene1(GridMixin, Scene):
     def construct(self):
         self.add_grid(False)
 
@@ -112,5 +112,5 @@ class CubeOrientations(GridMixin, Scene):
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = CubeOrientations()
+        scene = CombinatoricsScene1()
         scene.render()

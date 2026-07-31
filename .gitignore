@@ -1,6 +1,12 @@
 # manim output media
 **/media/
 
+# per-part videos and concat lists (see Makefile `output` target)
+build-output/
+
+# final assembled video (see Makefile `output` target)
+output/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
