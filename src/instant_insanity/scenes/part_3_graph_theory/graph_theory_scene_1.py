@@ -223,11 +223,11 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         
         Some relationships are symmetric in the sense that they have no direction.
         For example, saying that Alice is a neighbour of Bob is the same as saying that Bob is a neighbour of Alice.
-        In this case we can represent the neighbour relationship by a plain, undirected line.
+        In this case we can represent the neighbour relationship by a plain, undirected edge.
 
         However, most relationships are not symmetric.
         For example, saying that Alice likes Bob is not the same as saying that Bob likes Alice.
-        In this case we can represent the likes relationship by a directed line where the arrow points from the
+        In this case we can represent the likes relationship by a directed edge where the arrow points from the
         person doing the liking to the person who is liked.
         
         A graph in which the edges are directed is called a directed graph.
@@ -248,7 +248,8 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         # opposite-face graph
         discussion = """
         Here's the opposite-face graph again.
-        It's edges are not directed.
+        It's edges are not directed because they represent the symmetric relation
+        of one face being opposite to another face.
         However, we will encounter directed graphs in the solution of the puzzle.
         We've introduced enough graph theory concepts and terms for now.
         Let's proceed with showing how to use graph theory to solve the puzzle.

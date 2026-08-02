@@ -1,19 +1,35 @@
-from manim import Scene, tempconfig, RIGHT, UP, BLACK, Text, Polygon, DOWN, LEFT, OUT, IN, ORIGIN
+from manim import tempconfig, RIGHT, UP, BLACK, Text, Polygon, DOWN, LEFT, OUT, IN, ORIGIN
 from manim.typing import Point3D, Vector3D
+from manim_voiceover import VoiceoverScene
 from scipy.spatial.transform import Rotation
 
 from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import OrthographicProjection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import FaceLabel
 from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.subscene import SubsceneMixin
 
 
-class CombinatoricsScene1(GridMixin, Scene):
+class CombinatoricsScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
     def construct(self):
+        self.set_speech_service(GCPTextToSpeechService())
         self.add_grid(False)
+
+        voiceover: str
+
+        voiceover = """
+        Our goal is to compute the total number of cube orientations.
+        A cube has six faces so one of them must be on the front side.
+        Each face is adjacent to four other faces so one of them must be on the top side.
+        Therefore, we can orient a cube by specifying its front and top faces.
+        This gives a total of 6 times 4 equals 24 possible orientations.
+        """
+        self.say(voiceover)
 
         front_to_tops_str: dict[FaceLabel, str] = {
             FaceLabel.X: "z,y,z',y'",
@@ -69,6 +85,7 @@ class CombinatoricsScene1(GridMixin, Scene):
                 cube3d: PuzzleCube3D = PuzzleCube3D(projection, TEST_PUZZLE_CUBE_SPEC, cube_centre)
                 front_top_to_cube[(front_label, top_label)] = cube3d
                 self.add(cube3d)
+                self.wait(1.0)
 
                 # orient the cube using two rotations
 
@@ -109,6 +126,7 @@ class CombinatoricsScene1(GridMixin, Scene):
                 text.next_to(front_polygon, DOWN, buff=0.15)
                 self.add(text)
 
+        self.wait(1.0)
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

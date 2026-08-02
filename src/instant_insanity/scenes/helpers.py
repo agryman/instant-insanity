@@ -8,7 +8,7 @@ def morph_and_checkpoint(
         scene: Scene,
         animorph: Puzzle3DAnimorph,
         run_time: float = 1.0,
-        wait_time: float = 0.5,
+        wait_time: float = 0.5
 ) -> None:
     """
     This method conceals the puzzle, morphs it, and then checkpoints it.
