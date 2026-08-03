@@ -30,9 +30,19 @@ mypy src
 After installation, utility commands are available:
 ```bash
 make-background-linen input.png  # Convert white backgrounds to LINEN color
+make-greyscale input.png         # Make a greyscale copy of an image for annotation
 ```
 
 Scripts are located in `src/instant_insanity/scripts/` and configured as entry points in `pyproject.toml`.
+
+An editable install keeps source changes live, but it does **not** pick up new
+`[project.scripts]` entries. The wrapper executables in `venv/bin/` are generated only
+when pip installs the package, so a newly added command will be missing from the venv
+until you reinstall:
+```bash
+pip install -e . --no-deps  # --no-deps skips re-resolving the dependency tree
+```
+Rerun this whenever an entry in `[project.scripts]` is added or renamed.
 
 ### Running Manim Animations
 Manim scenes are located throughout the codebase. To run a specific scene:
