@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from manim import tempconfig, Mobject, ORIGIN
 from manim_voiceover import VoiceoverScene
 
@@ -7,19 +9,17 @@ from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
 GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 
-class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
+class GraphTheoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
+    wm_graph: OppositeFaceGraph
+    toy_graph: Mobject
 
-    def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
-        self.add_grid(False)
-
-        topic: Mobject
-        image: Mobject
-        discussion: str
-
+    def subscene_1_the_opposite_face_graph(self) -> None:
+        if self.skip(self.subscene_1_the_opposite_face_graph):
+            return
         # the opposite-face graph
         topic = self.mk_topic("the opposite-face graph of Instant Insanity")
         discussion = """
@@ -28,10 +28,6 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_mobject(topic, discussion)
 
-        # create the full Winning Moves opposite-face graph
-        full_subgraph: EdgeToSubgraphMapping = OppositeFaceGraph.mk_subgraph_for_flag(True)
-        wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN)
-        wm_graph.set_subgraph(full_subgraph)
         discussion = """
         Here's the opposite-face graph of the Instant Insanity puzzle.
         Its points represent the four face colours.
@@ -40,7 +36,11 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         This type of graph is called a labelled multigraph.
         We'll define those terms, and some others, next.
         """
-        self.discuss_mobject(wm_graph, discussion)
+        self.discuss_mobject(self.wm_graph, discussion)
+
+    def subscene_2_what_is_a_graph(self) -> None:
+        if self.skip(self.subscene_2_what_is_a_graph):
+            return
 
         # What is a graph?
         topic = self.mk_topic("What is a graph?")
@@ -50,7 +50,8 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         Mathematicians often give the same name to different things
         and different names to the same thing.
         This holds for the name graph.
-        It is used for two different things.
+        It is used for two different things
+        and has two different names.
         """
         self.discuss_mobject(topic, discussion)
 
@@ -79,18 +80,25 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         self.discuss_mobject(topic, discussion)
 
         # example simple graph
-        toy_graph = self.get_image("example-simple-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's a toy example graph. It has five points and four lines.
         This kind of graph is the subject of graph theory, and the topic of this video.
-        
+
         Every line must begin on some point and must end on some point.
         This kind of graph is used to represent pairwise relationships between objects.
         Each point represents an object.
         Each line represents a pairwise relationship between the objects corresponding to the points
         that the line connects.
+        
+        For example, the points might represent cities and the lines highways.
+        The pairwise relationship is that the two cities are connected by a highway.
         """
-        self.discuss_mobject(toy_graph, discussion)
+        self.discuss_mobject(self.toy_graph, discussion)
+
+
+    def subscene_3_simple_graphs(self) -> None:
+        if self.skip(self.subscene_3_simple_graphs):
+            return
 
         # simple graphs
         topic = self.mk_topic("simple graphs")
@@ -107,7 +115,11 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         and every pair of distinct points is connected by at most one line.
         It is therefore a simple graph.
         """
-        self.discuss_mobject(toy_graph, discussion)
+        self.discuss_mobject(self.toy_graph, discussion)
+
+    def subscene_4_alternate_terminology(self) -> None:
+        if self.skip(self.subscene_4_alternate_terminology):
+            return
 
         # graph = network
         topic = self.mk_topic("graph = network")
@@ -140,6 +152,10 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_mobject(topic, discussion)
 
+    def subscene_5_graph_layouts(self) -> None:
+        if self.skip(self.subscene_5_graph_layouts):
+            return
+
         # graph layout
         topic = self.mk_topic("graph layouts")
         discussion = """
@@ -161,7 +177,10 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_mobject(image, discussion)
 
-        # this is a natural break point for the scene
+
+    def subscene_6_labelled_graphs(self) -> None:
+        if self.skip(self.subscene_6_labelled_graphs):
+            return
 
         # labelled graph
         topic = self.mk_topic("labelled graphs")
@@ -173,8 +192,8 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         image = self.get_image("example-labelled-graph.png", GRAPH_THEORY_LATEX)
         discussion = """
         Here's our toy graph with labels added.
-        The nodes are labelled A, B, C, D, and E.
-        The edges are labelled 1, 2, 3, and 4.
+        The nodes are labelled A to E.
+        The edges are labelled 1 to 4.
         """
         self.discuss_mobject(image, discussion)
 
@@ -185,7 +204,11 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         Its edges are labelled by a combination of the cube number and axis name of the opposite face pair.
         We'll explain this in more detail later.
         """
-        self.discuss_mobject(wm_graph, discussion)
+        self.discuss_mobject(self.wm_graph, discussion)
+
+    def subscene_7_multigraphs(self) -> None:
+        if self.skip(self.subscene_7_multigraphs):
+            return
 
         # multigraph
         topic = self.mk_topic("loops, parallel edges, multigraphs")
@@ -214,13 +237,16 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         It is therefore a multigraph.
         In fact, it is a labelled multigraph.
         """
-        self.discuss_mobject(wm_graph, discussion)
+        self.discuss_mobject(self.wm_graph, discussion)
 
+    def subscene_8_directed_graphs(self) -> None:
+        if self.skip(self.subscene_8_directed_graphs):
+            return
         # directed graphs
         topic = self.mk_topic("directed graphs")
         discussion = """
         Each edge of a graph represents a relationship between the pair of nodes it interconnects.
-        
+
         Some relationships are symmetric in the sense that they have no direction.
         For example, saying that Alice is a neighbour of Bob is the same as saying that Bob is a neighbour of Alice.
         In this case we can represent the neighbour relationship by a plain, undirected edge.
@@ -229,7 +255,7 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         For example, saying that Alice likes Bob is not the same as saying that Bob likes Alice.
         In this case we can represent the likes relationship by a directed edge where the arrow points from the
         person doing the liking to the person who is liked.
-        
+
         A graph in which the edges are directed is called a directed graph.
         """
         self.discuss_mobject(topic, discussion)
@@ -243,8 +269,6 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_mobject(image, discussion)
 
-        # TODO: maybe show the rock-paper-scissors(-lizard-spock) directed graph
-
         # opposite-face graph
         discussion = """
         Here's the opposite-face graph again.
@@ -254,8 +278,45 @@ class GraphTheoryScene1(GridMixin, DiscussionMixin, VoiceoverScene):
         We've introduced enough graph theory concepts and terms for now.
         Let's proceed with showing how to use graph theory to solve the puzzle.
         """
-        self.discuss_mobject(wm_graph, discussion)
+        self.discuss_mobject(self.wm_graph, discussion)
 
+    def construct(self):
+        self.set_speech_service(GCPTextToSpeechService())
+        self.add_grid(False)
+
+        topic: Mobject
+        image: Mobject
+        discussion: str
+
+        # create the full Winning Moves opposite-face graph
+        full_subgraph: EdgeToSubgraphMapping = OppositeFaceGraph.mk_subgraph_for_flag(True)
+        wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN)
+        wm_graph.set_subgraph(full_subgraph)
+        self.wm_graph = wm_graph
+
+        self.subscene_1_the_opposite_face_graph()
+
+        self.toy_graph = self.get_image("example-simple-graph.png", GRAPH_THEORY_LATEX)
+
+        self.subscene_2_what_is_a_graph()
+        self.subscene_3_simple_graphs()
+        self.subscene_4_alternate_terminology()
+        self.subscene_5_graph_layouts()
+        self.subscene_6_labelled_graphs()
+        self.subscene_7_multigraphs()
+        self.subscene_8_directed_graphs()
+
+    def get_playlist(self) -> Sequence[Subscene]:
+        return [
+            # self.subscene_1_the_opposite_face_graph,
+            # self.subscene_2_what_is_a_graph,
+            # self.subscene_3_simple_graphs,
+            # self.subscene_4_alternate_terminology,
+            # self.subscene_5_graph_layouts,
+            # self.subscene_6_labelled_graphs,
+            # self.subscene_7_multigraphs,
+            # self.subscene_8_directed_graphs,
+        ]
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

@@ -1,10 +1,13 @@
 from typing import Sequence
 
-from manim import Mobject, tempconfig
-from manim_voiceover import VoiceoverScene
+from manim import Mobject, tempconfig, Table, FadeIn, FadeOut
+from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
+from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, FaceLabel
+from instant_insanity.core.voiceover import voiceover_wait
+from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
@@ -104,31 +107,52 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             return
 
         # show the table for Instant Insanity
-        image: Mobject = self.get_image("instant-insanity-table.png", GRAPH_THEORY_LATEX)
-        discussion: str = """
-        Here is the face colour table for our starting arrangement of Instant Insanity.
-        We simply picked a random order for the cubes and 
-        a random orientation for each cube to define the starting arrangement.
-        The cube numbers 1, 2, 3, and 4 refer to the positions of the cubes in their
-        starting order and we never change this order.
-        
-        Note that, unlike the table in the article, 
-        our starting arrangement does not solve the puzzle.
-        If we lined up the cubes in a horizontal row then
-        both the back and bottom sides would have two red faces.
-        
-        Carteblache's face-naming scheme is based on imposing ex, wy, and zed
-        axes on each cube.
-        The ex axis points from back to front,
-        the wy axis points from left to right,
-        and the zed axis points from bottom to top.
-        Each face is initially perpendicular to the axis given by the face name.
-        Primes are added to the back, left, and bottom face names.
-        Here front, back, right, left, top, and bottom refer to the positions of the faces in 
-        their starting orientations. 
-        When we rotate a cube the positions of its faces change but the names stay with the faces.
+        # image: Mobject = self.get_image("instant-insanity-table.png", GRAPH_THEORY_LATEX)
+        face_colour_table: FaceColourTable = FaceColourTable(WINNING_MOVES_PUZZLE)
+        table: Table = face_colour_table.table
+        self.play(FadeIn(table))
+
+        discussion: str
+
+        discussion = """
+        Here's the face colour table for our starting arrangement of Instant Insanity.
+        We simply picked a random left-to-right order for the cubes and 
+        a random orientation for each cube.
+        The cube numbers 1, 2, 3, and 4 label the left-to-right positions of the cubes. 
+        We never change this order.
         """
-        self.discuss_mobject(image, discussion)
+        self.say(discussion)
+
+        discussion = """
+        Since we are arranging the cubes in a left-to-right row,
+        a solution must not repeat and colours on the front, back, top, and bottom sides.
+        Let's check the table.
+        """
+        self.say(discussion)
+
+        tracker: VoiceoverTracker
+        # assert isinstance(self, VoiceoverScene)
+        with self.voiceover(text="The front side has no repeated colours.") as tracker:
+            face_colour_table.indicate_data_row(self, FaceLabel.X)
+            voiceover_wait(self, tracker)
+
+        with self.voiceover(text="Red is repeated on the back side.") as tracker:
+            face_colour_table.indicate_data_row(self, FaceLabel.X_PRIME)
+
+        with self.voiceover(text="The top side has no repeated colours.") as tracker:
+            face_colour_table.indicate_data_row(self, FaceLabel.Z)
+
+        with self.voiceover(text="Again, red is repeated on the bottom.") as tracker:
+            face_colour_table.indicate_data_row(self, FaceLabel.Z_PRIME)
+
+        discussion = """
+        Therefore, unlike the table in the Carteblanche article, 
+        our starting arrangement is not a solution.
+        """
+        self.say(discussion)
+
+        # self.discuss_mobject(face_colour_table.table, discussion)
+        self.play(FadeOut(table))
 
     def subscene_6_eureka_page_10(self) -> None:
         if self.skip(self.subscene_6_eureka_page_10):
@@ -139,7 +163,7 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         image_filename: str = "eureka-page-10.png"
         image_voiceover: str = """
         The second page of the article explains how to convert the puzzle
-        into a graph and how to use the graph to solve the puzzle.
+        into a graph and how to use it to solve the puzzle.
         The graph is shown in Figure 1.
         """
 
@@ -261,7 +285,7 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             # self.subscene_2_eureka_cover,
             # self.subscene_2_eureka_page_1_toc,
             # self.subscene_4_eureka_page_9,
-            # self.subscene_5_instant_insanity_table,
+            self.subscene_5_instant_insanity_table,
             # self.subscene_6_eureka_page_10,
             # self.subscene_7_eureka_page_11,
             # self.subscene_8_instant_insanity_box_front,
