@@ -282,13 +282,13 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            # self.subscene_2_eureka_cover,
-            # self.subscene_2_eureka_page_1_toc,
-            # self.subscene_4_eureka_page_9,
+            self.subscene_2_eureka_cover,
+            self.subscene_2_eureka_page_1_toc,
+            self.subscene_4_eureka_page_9,
             self.subscene_5_instant_insanity_table,
-            # self.subscene_6_eureka_page_10,
-            # self.subscene_7_eureka_page_11,
-            # self.subscene_8_instant_insanity_box_front,
+            self.subscene_6_eureka_page_10,
+            self.subscene_7_eureka_page_11,
+            self.subscene_8_instant_insanity_box_front,
         ]
 
 

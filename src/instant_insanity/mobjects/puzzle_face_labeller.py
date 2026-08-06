@@ -161,6 +161,29 @@ class PuzzleFaceLabeller:
         self.rotate_plane_to_label_mapping(cube, unit_normal)
         self.update_cube_texts(cube)
 
+    def rotate_puzzle_ccw_90(self, unit_normal: Vector3D) -> None:
+        """
+        Rotate the puzzle counter-clockwise by the given number of degrees about the
+        axis defined by a unit normal vector. Checkpoint the puzzle
+        in the rotated position.
+
+        Args:
+            unit_normal: The unit normal vector.
+        """
+
+        self.remove_puzzle_texts()
+
+        rotation: Vector3D = cast(Vector3D, unit_normal * PI / 2.0)
+        animorph: Puzzle3DAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+        morph_and_checkpoint(self.scene, animorph)
+
+        # rotate the cube plane-to-label mapping
+        cube: PuzzleCubeNumber
+        for cube in PuzzleCubeNumber:
+            self.rotate_plane_to_label_mapping(cube, unit_normal)
+
+        self.update_puzzle_texts()
+
     def roll_puzzle(self) -> None:
         """
         Roll the puzzle by 4 quarter turns along the y-axis to show all
