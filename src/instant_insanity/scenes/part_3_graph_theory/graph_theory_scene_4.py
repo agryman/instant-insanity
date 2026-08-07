@@ -4,16 +4,21 @@ This module animates the search for the two subgraphs of the opposite-face graph
 
 from typing import Sequence
 
-from manim import tempconfig, UP, DOWN, LEFT, RIGHT, Tex, Dot, FadeIn, FadeOut, Mobject, Animation, AnimationGroup
+from manim import tempconfig, DOWN, LEFT, RIGHT, Tex, Dot, FadeIn, FadeOut, Mobject, Animation, AnimationGroup, Indicate
 from manim.typing import Vector3D, Point3D
 from manim.utils.color.X11 import BLACK
 from manim_voiceover import VoiceoverScene
 
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE
+from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
+from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE, \
+    PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, FaceColour
+from instant_insanity.mobjects.coloured_cube import MANIM_COLOUR_MAP
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping, mk_edge_directions
+from instant_insanity.mobjects.puzzle_3d import mk_standard_puzzle3d, DEFAULT_BUFF, Puzzle3D
+from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.mobjects.quadrant import Quadrant
 from instant_insanity.mobjects.stealth_tip import CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -27,187 +32,247 @@ GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
     puzzle: Puzzle
+    puzzle3d: Puzzle3D
+    puzzle_face_labeller: PuzzleFaceLabeller
     start_centre: Point3D
     end_centre: Point3D
+    initial_gap: float
+    min_gap: float
     total_graph: OppositeFaceGraph
+    front_graph: OppositeFaceGraph
+    top_graph: OppositeFaceGraph
+    front_text: Tex
+    top_text: Tex
 
-    def subscene_1a_discuss_opposite_face_graph(self) -> None:
-        if self.skip(self.subscene_1a_discuss_opposite_face_graph):
+    def subscene_1_discuss_opposite_face_graph(self) -> None:
+        if self.skip(self.subscene_1_discuss_opposite_face_graph):
             return
 
         voiceover: str = """
-        We've converted the puzzle into its corresponding opposite-face graph. 
-        Now we'll use it to solve the puzzle.
-        Let's focus on it.
+        We'll now explain how to use the opposite-face graph to solve the puzzle.
+        
+        Our solution strategy is to first solve the front-back sides and
+        then solve the top-bottom sides while preserving the front-back sides.
         """
         self.say(voiceover)
 
-    def subscene_1b_discuss_opposite_face_graph(self) -> None:
-        if self.skip(self.subscene_1b_discuss_opposite_face_graph):
+    def subscene_2_discuss_starting_arrangement(self) -> None:
+        if self.skip(self.subscene_2_discuss_starting_arrangement):
             return
 
-        voiceover: str = """
-        The reason that we created the graph is that it makes solving the puzzle easy.
-        The solution proceeds in two stages.
-        First, we'll solve the front-back side, and then we'll solve the top-bottom side.
-        This strategy works because once we've fixed the front and back faces of a cube we can still rotate it
-        about its x-axis without changing the colours of the front and back faces.
+        self.say("""
+        A subgraph of a graph is a subset of its nodes and edges that themselves define a graph.
+        We'll build up the front-back and top-bottom solutions in subgraphs of the opposite-face graph.
+        
+        A spanning subgraph is a subgraph that contains all the nodes of the graph.
+        The front-back and top-bottom subgraphs are spanning subgraphs since they contain all four colour nodes.
+        
+        Any arrangement of the cubes defines a front-back subgraph and a top-bottom subgraph.
+        Let's see what this looks like for the starting arrangement of the puzzle.
+        """)
 
-        TO DO: show a cube rotating about its x-axis.
-        """
-        self.say(voiceover)
+        self.say("""
+        The front face of each cube in the starting arrangement is labelled ex.
+        """)
+        self.puzzle_face_labeller.indicate_face_labels(self, FacePlane.FRONT)
 
-        voiceover = """
-        Suppose we are given an orientation for each cube such that 
-        the front and back sides of the row each contain all four colours.
-        This gets us halfway to a solution of the puzzle.
-        Here's where the opposite-face graph comes in. 
-        The front-back orientation of a cube corresponds to an edge in the opposite-face graph that connects the
-        colours of the front and back faces.
-        This leads us to the graph theory concept of subgraphs.
-         """
-        self.say(voiceover)
+        self.say("""
+        So move all the ex edges from the opposite-face graph to the front-back subgraph.
+        """)
+        for cube in PuzzleCubeNumber:
+            self.move_edge((cube, AxisLabel.X), self.total_graph, self.front_graph, run_time=0.5)
 
-    def subscene_2_discuss_subgraphs(self) -> None:
-        if self.skip(self.subscene_2_discuss_subgraphs):
-            return
+        self.say("""
+        Similarly, The top face of each cube in the starting arrangement is labelled zed.
+        """)
+        self.puzzle_face_labeller.indicate_face_labels(self, FacePlane.TOP)
 
-        topic: Mobject = self.mk_topic("subgraph")
-        discussion: str = """
-        In graph theory, a subgraph of a given graph G is a subset of the nodes and edges of G that themselves
-        form a graph.
-        TO DO: show an example subgraph of the opposite-face graph.
-        """
-        self.play(FadeOut(self.total_graph))
-        self.discuss_mobject(topic, discussion)
-        self.play(FadeIn(self.total_graph))
+        self.say("""
+        So move all the zed edges from the opposite-face graph to the top-bottom subgraph.
+        """)
+        for cube in PuzzleCubeNumber:
+            self.move_edge((cube, AxisLabel.Z), self.total_graph, self.top_graph, run_time=0.5)
 
-    def subscene_3_discuss_front_back_subgraph(self) -> None:
-        if self.skip(self.subscene_3_discuss_front_back_subgraph):
-            return
+        self.say("""
+        We know that the starting arrangment is not a solution and this fact
+        shows up clearly in the subgraphs.
 
-        voiceover: str = """
-        We'll refer to the subgraph that corresponds to a front-back solution as a front-back subgraph.
-        A front-back solution defines a front-back orientation for each cube.
-        Therefore, the front-back subgraph must contain exactly one edge for each of the four cubes.
-        Furthermore, each colour must appear exactly once on the front side and once on the back side.
-        This can happen in two ways, namely the colour appears on the front and back faces of the same cube
-        or the colour appears on the front face of one cube and on the back face of another distinct cube.
-        If the colour appears on the same cube then the subgraph has a loop at the node for the colour.
-        Otherwise, the colour appears on two distinct cubes and therefore has two distinct edges that connect it,
-        one edge for each of the two cubes.
+        The degree of a node is the number of edges that are incident on it.
+        A loop contributes 2 to the degree.
+        """)
 
-        TO DO: Point out that edges 1z and 2y are loops.
+        self.say("""
+        In a solution, each colour must appear once on the front side
+        and once on the back side.
+        This means that each node in the front-back subgraph
+        must have degree two.
 
-        Counting the number of edges incident on a node leads us to the graph theory concept of node degrees.
-        """
-        self.say(voiceover)
+        A spanning subgraph in which each node has degree two is called a 2-factor of the graph.
+        The front-back subgraph of a solution must be a 2-factor of the opposite-face graph.
 
-    def subscene_4_discuss_node_degrees(self) -> None:
-        if self.skip(self.subscene_4_discuss_node_degrees):
-            return
+        But this is not the case for the starting arrangement of the puzzle. 
 
-        self.play(FadeOut(self.total_graph))
-        topic: Mobject = self.mk_topic("in-degree, out-degree, total degree")
-        discussion = """
-        We often need to talk about the number of edges that are incident on a node.
-        This number is called the total degree of the node, or simply its degree.
-        In a directed graph, the number of edges that point out of a node is called its out-degree
-        and the number of edges that point into a node is called its in-degree.
-        The sum of the in-degree and the out-degree equals the total degree.
-        """
-        self.discuss_mobject(topic, discussion)
+        Look at the red node.
+        """)
 
-        # example directed graph
-        image: Mobject = self.get_image("example-directed-graph.png", GRAPH_THEORY_LATEX)
-        discussion = """
-        Here's our toy directed graph again.
-        """
-        self.discuss_mobject(image, discussion)
+        red_node: Dot = self.front_graph.get_node_by_colour(FaceColour.RED)
+        red_colour: str = str(MANIM_COLOUR_MAP[FaceColour.RED])
+        scale_factor: float = 1.5
+        self.play(Indicate(red_node, color=red_colour), scale_factor=scale_factor)
 
-        # example-degree-table.png
-        image = self.get_image("example-degree-table.png", GRAPH_THEORY_LATEX)
-        discussion = """
-        We can summarize the degree information in a table with one row for each node.
-        Here's the degree table for our toy directed graph.
+        self.say("""
+        It has degree 3.
+        
+        Look at the blue node.
+        """)
 
-        TO DO: put the graph and table on the screen side-by-side.
-        Show graph first. Shrink it and move it to the left.
-        Fade in the degree table on the right.
-        Then do the same for the opposite-face graph and its table.
-        """
-        self.discuss_mobject(image, discussion)
-        self.play(FadeIn(self.total_graph))
+        blue_node: Dot = self.front_graph.get_node_by_colour(FaceColour.BLUE)
+        blue_colour: str = str(MANIM_COLOUR_MAP[FaceColour.BLUE])
+        self.play(Indicate(blue_node, color=blue_colour), scale_factor=scale_factor)
 
-    def subscene_5_discuss_solving_the_puzzle(self) -> None:
-        if self.skip(self.subscene_5_discuss_solving_the_puzzle):
-            return
+        self.say("""
+        It has degree 1.
 
-        voiceover: str = """
-                Our next step is to solve the front-back and top-bottom sides.
-                Solving a pair of opposite sides requires us to select one opposite-face pair from each cube
-                such that no colour is repeated along each side. 
-                We therefore need to find a subgraph that has exactly one edge for each cube
-                and each node has degree two.
-                This leads us to the graph theory concept of 2-factors.
-                """
-        self.say(voiceover)
+        Similarly, the top-bottom subgraph of a solution must be a 2-factor of the opposite-face graph.
+        But this is not the case for the starting arrangement since again the red node has degree 3
+        """)
+        red_node = self.top_graph.get_node_by_colour(FaceColour.RED)
+        self.play(Indicate(red_node, color=red_colour), scale_factor=scale_factor)
 
-    def subscene_6_discuss_2_factors(self) -> None:
-        if self.skip(self.subscene_6_discuss_2_factors):
-            return
-        topic: Mobject = self.mk_topic("spanning subgraphs, 2-factors")
-        discussion: str = """
-        A spanning subgraph is a subgraph that contains all the nodes of a graph.
-        A 2-factor is a spanning subgraph such that each node has degree 2.
+        self.say("""
+        and the blue node has degree 1.
+        """)
+        blue_node = self.top_graph.get_node_by_colour(FaceColour.BLUE)
+        self.play(Indicate(blue_node, color=blue_colour), scale_factor=scale_factor)
 
-        TO DO: show a 2-factor of the opposite-face graph.
-        """
-        self.play(FadeOut(self.total_graph))
-        self.discuss_mobject(topic, discussion)
-        self.play(FadeIn(self.total_graph))
+        self.say("""
+        Two subgraphs are said to be independent if they have no edges in common.
+        In a solution, every edge of the opposite-face graph must be either 
+        an edge of the front-back subgraph, 
+        an edge of the top-bottom subgraph, 
+        or not be part of the solution.
+        This means that the front-back and top-bottom subgraphs of a solution must be independent.
+        In fact, the two subgraphs must be independent 2-factors of the opposite-face graph.
 
+        Now we know what the two subgraphs for a solution look like.
+        Let's restore the opposite-face graph and try to find a pair of independent 2-factors
+        of the opposite-face graph.
+        """)
+
+        # restore the opposite-face graph in reverse order, i.e. undo top then undo front
+        for cube_axis, source_graph in zip([AxisLabel.Z, AxisLabel.X], [self.top_graph, self.front_graph]):
+            for cube in PuzzleCubeNumber:
+                self.move_edge((cube, cube_axis), source_graph, self.total_graph, run_time=0.25)
 
     def subscene_7_discuss_finding_2_factors(self) -> None:
         if self.skip(self.subscene_7_discuss_finding_2_factors):
             return
 
         voiceover: str = """
-        A pair of 2-factors is said to be independent if they have no edges in common.
-        Our task now is to find two independent 2-factors of the full opposite-face graph,
-        one for the front-back side and another for the top-bottom side.
-
-        TO DO: Ask the viewer to see if they can see a 2-factor.
-        Highlight the nodes and edges briefly as they are mentioned.
-        Move the edges and back them out when we hit a dead end.
-        
-        Look at the 1z loop. Suppose it is in a 2-factor.
-        Now consider the blue loop 2y. This fixes the colours red and blue and cubes 1 and 2.
-        We therefore need to add white and green for cubes 3 and 4. There are no
-        green or white loops so we need to use a pair of edges that connect green and white.
-        But there is no such edge for cube 3. Therefore our choice of the blue loop for cube 2
-        leads to a dead end when we use the red loop on cube one.
-        So if we use the red loop at cube one then we cannot use any other loops and so
-        we must connect the blue, green and white nodes with edges that form a triangle.
-        But there is no edge that connects blue and green.
-        Therefore when we try to use the red loop, we hit a dead end.
-        This proves that the 1z red loop cannot be part of any solution.
-
-        But there are only three edges for cube 1 so we must use edges 1x and 1y in the solution.
-        Let's arbitrarily put 1x in the front-back subgraph and 1y in the top-bottom subgraph.
-
-        Let's focus on the front-back subgraph which now must contain edge 1x. 
-        Suppose the edges form a square.
-        The combination 1x, 2x, 3y, 4x forms a 2-factor. 
-
-        Can we find an independent 2-factor for the top-bottom subgraph?
-        It must contain the edge 1y.
-        The combination 1y, 2z, 3z, 4z forms and independent 2-factor.
-
-        We have therefore solved the puzzle by applying visual reasoning to the opposite-face graph.
-        Let's animate this solution.
+        Converting the puzzle into the opposite-face graph doesn't automatically solve the puzzle.
+        It just dramatically reduces the search space.
+        We still have to apply our powers of visual reasoning to find a solution.
         """
         self.say(voiceover)
+
+        voiceover = """
+        Let's start with the front-back subgraph and see if the 1 zed loop is part of the solution.
+        Let's tentatively move it into the subgraph.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.Z), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        The front-back subgraph now has an edge from cube 1 
+        so we can ignore the 1 ex and 1 wy edges in the opposite-face graph.
+        Let's hide them temporarily. 
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.X), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.Y), False)
+
+        voiceover = """
+        The red node already has degree 2 so we can't use edges from cubes 2, 3, or 4 that touch red.
+        Let's temporarily hide edges 3 zed, 2 ex, 3 ex, and 4 ex. 
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.X), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.X), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.X), False)
+
+        voiceover = """
+        Now let's see if edge 2 wy can be part of the solution.
+        Tentatively move it into the front-back subgraph.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        Now we have edges from cubes 1 and 2 so we can't use the 2 zed edge.
+        Also, the blue node already has degree 2 so we can't use the 3 wy or 4 zed edges.
+        Temporarily hide edges 2 zed, 3 wy, and 4 zed.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), False)
+
+        voiceover = """
+        Now we've hit a dead end because we have no available edges from cube 3.
+        We have to backtrack to the point where we added edge 2 wy and try a different edge from cube 2.
+        """
+        self.say(voiceover)
+
+
+        self.wait(5.0)
+
+        voiceover = """
+        The red node now has degree 2 so we cannot add another edge that touches a red node.
+        The opposite-face graph now has 5 edges that touch red, namely 
+        Let's hide those.
+        """
+
+        # voiceover = """
+        # Look at the 1z loop. Suppose it is in a 2-factor.
+        # Now consider the blue loop 2y. This fixes the colours red and blue and cubes 1 and 2.
+        # We therefore need to add white and green for cubes 3 and 4. There are no
+        # green or white loops so we need to use a pair of edges that connect green and white.
+        # But there is no such edge for cube 3. Therefore our choice of the blue loop for cube 2
+        # leads to a dead end when we use the red loop on cube one.
+        # So if we use the red loop at cube one then we cannot use any other loops and so
+        # we must connect the blue, green and white nodes with edges that form a triangle.
+        # But there is no edge that connects blue and green.
+        # Therefore when we try to use the red loop, we hit a dead end.
+        # This proves that the 1z red loop cannot be part of any solution.
+        # """
+        # self.say(voiceover)
+        #
+        # voiceover = """
+        # But there are only three edges for cube 1 so we must use edges 1x and 1y in the solution.
+        # Let's arbitrarily put 1x in the front-back subgraph and 1y in the top-bottom subgraph.
+        # """
+        # self.say(voiceover)
+        #
+        # voiceover = """
+        # Let's focus on the front-back subgraph which now must contain edge 1x.
+        # Suppose the edges form a square.
+        # The combination 1x, 2x, 3y, 4x forms a 2-factor.
+        # """
+        # self.say(voiceover)
+        #
+        # voiceover = """
+        # Can we find an independent 2-factor for the top-bottom subgraph?
+        # It must contain the edge 1y.
+        # The combination 1y, 2z, 3z, 4z forms and independent 2-factor.
+        # """
+        # self.say(voiceover)
+        #
+        # voiceover = """
+        # We have therefore solved the puzzle by applying visual reasoning to the opposite-face graph.
+        # Let's animate this solution.
+        # """
+        # self.say(voiceover)
 
     def subscene_8_animate_finding_2_factors(self) -> None:
         if self.skip(self.subscene_8_animate_finding_2_factors):
@@ -283,7 +348,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
                       solution_index: int,
                       total_graph: OppositeFaceGraph,
                       front_graph: OppositeFaceGraph,
-                      top_graph) -> None:
+                      top_graph: OppositeFaceGraph) -> None:
         """
         Moves a solution into the subgraphs.
         Args:
@@ -312,7 +377,8 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
     def move_edge(self,
                   cube_axis: CubeAxis,
                   source_graph: OppositeFaceGraph,
-                  target_graph: OppositeFaceGraph) -> None:
+                  target_graph: OppositeFaceGraph,
+                  run_time: float = 1.0) -> None:
         """
         Moves an edge from a source graph to a target graph.
 
@@ -320,6 +386,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             cube_axis: the edge.
             source_graph: the source graph.
             target_graph: the target graph.
+            run_time: the run time in seconds.
         """
         # the source subgraph MUST contain the edge
         assert source_graph.edge_to_subgraph[cube_axis]
@@ -346,7 +413,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.play(moving_edge.animate.shift(delta),
                   moving_start_dot.animate.shift(delta),
                   moving_end_dot.animate.shift(delta),
-                  run_time=1.0)
+                  run_time=run_time)
         self.remove(moving_edge, moving_start_dot, moving_end_dot)
         target_graph.set_subgraph_edge(cube_axis, True)
 
@@ -359,38 +426,43 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         # add the total graph at the initial position from the end of previous scene
         self.puzzle = WINNING_MOVES_PUZZLE
         self.start_centre = 4 * RIGHT + DOWN
-        self.end_centre = 2 * UP
+        self.end_centre = 1.5 * DOWN
+
         self.total_graph = OppositeFaceGraph(self.puzzle, self.start_centre)
         full_subgraph: EdgeToSubgraphMapping = self.total_graph.mk_subgraph_for_flag(True)
         self.total_graph.set_subgraph(full_subgraph)
         self.add(self.total_graph)
 
-        self.subscene_1a_discuss_opposite_face_graph()
+        self.subscene_1_discuss_opposite_face_graph()
 
         # move the full graph from start_centre to end_centre
         self.play(self.total_graph.animate.shift(self.end_centre - self.start_centre))
 
-        self.subscene_1b_discuss_opposite_face_graph()
+        # create and display the 3D puzzle
+        puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        projection: Projection = mk_standard_orthographic_projection()
 
-        self.subscene_2_discuss_subgraphs()
+        self.puzzle3d = mk_standard_puzzle3d(puzzle_spec, projection)
+        self.add(self.puzzle3d)
 
-        self.subscene_3_discuss_front_back_subgraph()
+        self.initial_gap = self.puzzle3d.get_cube_gap()
+        self.min_gap = DEFAULT_BUFF
+        self.puzzle_face_labeller = PuzzleFaceLabeller(self, self.puzzle3d)
 
-        self.subscene_4_discuss_node_degrees()
+        # create the labels for the puzzle and add them to the scene
+        self.puzzle_face_labeller.update_puzzle_texts()
+        self.wait(1.0)
 
-        self.subscene_5_discuss_solving_the_puzzle()
-
-        self.subscene_6_discuss_2_factors()
-
-        self.subscene_7_discuss_finding_2_factors()
-
-        self.subscene_8_animate_finding_2_factors()
-
-        front_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * LEFT + 1.5 * DOWN)
-        top_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * RIGHT + 1.5 * DOWN)
+        # TO DO: use the class that models the pair of labelled subgraphs
+        front_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * LEFT + self.end_centre)
+        top_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * RIGHT + self.end_centre)
+        self.front_graph = front_graph
+        self.top_graph = top_graph
 
         front_text: Tex = Tex("front-back", color=BLACK, font_size=36)
         top_text: Tex = Tex("top-bottom", color=BLACK, font_size=36)
+        self.front_text = front_text
+        self.top_text = top_text
 
         front_text.next_to(front_graph, DOWN, buff=0.5)
         top_text.next_to(top_graph, DOWN, buff=0.5)
@@ -398,21 +470,26 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         animations: list[Animation] = [FadeIn(front_graph), FadeIn(front_text), FadeIn(top_graph), FadeIn(top_text)]
         self.play(AnimationGroup(animations), lag_ratio=0.5)
 
-        graph_solver: GraphSolver = GraphSolver(self.puzzle)
-        graph_solver.solve()
+        self.subscene_2_discuss_starting_arrangement()
 
-        self.move_solution(graph_solver, 0, self.total_graph, front_graph, top_graph)
+        self.subscene_7_discuss_finding_2_factors()
 
         self.subscene_8_animate_finding_2_factors()
 
-        self.subscene_9_discuss_assigning_directions()
-
-        # TODO: fade in the tips following the directed path
-        subgraph: OppositeFaceGraph
-        for subgraph in (front_graph, top_graph):
-            cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
-            for edge_tip in cube_edge_tips.values():
-                self.play(FadeIn(edge_tip.tip), run_time=0.5)
+        # graph_solver: GraphSolver = GraphSolver(self.puzzle)
+        # graph_solver.solve()
+        # self.move_solution(graph_solver, 0, self.total_graph, front_graph, top_graph)
+        #
+        # self.subscene_8_animate_finding_2_factors()
+        #
+        # self.subscene_9_discuss_assigning_directions()
+        #
+        # # TODO: fade in the tips following the directed path
+        # subgraph: OppositeFaceGraph
+        # for subgraph in (front_graph, top_graph):
+        #     cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
+        #     for edge_tip in cube_edge_tips.values():
+        #         self.play(FadeIn(edge_tip.tip), run_time=0.5)
 
         self.subscene_10_discuss_solution_symmetries()
 
@@ -423,7 +500,13 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            self.subscene_11_convert_subgraphs_to_solution,
+            # self.subscene_1_discuss_opposite_face_graph,
+            # self.subscene_2_discuss_starting_arrangement,
+            self.subscene_7_discuss_finding_2_factors,
+            # self.subscene_8_animate_finding_2_factors,
+            # self.subscene_9_discuss_assigning_directions,
+            # self.subscene_10_discuss_solution_symmetries,
+            # self.subscene_11_convert_subgraphs_to_solution,
         ]
 
 

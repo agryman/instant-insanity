@@ -2,7 +2,6 @@
 This module animates the conversion of the subgraphs into a solution of the puzzle.
 The scene starts with the two subgraphs on the bottom half the of the frame and nothing
 in the top half. The state of the scene is determined by the puzzle and the solution number.
-Recall that Carteblanche's puzzle has two solutions.
 """
 from typing import cast, Sequence
 
@@ -492,20 +491,20 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            # self.subscene_1_introduction,
-            # self.subscene_2_show_puzzle,
-            # self.subscene_3_describe_face_labels,
-            # self.subscene_3b_roll_puzzle,
-            # self.subscene_4_discuss_matching,
-            # self.subscene_4_discuss_front_cube_1,
-            # self.subscene_4_discuss_front_cube_2,
-            # self.subscene_4_discuss_front_cube_3,
-            # self.subscene_4_discuss_front_cube_4,
-            # self.subscene_5_discuss_top_cube_1,
-            # self.subscene_5_discuss_top_cube_2,
-            # self.subscene_5_discuss_top_cube_3,
-            # self.subscene_5_discuss_top_cube_4,
-            # self.subscene_6_conclusion,
+            self.subscene_1_introduction,
+            self.subscene_2_show_puzzle,
+            self.subscene_3_describe_face_labels,
+            self.subscene_3b_roll_puzzle,
+            self.subscene_4_discuss_matching,
+            self.subscene_4_discuss_front_cube_1,
+            self.subscene_4_discuss_front_cube_2,
+            self.subscene_4_discuss_front_cube_3,
+            self.subscene_4_discuss_front_cube_4,
+            self.subscene_5_discuss_top_cube_1,
+            self.subscene_5_discuss_top_cube_2,
+            self.subscene_5_discuss_top_cube_3,
+            self.subscene_5_discuss_top_cube_4,
+            self.subscene_6_conclusion,
         ]
 
 if __name__ == "__main__":

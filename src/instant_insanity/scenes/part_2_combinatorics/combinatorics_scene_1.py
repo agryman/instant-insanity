@@ -1,22 +1,16 @@
 from typing import Sequence, cast
 
-from manim import tempconfig, RIGHT, UP, BLACK, Text, Polygon, DOWN, LEFT, OUT, IN, ORIGIN, Mobject, FadeIn, Indicate, \
-    PI, FadeOut
-from manim.typing import Point3D, Vector3D
+from manim import tempconfig, RIGHT, BLACK, Text, DOWN, OUT, Mobject, FadeIn, Indicate, PI, FadeOut
+from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
-from scipy.spatial.transform import Rotation
 
-from instant_insanity.animators.cube_animators import CubeRigidMotionAnimorph
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.core.projection import OrthographicProjection, mk_standard_orthographic_projection, Projection
-from instant_insanity.core.puzzle import FaceLabel, PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber
-from instant_insanity.core.voiceover import voiceover_wait
-from instant_insanity.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
+from instant_insanity.core.projection import mk_standard_orthographic_projection, Projection
+from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d
-from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin
@@ -232,8 +226,6 @@ class CombinatoricsScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSc
         self.puzzle_face_labeller = PuzzleFaceLabeller(self, self.puzzle3d)
 
         # create the labels for the puzzle and add them to the scene
-        # for cube_number in PuzzleCubeNumber:
-        #     self.puzzle_face_labeller.update_cube_texts(cube_number)
         self.puzzle_face_labeller.update_puzzle_texts()
         self.wait(1.0)
 

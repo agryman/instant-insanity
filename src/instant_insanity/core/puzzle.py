@@ -201,6 +201,7 @@ class PuzzleCubeNumber(IntEnum):
     THREE = 3
     FOUR = 4
 
+
 type CubeAxis = tuple[PuzzleCubeNumber, AxisLabel]
 
 # PuzzleSpec is a list of four strings, one per cube.

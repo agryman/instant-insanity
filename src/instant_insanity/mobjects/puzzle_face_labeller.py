@@ -21,7 +21,7 @@ add them back to the scene after the rotations is completed.
 """
 from typing import cast
 
-from manim import Scene, Text, Polygon, DOWN, RIGHT, UP, PI
+from manim import Scene, Text, Polygon, DOWN, RIGHT, UP, PI, AnimationGroup, Indicate, BLACK
 from manim.typing import Vector3D
 
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeRotationAnimorph, \
@@ -65,6 +65,17 @@ class PuzzleFaceLabeller:
     def get_face_label(self, cube: PuzzleCubeNumber, plane: FacePlane) -> Text:
         visible_texts: VisibleCubeTexts = self.cube_to_visible_texts[cube]
         return visible_texts.get_label(plane)
+
+    def indicate_face_labels(self, scene: Scene, plane: FacePlane, runtime: float = 2.0) -> None:
+        cube: PuzzleCubeNumber
+        face_labels: list[Text] = [
+            self.get_face_label(cube, plane) for cube in PuzzleCubeNumber
+        ]
+        indicate_labels: AnimationGroup = AnimationGroup(
+            *[Indicate(label, scale_factor=2.0, color=BLACK) for label in face_labels],
+            lag_ratio=0.15
+        )
+        scene.play(indicate_labels, runtime=runtime)
 
     def update_cube_texts(
             self,
