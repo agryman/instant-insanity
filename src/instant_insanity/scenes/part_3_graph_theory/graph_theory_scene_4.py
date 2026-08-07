@@ -169,9 +169,10 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             return
 
         voiceover: str = """
-        Converting the puzzle into the opposite-face graph doesn't automatically solve the puzzle.
-        It just dramatically reduces the search space.
-        We still have to apply our powers of visual reasoning to find a solution.
+        Converting the puzzle into the opposite-face graph doesn't automatically solve it for us.
+        We still need to search it for a solution.
+        However, using the opposite-face graph dramatically reduces the search space and it helps us use 
+        our powers of visual reasoning to find a solution.
         """
         self.say(voiceover)
 
@@ -192,8 +193,8 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.Y), False)
 
         voiceover = """
-        The red node already has degree 2 so we can't use edges from cubes 2, 3, or 4 that touch red.
-        Let's temporarily hide edges 3 zed, 2 ex, 3 ex, and 4 ex. 
+        The red node already has degree 2 so we can't add edges that touch red.
+        Let's temporarily hide edges 2 ex, 3 ex, 3 zed, and 4 ex. 
         """
         self.say(voiceover)
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), False)
@@ -209,70 +210,217 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
 
         voiceover = """
-        Now we have edges from cubes 1 and 2 so we can't use the 2 zed edge.
-        Also, the blue node already has degree 2 so we can't use the 3 wy or 4 zed edges.
-        Temporarily hide edges 2 zed, 3 wy, and 4 zed.
+        Now the front-back subgraph has an edge from cube 2 so we can't use edge 2 zed. 
+        Temporarily hide it.
         """
         self.say(voiceover)
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), False)
+
+        voiceover = """
+        The blue node already has degree 2 so we can't use the 3 wy or 4 zed edges
+        since they touch blue.
+        Temporarily hide them.
+        """
+        self.say(voiceover)
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), False)
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), False)
 
+
         voiceover = """
-        Now we've hit a dead end because we have no available edges from cube 3.
+        Now we've hit a dead end because the front-back subgraph still needs an edge from cube 3 but none are available.
         We have to backtrack to the point where we added edge 2 wy and try a different edge from cube 2.
+        Show the edges we just hid and move edge 2 wy back to the opposite-face graph.
         """
         self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), True)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), self.front_graph, self.total_graph, run_time=1.0)
+
+        voiceover = """
+        We just showed that using edge 2 wy leads to a dead end, so temporarily hide it.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), False)
+
+        voiceover = """
+        We need edges from cubes 2, 3, and 4. 
+        The only available edges from cubes 2 and 3 are 2 zed and 3 wy so we are forced to use them. 
+        Move them into the front-back subgraph.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), self.total_graph, self.front_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        To complete the front-back subgraph we need an edge from cube 4 that connects green and blue.
+        However, no such edge is available so we've hit another dead end.
+        Backtrack to the point where we added edge 1 zed.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), self.front_graph, self.total_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), self.front_graph, self.total_graph, run_time=1.0)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.Y), True)
+        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.Z), self.front_graph, self.total_graph, run_time=1.0)
+
+        voiceover = """
+        It looks like we're back to square one, but we have discovered one valuable piece of new information.
+        We proved that using edge 1 zed leads to a dead end, so it can't be part of the solution.
+        Hide it.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.Z), False)
+
+        voiceover = """
+        Now there are only two available edges from cube 1, namely 1 ex and 1 wy.
+        One of those must go into the front-back subgraph and the other must go into the top-bottom subgraph.
+        The choice of which goes where is arbitrary but 
+        let's move 1 ex into the front-back subgraph and 1 wy into the top-bottom subgraph
+        since that matches the starting orientation of cube 1.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.X), self.total_graph, self.front_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.ONE, AxisLabel.Y), self.total_graph, self.top_graph, run_time=1.0)
+
+        voiceover = """
+        This choice reduces the number of rotations we will have to do 
+        to turn the starting arrangement into the solution.
+
+        Let's see if 2 wy can be part of the front-back subgraph.
+        Tentatively move it there.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        Now the front-back subgraph contains an edge from cube 2 so edges 2 ex and 2 zed cannot be part of it.
+        Temporarily hide them.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.X), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), False)
+
+        voiceover = """
+        The blue node of the front-back subgraph has degree two so no other edges that touch blue
+        can be part of it.
+        Temporarily hide edges 3 wy, 4 ex, and 4 zed.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.X), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), False)
+
+        voiceover = """
+        The front-back subgraph needs edges from cubes 3 and 4.
+        The only edge available from cube 4 is 4 wy so move it.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.FOUR, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        To complete the front-back subgraph we need a loop on the red node.
+        However, no such edge is available so we've hit another dead end.
+        Therefore edge 2 wy cannot be part of the front-back subgraph.
+        Backtrack to the point before we moved it into the front-back subgraph.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.X), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), True)
+        self.move_edge((PuzzleCubeNumber.FOUR, AxisLabel.Y), self.front_graph, self.total_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), self.front_graph, self.total_graph, run_time=1.0)
+
+        voiceover = """
+        We just proved that edge 2 wy cannot be part of the front-back subgraph.
+        
+        The blue node in the top-bottom subgraph has degree one.
+        Edge 2 wy is a loop so it cannot be part of the top-bottom subgraph
+        since that would increase the degree of the blue node to three. 
+        
+        Therefore edge 2 wy cannot be part of the solution so hide it.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), False)
+
+        voiceover = """
+        Let's see if edge 3 ex can be part of the front-back subgraph.
+        Tentatively move it.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.X), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        The front-back subgraph now has an edge from cube 3 so temporarily hide edges 3 wy and 3 zed in
+        the opposite-face graph.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), False)
+
+        voiceover = """
+        The white node in the front-back subgraph has degree two so no other edges that touch white
+        can be part of it.
+        Temporarily hide edges 2 zed, 4 wy, and 4 zed.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Y), False)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), False)
+
+        voiceover = """
+        The front-back subgraph needs edges from cubes 2 and 4 but there are only one of each available.
+        However, both of those touch red so adding them would increase the degree of the red node to three.
+        We have hit another dead end.
+        Backtrack to where we moved edge 3 ex.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Y), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), True)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), True)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.X), self.front_graph, self.total_graph, run_time=1.0)
+
+        voiceover = """
+        Adding edge 3 ex to the front-back subgraph leads to a dead end so hide it.
+        """
+        self.say(voiceover)
+        self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.X), False)
+
+        voiceover = """
+        The graphs are now simple enough for us to see the solution.
+        Move edges 2 ex, 3 wy, and 4 ex to the front-back subgraph to complete it.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.X), self.total_graph, self.front_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.Y), self.total_graph, self.front_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.FOUR, AxisLabel.X), self.total_graph, self.front_graph, run_time=1.0)
+
+        voiceover = """
+        Move edges 2 zed, 3 zed, and 4 zed to the top-bottom subgraph to complete it.
+        """
+        self.say(voiceover)
+        self.move_edge((PuzzleCubeNumber.TWO, AxisLabel.Z), self.total_graph, self.top_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.THREE, AxisLabel.Z), self.total_graph, self.top_graph, run_time=1.0)
+        self.move_edge((PuzzleCubeNumber.FOUR, AxisLabel.Z), self.total_graph, self.top_graph, run_time=1.0)
+
+        voiceover = """
+        The front-back and top-bottom subgraphs are now independent 2-factors of the opposite-face graph.
+        We have therefore found the solution.
+        It remains to convert this graphical solution into the arrangement of the four cubes that solves the puzzle.
+        """
 
 
         self.wait(5.0)
 
-        voiceover = """
-        The red node now has degree 2 so we cannot add another edge that touches a red node.
-        The opposite-face graph now has 5 edges that touch red, namely 
-        Let's hide those.
-        """
-
-        # voiceover = """
-        # Look at the 1z loop. Suppose it is in a 2-factor.
-        # Now consider the blue loop 2y. This fixes the colours red and blue and cubes 1 and 2.
-        # We therefore need to add white and green for cubes 3 and 4. There are no
-        # green or white loops so we need to use a pair of edges that connect green and white.
-        # But there is no such edge for cube 3. Therefore our choice of the blue loop for cube 2
-        # leads to a dead end when we use the red loop on cube one.
-        # So if we use the red loop at cube one then we cannot use any other loops and so
-        # we must connect the blue, green and white nodes with edges that form a triangle.
-        # But there is no edge that connects blue and green.
-        # Therefore when we try to use the red loop, we hit a dead end.
-        # This proves that the 1z red loop cannot be part of any solution.
-        # """
-        # self.say(voiceover)
-        #
-        # voiceover = """
-        # But there are only three edges for cube 1 so we must use edges 1x and 1y in the solution.
-        # Let's arbitrarily put 1x in the front-back subgraph and 1y in the top-bottom subgraph.
-        # """
-        # self.say(voiceover)
-        #
-        # voiceover = """
-        # Let's focus on the front-back subgraph which now must contain edge 1x.
-        # Suppose the edges form a square.
-        # The combination 1x, 2x, 3y, 4x forms a 2-factor.
-        # """
-        # self.say(voiceover)
-        #
-        # voiceover = """
-        # Can we find an independent 2-factor for the top-bottom subgraph?
-        # It must contain the edge 1y.
-        # The combination 1y, 2z, 3z, 4z forms and independent 2-factor.
-        # """
-        # self.say(voiceover)
-        #
-        # voiceover = """
-        # We have therefore solved the puzzle by applying visual reasoning to the opposite-face graph.
-        # Let's animate this solution.
-        # """
-        # self.say(voiceover)
 
     def subscene_8_animate_finding_2_factors(self) -> None:
         if self.skip(self.subscene_8_animate_finding_2_factors):
@@ -425,8 +573,8 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
         # add the total graph at the initial position from the end of previous scene
         self.puzzle = WINNING_MOVES_PUZZLE
-        self.start_centre = 4 * RIGHT + DOWN
-        self.end_centre = 1.5 * DOWN
+        self.start_centre = 4.0 * RIGHT + DOWN
+        self.end_centre = 1.0 * DOWN
 
         self.total_graph = OppositeFaceGraph(self.puzzle, self.start_centre)
         full_subgraph: EdgeToSubgraphMapping = self.total_graph.mk_subgraph_for_flag(True)
@@ -454,8 +602,8 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.wait(1.0)
 
         # TO DO: use the class that models the pair of labelled subgraphs
-        front_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * LEFT + self.end_centre)
-        top_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4 * RIGHT + self.end_centre)
+        front_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4.5 * LEFT + self.end_centre)
+        top_graph: OppositeFaceGraph = OppositeFaceGraph(self.puzzle, 4.5 * RIGHT + self.end_centre)
         self.front_graph = front_graph
         self.top_graph = top_graph
 
@@ -464,8 +612,8 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.front_text = front_text
         self.top_text = top_text
 
-        front_text.next_to(front_graph, DOWN, buff=0.5)
-        top_text.next_to(top_graph, DOWN, buff=0.5)
+        front_text.next_to(front_graph, 2.0 * DOWN, buff=0.5)
+        top_text.next_to(top_graph, 2.0 * DOWN, buff=0.5)
 
         animations: list[Animation] = [FadeIn(front_graph), FadeIn(front_text), FadeIn(top_graph), FadeIn(top_text)]
         self.play(AnimationGroup(animations), lag_ratio=0.5)
