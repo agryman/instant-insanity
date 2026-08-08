@@ -1,74 +1,278 @@
-from pathlib import Path
+from typing import cast, Sequence
 
-from manim import Tex, BLACK, tempconfig
+from manim import tempconfig, PI, DOWN, RIGHT, OUT, Mobject
+from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
+from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.scenes.part_1_introduction.introduction_scene_1 import IMAGE_PATH
+from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
+from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
+from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.helpers import morph_and_checkpoint
+from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
-voiceover_text_1: str = """
-The Instant Insanity puzzle consists of four cubes whose faces are coloured either red, white, blue, or green.
-The goal of the puzzle is to arrange the cubes in a row so that no colour is
-repeated along each of the four sides.
-"""
+INTRODUCTION = "introduction"
+ROTATION_RUNTIME: float = 0.75
+ROTATION_WAIT_TIME: float = 0.25
+IMAGE_HEIGHT: float = 6.0
 
-voiceover_text_2: str = """
-As its name suggests, Instant Insanity is very challenging to solve simply by trial and error
-because there is a huge number of possible ways to arrange the cubes.
-The Winning Moves box claims that there are eighty-two thousand nine hundred and forty-four combinations.
 
-The surprising and delightful thing about Instant Insanity is that you can solve it very quickly 
-using an elegant method based on some simple concepts from the branch of mathematics known as graph theory.
-"""
+class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
+    """
+    This scene shows the puzzle cubes, explains the goal of the puzzle, and exhibits the solution.
+    It leads in to the graph theory scenes.
+    """
 
-voiceover_text_3: str = """
-One day in 1968, a university professor visited Arthur's high school and gave a guest lecture on graph theory.
-He finished the lecture by showing how to apply graph theory to quickly solve Instant Insanity.
-Arthur was very impressed by this demonstration of the power of graph theory and 
-often used it for thinking about technical problems later in his career.
-"""
+    puzzle3d: Puzzle3D
+    initial_gap: float
+    min_gap: float
 
-voiceover_text_4: str = """
-Fast forward to the present where we now have a wealth of excellent math videos on YouTube.
-Several of them explain the solution to Instant Insanity but, in Arthur's opinion,
-none of them fully exploit the potential of animation to clarify the concepts.
-It occurred to Arthur that a compelling animation of the graph theory solution to Instant Insanity
-might resonate with the current generation of young math enthusiasts
-and perhaps inspire them to explore the subject further.
+    def subscene_1_describe_puzzle(self):
+        if self.skip(self.subscene_1_describe_puzzle):
+            return
 
-This video explains the Instant Insanity puzzle and its graph theory solution without 
-assuming any prior knowledge of the subject.
-If you enjoy solving puzzles, and know some high school mathematics, then this video is for you.
-"""
+        voiceover: str
 
-class IntroductionScene2(VoiceoverScene):
+        voiceover = """
+        The Instant Insanity puzzle consists of four cubes whose faces are coloured 
+        red, white, blue, or green.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        Let's rotate the puzzle so we can see the colours of all the faces.
+        """
+        self.say(voiceover)
+        self.wait()
+
+        rotation_axes: list[Vector3D] = [RIGHT, DOWN]
+        rotation_voiceovers: list[str] = [
+            "First, we'll rotate the cubes around their horizontal axis.",
+            "Next, we'll rotate each cube around its vertical axis."
+        ]
+
+        rotation_axis: Vector3D
+        rotation_voiceover: str
+        for rotation_axis, rotation_voiceover in zip(rotation_axes, rotation_voiceovers):
+            self.say(rotation_voiceover)
+            # rotate the puzzle
+            rotation: Vector3D = cast(Vector3D, rotation_axis * PI / 2.0)
+            rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+            n: int
+            for n in range(4):
+                morph_and_checkpoint(self, rotation_animorph)
+
+        voiceover = """
+        Now you've seen all the faces of all the cubes.
+        We'll state the goal of the puzzle next.
+        """
+        self.say(voiceover)
+
+    def subscene_2_describe_goal(self):
+        if self.skip(self.subscene_2_describe_goal):
+            return
+
+        voiceover: str
+
+        voiceover = """
+        The puzzle challenges you to arrange the cubes in a row so that no colour is
+        repeated along each of the four sides.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        Let's move the cubes together so they form a row.
+        """
+        self.say(voiceover)
+
+        # set the cube gap
+        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
+        morph_and_checkpoint(self, gap_animorph)
+
+        voiceover = """
+        As you can see, the front side has all four colours so
+        it satisfies the goal of the puzzle.
+        We need to check the top, back, and bottom sides.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        Rotate the row so that the top side becomes the front side.
+        """
+        self.say(voiceover)
+
+        right_rotation: Vector3D = cast(Vector3D, RIGHT * PI / 2.0)
+        right_rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, right_rotation)
+        morph_and_checkpoint(self, right_rotation_animorph)
+
+        voiceover = """
+        Again we have all four colours so 
+        this side also satisfies the goal of the puzzle.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        Rotate again.
+        """
+        self.say(voiceover)
+        morph_and_checkpoint(self, right_rotation_animorph)
+
+        voiceover = """
+        Now the colour red is repeated so 
+        this side does not satisfy the goal of the puzzle.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        Rotate one more time.
+        """
+        self.say(voiceover)
+        morph_and_checkpoint(self, right_rotation_animorph)
+
+        voiceover = """
+        Once again, the colour red is repeated so 
+        this side also does not satisfy the goal of the puzzle.
+        """
+        self.say(voiceover)
+
+        voiceover = """
+        One more rotation brings us back to the starting position.
+        """
+        self.say(voiceover)
+        morph_and_checkpoint(self, right_rotation_animorph)
+
+        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
+        morph_and_checkpoint(self, gap_animorph)
+
+        voiceover = """
+        You now know the rules of Instant Insanity.
+        Simple, aren't they?
+        """
+        self.say(voiceover)
+
+    def subscene_3_show_box_front(self):
+        if self.skip(self.subscene_3_show_box_front):
+            return
+
+        self.remove(self.puzzle3d)
+        image: Mobject = self.get_image("instant-insanity-box-front.png", INTRODUCTION, IMAGE_HEIGHT)
+        discussion:str = """
+        Although the goal is simple to state, it's very challenging to find the solution. 
+        The Instant Insanity box claims there are eighty-two thousand nine hundred
+        and forty-four combinations, but only one solution. 
+        """
+        self.discuss_mobject(image, discussion)
+        self.add(self.puzzle3d)
+
+    def subscene_4_exhibit_solution(self):
+        if self.skip(self.subscene_4_exhibit_solution):
+            return
+
+        voiceover: str
+
+        voiceover = """
+        Looking ahead, we are going to find the following essentially unique solution.
+        We'll rotate each cube its starting orientation into its solution orientation.
+        """
+        self.say(voiceover)
+
+        solution_rotation_axes: dict[PuzzleCubeNumber, list[Vector3D]] = {
+            PuzzleCubeNumber.ONE: [OUT],
+            PuzzleCubeNumber.TWO: [OUT, OUT],
+            PuzzleCubeNumber.THREE: [DOWN, OUT, OUT],
+            PuzzleCubeNumber.FOUR: [OUT, OUT],
+        }
+
+        rotation: Vector3D
+        cube_number: PuzzleCubeNumber
+        for cube_number in PuzzleCubeNumber:
+            key_cube_number: PuzzleCubeNumber
+            mask: dict[PuzzleCubeNumber, bool] = {
+                key_cube_number: key_cube_number == cube_number for key_cube_number in PuzzleCubeNumber
+            }
+
+            voiceover = f"Rotate cube {cube_number}."
+            self.say(voiceover)
+
+            cube_rotation_axes: list[Vector3D] = solution_rotation_axes[cube_number]
+            cube_rotation_axis: Vector3D
+            for cube_rotation_axis in cube_rotation_axes:
+                rotation = cast(Vector3D, cube_rotation_axis * PI / 2.0)
+                animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation, mask)
+                morph_and_checkpoint(self, animorph, run_time=ROTATION_RUNTIME, wait_time=ROTATION_WAIT_TIME)
+
+        voiceover = """
+        Now let's confirm that this arrangement is in fact the solution.
+        """
+        self.say(voiceover)
+
+        gap_animorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
+        morph_and_checkpoint(self, gap_animorph)
+        self.wait()
+
+        # rotate the puzzle
+        rotation = cast(Vector3D, RIGHT * PI / 2.0)
+        rotation_animorph: Puzzle3DCubeRotationAnimorph = Puzzle3DCubeRotationAnimorph(self.puzzle3d, rotation)
+        solution_texts: list[str] = [
+            "No colour is repeated on the front side.",
+            "No repeats here either.",
+            "Still looking good.",
+            "Eureka!",
+        ]
+        for voiceover in solution_texts:
+            self.say(voiceover)
+            morph_and_checkpoint(self, rotation_animorph, run_time = ROTATION_RUNTIME, wait_time = ROTATION_WAIT_TIME)
+
+        voiceover = """
+            As claimed, this arrangement solves the puzzle.
+        """
+        self.say(voiceover)
+
+        # set the cube gap
+        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
+        morph_and_checkpoint(self, gap_animorph)
+
+
+        voiceover = """
+        Next we'll show an ingenious approach to finding the solution
+        that uses ideas from the branch of mathematics called graph theory.
+        Don't worry if you've never heard of graph theory.
+        We'll explain all the necessary concepts and then apply them to finding the solution.
+        If you enjoy solving puzzles then this video is for you.
+        Welcome to: A Puzzling Introduction to Graph Theory!
+        """
+        self.say(voiceover)
+
     def construct(self):
-        image_path = Path(IMAGE_PATH).expanduser()
         self.set_speech_service(GCPTextToSpeechService())
+        self.add_grid(False)
 
-        # Define the path to images
-        hello: Tex = Tex("Hello, world.", color=BLACK, font_size=72)
+        # create and display the 3D puzzle
+        puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        projection: Projection = mk_standard_orthographic_projection()
 
-        with self.voiceover(text=voiceover_text_1) as tracker:
-            self.add(hello)
-            self.wait(1)
-            self.remove(hello)
+        self.puzzle3d = mk_standard_puzzle3d(puzzle_spec, projection, centre=True)
+        self.initial_gap = self.puzzle3d.get_cube_gap()
+        self.min_gap = DEFAULT_BUFF
+        self.add(self.puzzle3d)
 
-        with self.voiceover(text=voiceover_text_2) as tracker:
-            self.add(hello)
-            self.wait(1)
-            self.remove(hello)
+        self.subscene_1_describe_puzzle()
+        self.subscene_2_describe_goal()
+        self.subscene_3_show_box_front()
+        self.subscene_4_exhibit_solution()
 
-        with self.voiceover(text=voiceover_text_3) as tracker:
-            self.add(hello)
-            self.wait(1)
-            self.remove(hello)
+    def get_playlist(self) -> Sequence[Subscene]:
+        return [
+            # self.subscene_1_describe_puzzle,
+            # self.subscene_2_describe_goal,
+            # self.subscene_3_show_box_front,
+            # self.subscene_4_exhibit_solution,
+        ]
 
-        with self.voiceover(text=voiceover_text_4) as tracker:
-            self.add(hello)
-            self.wait(1)
-            self.remove(hello)
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):

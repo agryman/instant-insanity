@@ -10,7 +10,7 @@ authors = [
     { name = "Arthur Ryman", email = "arthur.ryman@gmail.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.11.11"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -24,9 +24,13 @@ classifiers = [
 
 [project.scripts]
 make-background-linen = "instant_insanity.scripts.make_background_linen:main"
+make-greyscale = "instant_insanity.scripts.make_greyscale:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}    # Specifies that the packages are located in the 'src' directory
 
 [tool.setuptools.packages.find]
 where = ["src"]              # Search for packages in the 'src' directory
+
+[tool.setuptools.package-data]
+"instant_insanity" = ["resources/images/**/*.png", "resources/images/**/*.svg"]

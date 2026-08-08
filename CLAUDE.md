@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This project creates animations showing how to solve the Instant Insanity puzzle using Graph Theory. It uses Manim Community Edition for mathematical animations and includes multiple Python packages for cube geometry, puzzle solving, and visualization.
+This project creates animations showing how to solve the Instant Insanity puzzle using Graph Theory. 
+It uses Manim Community Edition to create mathematical animations
+It includes Python packages for cube geometry, puzzle solving, and visualization.
 
 ## Development Commands
 
@@ -28,9 +30,19 @@ mypy src
 After installation, utility commands are available:
 ```bash
 make-background-linen input.png  # Convert white backgrounds to LINEN color
+make-greyscale input.png         # Make a greyscale copy of an image for annotation
 ```
 
 Scripts are located in `src/instant_insanity/scripts/` and configured as entry points in `pyproject.toml`.
+
+An editable install keeps source changes live, but it does **not** pick up new
+`[project.scripts]` entries. The wrapper executables in `venv/bin/` are generated only
+when pip installs the package, so a newly added command will be missing from the venv
+until you reinstall:
+```bash
+pip install -e . --no-deps  # --no-deps skips re-resolving the dependency tree
+```
+Rerun this whenever an entry in `[project.scripts]` is added or renamed.
 
 ### Running Manim Animations
 Manim scenes are located throughout the codebase. To run a specific scene:
@@ -44,6 +56,20 @@ Key scene directories:
 - `src/manim_examples/` - General Manim learning examples
 
 Each scene directory may have its own `manim.cfg` configuration file.
+
+## Git
+
+Arthur performs all git operations himself using GitHub Desktop. Do not run any git
+command unless he explicitly asks for it in that request. This includes, but is not
+limited to, `git commit`, `git add`, `git mv`, `git rm`, `git checkout`, `git branch`,
+`git merge`, `git push`, and `git pull`. Do not offer to run them either.
+
+When a change would normally involve git, such as renaming or deleting a file, make the
+change with ordinary file operations and let Arthur stage and commit it in GitHub Desktop.
+Describe what changed in terms of files rather than suggesting git commands to run.
+
+Read-only inspection is fine, such as `git status`, `git diff`, and `git log`, when it
+helps answer a question or verify work.
 
 ## Architecture
 
@@ -67,9 +93,9 @@ Each scene directory may have its own `manim.cfg` configuration file.
 
 ### Coordinate System
 Uses standard 3D coordinate system where:
-- x-axis: horizontal, left to right
-- y-axis: vertical, bottom to top  
-- z-axis: perpendicular to screen, back to front
+- x-axis: horizontal, increasing from left to right
+- y-axis: vertical, increasing from bottom to top  
+- z-axis: perpendicular to screen, increasing from back to front
 - Standard cube occupies `[-1,1]³`
 
 ### Graph Theory Approach
@@ -105,11 +131,25 @@ The puzzle is solved using an "opposite-face graph" where each cube contributes 
 
 ## Important Notes
 
-- Python 3.11.11+ required (Google Colab compatibility)
+- Python 3.12+ required (Google Colab compatibility)
 - Avoid directory names conflicting with package names (especially `manim`)
-- Use Cairo renderer for 2D scenes, OpenGL for 3D scenes (due to Cairo 3D rendering bugs)
-- Voiceover text stored in `notebooks/voiceovers/` subdirectories
+- Use Cairo renderer for 2D scenes
+- Do not use Cairo or OpenGL renderer for 3D scenes
+- Cairo 3D has rendering bugs
+- Always use Cairo 2D scenes since the code is stable
+- Use custom `core.depth_sort.py` and `core.projection.py` modules to render 3D scenes in 2D Cairo
+- Voiceover text is stored in `notebooks/voiceovers/` subdirectories
 
 ## Development Environment
 
-The project is set up to work in PyCharm and Google Colab. Manim configuration files are distributed throughout scene directories to customize rendering settings per use case.
+The project is set up to work in PyCharm and Google Colab. 
+Google Colab was used in the initial stages of development for sharing content with Will but
+is now no longer needed since I am working alone and using manim.
+
+As of 2026-07-10, Google Colab uses Python 3.12 as the default version.
+Try to avoid features that do not work in Python 3.12.
+However, Colab compatibility is not a hard requirement anymore.
+It may be useful later in the project if I made any Jupyter notebooks publicly available.
+
+
+Manim configuration files are distributed throughout scene directories to customize rendering settings per use case.

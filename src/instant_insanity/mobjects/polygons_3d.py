@@ -28,7 +28,7 @@ class Polygons3D[KeyType](VGroup):
     We use the term *polygon* to refer to a Manim `Polygon` which is defined by a vertex path and other style attributes.
 
     These polygons are assumed to be planar, convex, and to not intersect each other,
-    except possibly along vertices or edges. That is, there are allowed to intersect
+    except possibly along vertices or edges. That is, they are allowed to intersect
     in a set of points whose area is zero. Furthermore, we assume that they have a valid
     depth sort. This means that the binary relation *polygon X is strictly behind polygon Y*
     in the given projection defines a directed acyclic graph.

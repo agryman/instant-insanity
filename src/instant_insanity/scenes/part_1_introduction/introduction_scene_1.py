@@ -1,13 +1,21 @@
 from dataclasses import dataclass
-from pathlib import Path
 
-from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, SVGMobject, ImageMobject, tempconfig
-from manim_voiceover import VoiceoverScene
+from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig
+from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.config import LINEN_CONFIG
+from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
+from instant_insanity.core.voiceover import voiceover_wait
+from instant_insanity.mobjects.image import ImagesPath
 
-IMAGE_PATH = "~/Documents/repositories/GitHub/agryman/instant-insanity/notebooks/images/scenes/part_1_introduction/"
+# Wait time between puzzles
+WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
+
+# Fade-in and Fade-out duration
+FADE_DURATION: float = 1.5
+
+IMAGES_SUBPACKAGE = 'introduction'
+
 
 @dataclass
 class PuzzleInfo:
@@ -25,12 +33,9 @@ class IntroductionScene1(VoiceoverScene):
         # Set up the Google TTS service
         self.set_speech_service(GCPTextToSpeechService())
 
-        # Define the path to images
-        image_path = Path(IMAGE_PATH).expanduser()
-
         wordle_info: PuzzleInfo = PuzzleInfo(
             name='Wordle',
-            voiceover='Before Wordle...',
+            voiceover='Before Wordle,',
             year=2021,
             image_filename='wordle-cropped.png',
             image_attribution='© 2025 The New York Times Company',
@@ -39,7 +44,7 @@ class IntroductionScene1(VoiceoverScene):
 
         sudoku_info: PuzzleInfo = PuzzleInfo(
             name='Sudoku',
-            voiceover='...before Sudoku...',
+            voiceover='before Sudoku,',
             year=1986,
             image_filename='sudoku-cropped.png',
             image_attribution='© 2025 The New York Times Company',
@@ -48,7 +53,7 @@ class IntroductionScene1(VoiceoverScene):
 
         rubiks_cube_info: PuzzleInfo = PuzzleInfo(
             name="Rubik's Cube",
-            voiceover="...before Rubik's Cube...",
+            voiceover="before Rubik's Cube,",
             year=1974,
             image_filename="Rubik's_cube.svg",
             image_attribution='image by Booyabazooka, CC BY-SA 3.0',
@@ -58,7 +63,7 @@ class IntroductionScene1(VoiceoverScene):
         instant_insanity_info: PuzzleInfo = PuzzleInfo(
             name="Instant Insanity",
             voiceover="""
-            ...there was Instant Insanity.
+            there was Instant Insanity!
             ...
             Released in 1967 by Parker Brothers, Instant Insanity became a craze.
             Millions of copies were sold, including one to a certain high school student named Arthur.
@@ -76,8 +81,8 @@ class IntroductionScene1(VoiceoverScene):
             instant_insanity_info,
         ]
 
-        # Create a ValueTracker for the year, starting at 2025
-        year_tracker = ValueTracker(2025)
+        # Create a ValueTracker for the year, starting at the first image
+        year_tracker = ValueTracker(info_list[0].year)
 
         # Create the year text that updates based on the tracker (BLACK text for LINEN background)
         year_text = always_redraw(
@@ -89,17 +94,11 @@ class IntroductionScene1(VoiceoverScene):
 
         # Display the initial year
         self.add(year_text)
-        self.wait(1.0)
 
+        images_path: ImagesPath = ImagesPath()
         info: PuzzleInfo
         for info in info_list:
-            filename: str = info.image_filename
-            full_path: Path = image_path / filename
-            image: Mobject
-            if filename.endswith('.svg'):
-                image = SVGMobject(full_path)
-            else:
-                image = ImageMobject(full_path)
+            image: Mobject = images_path.get_image(IMAGES_SUBPACKAGE, info.image_filename)
             image.height = info.image_height
 
             name: Tex = Tex(info.name,
@@ -114,36 +113,47 @@ class IntroductionScene1(VoiceoverScene):
             name.to_edge(DOWN, buff=1.0)
             attribution.to_corner(DOWN + LEFT, buff=0.25)
 
-            with self.voiceover(text=info.voiceover) as tracker:
+            start_opacity: int = 1 if info == info_list[0] else 0
 
-                self.add(name)
-                self.add(image)
-                self.add(attribution)
+            name.set_opacity(start_opacity)
+            image.set_opacity(start_opacity)
+            attribution.set_opacity(start_opacity)
 
-                name.set_opacity(0)
-                image.set_opacity(0)
-                attribution.set_opacity(0)
+            self.add(name)
+            self.add(image)
+            self.add(attribution)
 
+            if info == info_list[0]:
+                # show the first image then wait
+                self.wait(WAIT_BETWEEN_PUZZLES_DURATION)
+            else:
+                # fade in the puzzle and turn back the year
                 self.play(year_tracker.animate.set_value(info.year),
                           name.animate.set_opacity(1),
                           image.animate.set_opacity(1),
                           attribution.animate.set_opacity(1),
-                          run_time=1.0)
+                          run_time=FADE_DURATION)
 
-                # self.wait(1)
+            tracker: VoiceoverTracker
+            with self.voiceover(text=info.voiceover) as tracker:
+                # keep the image on screen for at least MIN_VOICEOVER_DURATION seconds
+                # elapsed: float = tracker.duration - tracker.get_remaining_duration()
+                # self.safe_wait(MIN_VOICEOVER_DURATION - elapsed)
+                voiceover_wait(self, tracker)
 
-                # leave the last item on screen, else fade out
-                if info == info_list[-1]:
-                    self.wait(2.0)
-                else:
-                    self.play(name.animate.set_opacity(0),
-                              attribution.animate.set_opacity(0),
-                              image.animate.set_opacity(0),
-                              run_time=1.0)
+            # leave the last item on screen, else fade out
+            if info == info_list[-1]:
+                self.wait(WAIT_BETWEEN_PUZZLES_DURATION)
+            else:
+                # fade out the puzzle
+                self.play(name.animate.set_opacity(0),
+                          attribution.animate.set_opacity(0),
+                          image.animate.set_opacity(0),
+                          run_time=FADE_DURATION)
 
-                    self.remove(name)
-                    self.remove(image)
-                    self.remove(attribution)
+                self.remove(name)
+                self.remove(image)
+                self.remove(attribution)
 
 
 if __name__ == "__main__":

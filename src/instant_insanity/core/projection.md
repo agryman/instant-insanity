@@ -111,7 +111,7 @@ Suppose that $m$ is behind $m'$.
 Denote this as:
 $$ m \prec m'$$
 
-We will define a real-valued $t_f$ function for $f$ 
+We will define a real-valued function $t_f$ for $f$ 
 $$ t_f: M \rightarrow \mathbb{R}$$
 with the property that it respects
 the relative ordering of collinear points in the sense that
@@ -174,13 +174,13 @@ $$
 L(v;m,\lambda) = (b(v;m)_x + \lambda u_x, b(v;m)_y + \lambda u_y, c + \lambda u_z)
 $$
 
-By construction, the parameter value $\lambda = 0$ maps to the point $b(v;m)$.
+By construction, $L$ maps the parameter value $\lambda = 0$ to the point $b(v;m)$.
 $$
 L(v;m, 0) = b(v;m)
 $$
 
-By construction, the parameter value $\lambda = \lVert v - m \rVert$ 
-maps to the point $v$.
+By construction, $L$ maps the parameter value $\lambda = \lVert v - m \rVert$ 
+to the point $v$.
 $$
 L(v;m, \lVert v - m \rVert) = v
 $$
@@ -280,8 +280,8 @@ $$
 
 The projection depends on the viewpoint $v$, the camera plane $c$,
 the scene origin $o$, and the model-to-scene scaling factor $\alpha$.
-This scene origin includes $c$ as its $z$-component. Altogether, we
-have 3 ($v$) + 3 ($o$) + 1 ($c$) + 1 ($\alpha$) parameters
+The scene origin includes $c$ as its $z$-component. Altogether, we
+have 3 ($v$) + 1 ($c$) + 3 ($o$) + 1 ($\alpha$) parameters
 for a grand total of 8 parameters. Are these independent or can we
 canconicalize them, say by finding an equivalent set of parameters
 with $c = 0$?

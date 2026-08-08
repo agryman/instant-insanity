@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from manim import Dot, VGroup, Polygon, CubicBezier, StealthTip
+from manim import Dot, VGroup, Polygon, CubicBezier, StealthTip, Text
 from manim.typing import Point3D, Point3D_Array
 
 from instant_insanity.core.cube import FacePlane
@@ -201,6 +201,27 @@ class OppositeFaceGraph(VGroup):
         # the subgraph is initially empty
         empty_subgraph: EdgeToSubgraphMapping = self.mk_subgraph_for_flag(False)
         self.set_subgraph(empty_subgraph)
+
+    def get_node_by_colour(self, colour: FaceColour) -> Dot:
+        """
+        Returns the node mobject corresponding to the given colour.
+
+        Args:
+            colour: the face colour.
+
+        Returns:
+            the node mobject corresponding to the given colour.
+        """
+        quadrant: Quadrant = self.colour_to_node[colour]
+        node: Dot = self.node_to_mobject[quadrant]
+
+        return node
+
+    def get_edge_label(self, cube: PuzzleCubeNumber, axis: AxisLabel) -> Text:
+        cube_axis: CubeAxis = (cube, axis)
+        edge_to_mobject: EdgeToMobjectMapping = self.edge_to_mobject
+        labelled_edge: LabelledEdge = edge_to_mobject[cube_axis]
+        return labelled_edge.get_label()
 
     def mk_node_at(self, quadrant: Quadrant, point: Point3D) -> Dot:
         """
