@@ -97,7 +97,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         We know that the starting arrangment is not a solution and this fact
         shows up clearly in the subgraphs.
 
-        The degree of a node is the number of edges that are incident on it.
+        The degree of a node is the number of edges that are connected to it.
         A loop contributes 2 to the degree.
         """)
 
@@ -154,7 +154,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         This means that the front-back and top-bottom subgraphs of a solution must be independent.
         In fact, the two subgraphs must be independent 2-factors of the opposite-face graph.
 
-        Now we know what the two subgraphs for a solution look like.
+        Now we know what the two subgraphs for a solution should look like.
         Let's restore the opposite-face graph and try to find a pair of independent 2-factors
         of the opposite-face graph.
         """)
@@ -418,64 +418,19 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         It remains to convert this graphical solution into the arrangement of the four cubes that solves the puzzle.
         """
 
-
-        self.wait(5.0)
-
-
-    def subscene_8_animate_finding_2_factors(self) -> None:
-        if self.skip(self.subscene_8_animate_finding_2_factors):
-            return
-
-        voiceover = """
-        We'll start by drawing their nodes and then add their edges.
-        Above we proved that the 1z loop on red cannot be part of any solution.
-        Therefore, the solution must use the 1x and 1y edges.
-        We arbitrarily put the 1x edge in the front-back subgraph which forces
-        the 1y edge to go into the top-bottom subgraph.
-        We then observed that the solution 2-factors must form squares.
-        """
-        self.say(voiceover)
-
-
     def subscene_9_discuss_assigning_directions(self) -> None:
         if self.skip(self.subscene_9_discuss_assigning_directions):
             return
 
         voiceover = """
-        Our next task is to orient the cubes. The 2-factors
-        tell us which pair of opposite faces appear on the front and back
-        sides and which appear on the top and bottom sides. 
-        We need to give each edge a direction.
-        The arrows in the front-back 2-factor point from front to back.
-        The arrows in the top-bottom 2-factor point from top to bottom.
-        The actual direction is arbitrary except that all the directions
-        must be consistent with each other.
-        Each node must have one edge coming into it and 
-        one edge going out of it. 
-        This rule ensures that no colour is repeated on any of the sides.
-        TO DO: improve the continuity of fading in the tips
-        TO DO: For example, in the front-back 2-factor the edge for cube 1
-        connects etc.
+        Our next task is to assign directions to edges of the subgraphs.
+
+        The arrows in the front-back subgraph will point from front to back.
+        The arrows in the top-bottom subgraph will point from top to bottom.
+        Each node must have one edge coming into it and one edge going out of it
+        to ensure that no colour is repeated on any of the sides.
         
-        Here is one way to do this.
-        """
-        self.say(voiceover)
-
-    def subscene_10_discuss_solution_symmetries(self) -> None:
-        if self.skip(self.subscene_10_discuss_solution_symmetries):
-            return
-
-        voiceover: str = """
-        A pair of valid independent directed 2-factors has several symmetries
-        in the sense that we can modify the 2-factors in certain ways that
-        define distinct, but essentially equivalent solutions.
-        We can interchange the front-back 2-factor with 
-        the top-bottom 2-factor.
-        We can reverse the directions of the front-back 2-factor.
-        We can reverse the directions of the top-bottom 2-factor.
-        We therefor have three independent 2-fold symmetries of the 2-factors, 
-        giving a total of eight distinct, but essentially equivalent, solutions. 
-        TO DO: do the math and maybe animate the eight solutions.
+        Here is one way to assign directions.
         """
         self.say(voiceover)
 
@@ -622,38 +577,33 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
         self.subscene_7_discuss_finding_2_factors()
 
-        self.subscene_8_animate_finding_2_factors()
+        # fade out the total graph in preparation for entry to GraphTheoryScene5
+        self.play(FadeOut(self.total_graph))
 
+        # the previous subscene creates the solution
         # graph_solver: GraphSolver = GraphSolver(self.puzzle)
         # graph_solver.solve()
         # self.move_solution(graph_solver, 0, self.total_graph, front_graph, top_graph)
-        #
-        # self.subscene_8_animate_finding_2_factors()
-        #
-        # self.subscene_9_discuss_assigning_directions()
-        #
-        # # TODO: fade in the tips following the directed path
-        # subgraph: OppositeFaceGraph
-        # for subgraph in (front_graph, top_graph):
-        #     cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
-        #     for edge_tip in cube_edge_tips.values():
-        #         self.play(FadeIn(edge_tip.tip), run_time=0.5)
 
-        self.subscene_10_discuss_solution_symmetries()
+        # TODO: improve the continuity of fading in the tips
+        # TODO: For example, in the front-back 2-factor the edge for cube 1 connects etc.
+        self.subscene_9_discuss_assigning_directions()
+
+        # TODO: fade in the tips following the directed path
+        subgraph: OppositeFaceGraph
+        for subgraph in (front_graph, top_graph):
+            cube_edge_tips: CubeEdgeTip = mk_edge_directions(subgraph)
+            for edge_tip in cube_edge_tips.values():
+                self.play(FadeIn(edge_tip.tip), run_time=0.5)
 
         self.subscene_11_convert_subgraphs_to_solution()
-
-        # fade out the total graph in preparation for entry to the next scene CubesFromSubgraphs
-        self.play(FadeOut(self.total_graph))
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
             # self.subscene_1_discuss_opposite_face_graph,
             # self.subscene_2_discuss_starting_arrangement,
-            self.subscene_7_discuss_finding_2_factors,
-            # self.subscene_8_animate_finding_2_factors,
+            # self.subscene_7_discuss_finding_2_factors,
             # self.subscene_9_discuss_assigning_directions,
-            # self.subscene_10_discuss_solution_symmetries,
             # self.subscene_11_convert_subgraphs_to_solution,
         ]
 
