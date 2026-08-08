@@ -9,13 +9,10 @@ from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, FaceLabel
 from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.mobjects.zoom_image import GRAPH_THEORY, INTRODUCTION
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
-# image subpackages
-INTRODUCTION: str = "introduction"
-GRAPH_THEORY: str = "graph_theory"
-GRAPH_THEORY_LATEX: str = GRAPH_THEORY + ".latex"
 
 class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
     def subscene_2_eureka_cover(self) -> None:

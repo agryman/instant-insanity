@@ -133,7 +133,7 @@ class CombinatoricsScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSc
         voiceover: str = """
         An arrangement consists of four orientations, one for each of the four cubes.
         We can freely choose each orientation.
-        Therefore there are 331 thousand 776 possible arrangements of four cubes.
+        Therefore, there are 331 thousand 776 possible arrangements of four cubes.
         """
         self.discuss_mobject(topic, voiceover)
 

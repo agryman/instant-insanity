@@ -36,7 +36,8 @@ BUILD_DIR   := build-output
 OUTPUT_DIR  := output
 
 # Ordered list of parts. The order here IS the playback order.
-PARTS := part-1 part-3
+# PARTS := part-1 part-3
+PARTS := part-1
 
 # Source scene directory for each part.
 PART_DIR_part-1 := part_1_introduction
