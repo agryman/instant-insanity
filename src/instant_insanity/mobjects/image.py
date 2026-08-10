@@ -65,3 +65,9 @@ class ImagesPath:
             image.load()
 
         return image
+
+
+INTRODUCTION = "introduction"
+IMAGE_HEIGHT: float = 6.0
+GRAPH_THEORY_LATEX: str = "graph_theory.latex"
+GRAPH_THEORY: str = "graph_theory"

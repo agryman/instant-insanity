@@ -4,9 +4,8 @@ This module animates the search for the two subgraphs of the opposite-face graph
 
 from typing import Sequence
 
-from manim import tempconfig, DOWN, LEFT, RIGHT, Tex, Dot, FadeIn, FadeOut, Mobject, Animation, AnimationGroup, Indicate
+from manim import tempconfig, DOWN, LEFT, RIGHT, Tex, Dot, FadeIn, FadeOut, Animation, AnimationGroup, Indicate, BLACK
 from manim.typing import Vector3D, Point3D
-from manim.utils.color.X11 import BLACK
 from manim_voiceover import VoiceoverScene
 
 from instant_insanity.core.cube import FacePlane
@@ -26,8 +25,6 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.scenes.discussion import DiscussionMixin
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid
-
-GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 
 class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
@@ -49,10 +46,12 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             return
 
         voiceover: str = """
-        We'll now explain how to use the opposite-face graph to solve the puzzle.
+        We'll now show how to use the opposite-face graph to solve the puzzle.
         
         Our solution strategy is to first solve the front-back sides and
-        then solve the top-bottom sides while preserving the front-back sides.
+        then solve the top-bottom sides without disrupting the front-back sides.
+        
+        We need to understand what a solution looks like in terms of graphs.
         """
         self.say(voiceover)
 
@@ -62,13 +61,20 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
         self.say("""
         A subgraph of a graph is a subset of its nodes and edges that themselves define a graph.
-        We'll build up the front-back and top-bottom solutions in subgraphs of the opposite-face graph.
         
-        A spanning subgraph is a subgraph that contains all the nodes of the graph.
-        The front-back and top-bottom subgraphs are spanning subgraphs since they contain all four colour nodes.
+        In any arrangement of the cubes, the sets of front-back and top-bottom pairs of opposite
+        faces each define a subgraph of the opposite-face graph.
         
-        Any arrangement of the cubes defines a front-back subgraph and a top-bottom subgraph.
-        Let's see what this looks like for the starting arrangement of the puzzle.
+        Furthermore, these subgraphs each contain exactly one edge from each cube and they
+        have no edges in common. Two subgraphs that have no edges in common are said to be independent.
+        
+        If the arrangement is a solution then all colours must appear on each of the front, back, top, and bottom sides.
+        This means that each node in both subgraphs must be touched by exactly two edges.
+        The number of edges that touch a node is called its degree.
+        A loop at a node counts as touching it twice.
+        
+        In summary, a solution corresponds to two independent subgraphs that each contain exactly one edge
+        from each cube and whose nodes all have degree 2.
         """)
 
         self.say("""

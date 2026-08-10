@@ -72,15 +72,12 @@ class FaceColourTable:
         # because row 1 holds the column labels and column 1 holds the row labels.
         for i, face_colour_row in enumerate(face_colour_rows):
             for j, face_colour in enumerate(face_colour_row):
-                if face_colour is FaceColour.WHITE:
-                    continue
                 cell_colour: ManimColor = MANIM_COLOUR_MAP[face_colour]
                 table.add_highlighted_cell((i + 2, j + 2), color=cell_colour, fill_opacity=1.0)
+                if face_colour is FaceColour.WHITE:
+                    continue
                 table.get_entries((i + 2, j + 2)).set_color(WHITE)
 
-        # add the table background last so that it sits behind the highlighted cells.
-        table.add_background_rectangle(color=WHITE, opacity=1.0)
-        table.scale(0.5)
         self.table = table
 
     def indicate_data_row(
@@ -94,6 +91,7 @@ class FaceColourTable:
         Args:
             scene: The scene that contains the face table.
             face_label: The face label of the data row to indicate.
+            scale_factor: The scale factor applied to the indicated data row.
             run_time: The run time in seconds.
         """
         # get_rows() returns the column label row at index 0, so the data rows start

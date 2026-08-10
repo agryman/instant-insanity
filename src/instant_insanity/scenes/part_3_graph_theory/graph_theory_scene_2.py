@@ -9,95 +9,13 @@ from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, FaceLabel
 from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.mobjects.zoom_image import GRAPH_THEORY, INTRODUCTION
+# from instant_insanity.mobjects.zoom_image import GRAPH_THEORY, INTRODUCTION
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
+from instant_insanity.mobjects.image import INTRODUCTION
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
 
 class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
-    def subscene_2_eureka_cover(self) -> None:
-        if self.skip(self.subscene_2_eureka_cover):
-            return
-
-        # cite Eureka and show its cover
-        image = self.get_image("eureka-cover.png", GRAPH_THEORY)
-        discussion = """
-        The ingenious use of graph theory to solve Instant Insanity
-        was published in the April, 1947 issue of Eureka, the journal
-        of the Cambridge University Mathematical Society.
-        """
-        self.discuss_mobject(image, discussion)
-
-    def subscene_2_eureka_page_1_toc(self) -> None:
-        if self.skip(self.subscene_2_eureka_page_1_toc):
-            return
-
-        subpackages: str = GRAPH_THEORY
-        image_filename: str = "eureka-page-1-toc.png"
-        image_height: float = PAGE_HEIGHT
-        image_voiceover: str = """
-        Here's the table of contents of Eureka, number 9, dated April 1947.
-        """
-        annotated_filenames: list[str] = [
-            "eureka-page-1-toc-annotated.png",
-        ]
-        annotated_voiceovers: list[str] = [
-            """
-            The solution is given in 
-            "The Coloured Cubes Problem" by F. de Carteblanche on page 9.
-            """,
-        ]
-
-        self.discuss_and_zoom_image(
-            subpackages,
-            image_filename,
-            image_height,
-            image_voiceover,
-            annotated_filenames,
-            annotated_voiceovers
-        )
-
-    def subscene_4_eureka_page_9(self) -> None:
-        if self.skip(self.subscene_4_eureka_page_9):
-            return
-
-        subpackages: str = GRAPH_THEORY
-        image_height: float = PAGE_HEIGHT
-        image_filename: str = "eureka-page-9.png"
-        image_voiceover: str = """
-        Let's look at the article.
-        """
-
-        annotated_filenames: list[str] = [
-            "eureka-page-9-the-article.png",
-            "eureka-page-9-naming-scheme.png",
-        ]
-        annotated_voiceovers: list[str] = [
-            """
-            The puzzle was called the Tantalizer at that time and it used the colour orange instead of blue.            
-            Aside from those minor differences, it was the same as Instant Insanity.
-            Another irrelevant difference is that Carteblanche asks us to stack the cubes in a vertical pile
-            but we prefer to line them up in a horizontal row.
-            """,
-            """
-            Carteblanche introduced a naming scheme for the cube faces to make referring to them easy.
-            These names are given in the table at the bottom of the page.
-            We'll use this naming scheme too.
-            
-            Note that no colour is repeated in the table rows for the front, back, right, and left faces
-            so this arrangement of the cubes makes a vertical pile that solves the puzzle.
-            """,
-        ]
-
-        self.discuss_and_zoom_image(
-            subpackages,
-            image_filename,
-            image_height,
-            image_voiceover,
-            annotated_filenames,
-            annotated_voiceovers
-        )
-
 
     def subscene_5_instant_insanity_table(self) -> None:
         if self.skip(self.subscene_5_instant_insanity_table):
@@ -151,78 +69,6 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         # self.discuss_mobject(face_colour_table.table, discussion)
         self.play(FadeOut(table))
 
-    def subscene_6_eureka_page_10(self) -> None:
-        if self.skip(self.subscene_6_eureka_page_10):
-            return
-
-        subpackages: str = GRAPH_THEORY
-        image_height: float = PAGE_HEIGHT
-        image_filename: str = "eureka-page-10.png"
-        image_voiceover: str = """
-        The second page of the article explains how to convert the puzzle
-        into a graph and how to use it to solve the puzzle.
-        The graph is shown in Figure 1.
-        """
-
-        annotated_filenames: list[str] = [
-            "eureka-page-10-fig-1.png",
-        ]
-        annotated_voiceovers: list[str] = [
-            """
-            The nodes of the graph represent the face colours and 
-            are labelled G, R, O, and W.
-            Its edges represent pairs of opposite faces and 
-            are labelled by the number of the cube they belong to.
-            Each edge connects the colours that occur in a pair of opposite faces.
-            There are four cubes and three pairs of opposite faces in each cube
-            so the graph has twelve edges.
-            
-            Note that the unlabelled horizontal edge from W to O should have the label 3.
-    
-            Later, we'll explain how to use this graph for solving the puzzle.
-            """,
-        ]
-
-        self.discuss_and_zoom_image(
-            subpackages,
-            image_filename,
-            image_height,
-            image_voiceover,
-            annotated_filenames,
-            annotated_voiceovers
-        )
-
-    def subscene_7_eureka_page_11(self) -> None:
-        if self.skip(self.subscene_7_eureka_page_11):
-            return
-
-        subpackages: str = GRAPH_THEORY
-        image_height: float = PAGE_HEIGHT
-        image_filename: str = "eureka-page-11.png"
-        image_voiceover: str = """
-        The final page of the article contains a noteworthy statement.
-        """
-
-        annotated_filenames: list[str] = [
-            "eureka-page-11-greyscale-41472.png",
-        ]
-        annotated_voiceovers: list[str] = [
-            """
-            The article claims that the chance that a random arrangement
-            of the cubes solves the puzzle is one in forty-one thousand four hundred
-            and seventy two, making it only half as difficult as the Instant Insanity box claims.
-            """
-        ]
-
-        self.discuss_and_zoom_image(
-            subpackages,
-            image_filename,
-            image_height,
-            image_voiceover,
-            annotated_filenames,
-            annotated_voiceovers
-        )
-
     def subscene_8_instant_insanity_box_front(self) -> None:
         if self.skip(self.subscene_8_instant_insanity_box_front):
             return
@@ -269,22 +115,12 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         image: Mobject
         discussion: str
 
-        self.subscene_2_eureka_cover()
-        self.subscene_2_eureka_page_1_toc()
-        self.subscene_4_eureka_page_9()
         self.subscene_5_instant_insanity_table()
-        self.subscene_6_eureka_page_10()
-        self.subscene_7_eureka_page_11()
         self.subscene_8_instant_insanity_box_front()
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            self.subscene_2_eureka_cover,
-            self.subscene_2_eureka_page_1_toc,
-            self.subscene_4_eureka_page_9,
             self.subscene_5_instant_insanity_table,
-            self.subscene_6_eureka_page_10,
-            self.subscene_7_eureka_page_11,
             self.subscene_8_instant_insanity_box_front,
         ]
 

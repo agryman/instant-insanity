@@ -191,7 +191,7 @@ class DiscussionMixin:
         image: Mobject = self.get_image(image_filename, subpackages, height=image_height)
         assert isinstance(image, ImageMobject)
 
-        self.play(FadeIn(image))
+        self.play(FadeIn(image, run_time=0.5))
         self.say(image_voiceover)
 
         annotated_filename: str
@@ -205,12 +205,12 @@ class DiscussionMixin:
             rect: Rectangle = self.mk_region_rect(image, region,
                                              stroke_color=RED,
                                              stroke_width=2.0)
-            self.play(FadeIn(rect))
+            self.play(FadeIn(rect, run_time=0.5))
 
             # conceal everything outside the region
             mask: VMobject = self.mk_spotlight_mask(rect)
             self.add(mask)
-            self.play(FadeIn(mask))
+            self.play(FadeIn(mask, run_time=0.5))
 
             # scale the image, the mask, and the frame together so that the hole in
             # the mask stays over the same part of the image
@@ -226,4 +226,4 @@ class DiscussionMixin:
             self.play(FadeOut(mask), FadeOut(rect))
 
         # conceal the main image
-        self.play(FadeOut(image))
+        self.play(FadeOut(image, run_time=0.5))

@@ -35,7 +35,7 @@ from instant_insanity.core.projection import (
 )
 from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WINNING_MOVES_PUZZLE_SPEC,
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel,
-                                          FaceColour, AXIS_TO_FACE_LABEL_PAIR, FaceLabelPair, FaceLabel,
+                                          AXIS_TO_FACE_LABEL_PAIR, FaceLabelPair, FaceLabel,
                                           INITIAL_FACE_PLANE_TO_LABEL)
 from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
@@ -44,9 +44,11 @@ from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, Fac
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, Puzzle3DPolygonName, mk_standard_puzzle3d
 from instant_insanity.mobjects.puzzle_cube_3d import PuzzleCube3D
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.subscene import SubsceneMixin
 
 
-class GraphTheoryScene3(GridMixin, VoiceoverScene):
+class GraphTheoryScene3(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
     """
     This scene animates the construction of the opposite-face graph of a puzzle.
     Each cube of the puzzle is exploded into opposite-face pairs.
@@ -213,17 +215,11 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
         else:
             return second, first
 
-    def animate_explode_cube(self, cube3d: PuzzleCube3D) -> None:
-        expansion_factor: float = 2.0
-        animorph: CubeAnimorph = CubeExplosionAnimorph(cube3d, expansion_factor)
-        cube3d.conceal_polygons()
-        animorph.play(self, alpha=1.0, run_time=4.0)
-
     def animate_explode_puzzle_cube(self, puzzle3d: Puzzle3D, cube_number: PuzzleCubeNumber) -> None:
         expansion_factor: float = 2.0
         animorph: Puzzle3DAnimorph = Puzzle3DCubeExplosionAnimorph(puzzle3d, expansion_factor, cube_number)
         puzzle3d.conceal_polygons()
-        animorph.play(self, alpha=1.0, run_time=4.0)
+        animorph.play(self, alpha=1.0, run_time=1.0)
 
     def animate_shift_cube(self, cube3d: PuzzleCube3D) -> None:
         # animate movement of exploded cube to the left
@@ -306,7 +302,7 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
         self.play(
             start.dot.animate.move_to(start_dot_1),
             end.dot.animate.move_to(end_dot_1),
-            run_time=2.0,
+            run_time=1.0
         )
         self.remove(moving_edge, start.dot, end.dot)
 
@@ -343,24 +339,26 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
         Here's our puzzle.
         Let's construct its opposite-face graph.
         '''
-        with self.voiceover(text=voiceover_1) as tracker:
-            self.wait(tracker.duration)
+        self.say(voiceover_1)
 
         voiceover_2a: str = '''
-        Start by drawing the nodes of the opposite-face graph below-and-to-the-right-of the puzzle.
+        Start by drawing its nodes.
         '''
-        with self.voiceover(text=voiceover_2a) as tracker:
-            self.wait(tracker.duration)
+        self.say(voiceover_2a)
 
         graph: OppositeFaceGraph = OppositeFaceGraph(puzzle, 4 * RIGHT + DOWN)
         self.play(Create(graph))
 
         voiceover_2b: str = '''
-        The graph contains four nodes, one for each possible face colour.
-        The graph has no edges yet. We'll add them next.
+        The graph has no edges yet. 
+        We'll add them
+        by morphing each cube into its three pairs of opposite faces
+        and then converting each pair into an edge.
+        Each cube will therefore contribute three edges by this process
+        giving a total of 12 edges.
         '''
-        with self.voiceover(text=voiceover_2b) as tracker:
-            self.wait(tracker.duration)
+        self.say(voiceover_2b)
+        self.wait(0.5)
 
         cube_number: PuzzleCubeNumber
         cube: PuzzleCube
@@ -374,19 +372,7 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
         animorph: Animorph
         moveable_polygon_ids: set[Puzzle3DPolygonName]
 
-        voiceover_3: str = '''
-        We're going to add the edges to the graph one cube at a time.
-        We'll morph each cube into its three pairs of opposite faces.
-        Each pair of opposite faces will become an edge.
-        The six faces will thus be converted into three edges by this process.
-        '''
-        with self.voiceover(text=voiceover_3) as tracker:
-            self.wait(tracker.duration)
-
         for cube_number in PuzzleCubeNumber:
-            cube = puzzle.number_to_cube[cube_number]
-            if cube_number > PuzzleCubeNumber.FOUR:
-                break
 
             # move the cube to the work area
             moveable_polygon_keys: set[Puzzle3DPolygonName] = {
@@ -405,56 +391,19 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
 
             animorph = RigidMotionPolygons3DAnimorph[Puzzle3DPolygonName](puzzle3d, rotation, translation, moveable_polygon_keys)
 
-            self.wait()
-
-            voiceover_4: str= f'Move cube {cube_number},'
-            if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_4 = f'Move cube {cube_number} down-and-to-the-left-of the graph.'
-            elif cube_number == PuzzleCubeNumber.FOUR:
-                voiceover_4 = f'Finally, move cube {cube_number}.'
+            voiceover_4: str = f'Convert cube {cube_number}.'
+            if cube_number == PuzzleCubeNumber.FOUR:
+                voiceover_4 = f'Finally, convert cube {cube_number}.'
 
             with self.voiceover(text=voiceover_4) as _:
                 puzzle3d.conceal_polygons()
-                animorph.play(self)
+                animorph.play(self, run_time=0.5)
 
             puzzle3d.checkpoint()
 
-            voiceover_5: str = f'and explode it.'
-            if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_5 = f'Explode cube {cube_number} so we can see the colours of its faces.'
-            with self.voiceover(text=voiceover_5) as _:
-                self.animate_explode_puzzle_cube(puzzle3d, cube_number)
-
-            voiceover_6: str = f'Morph cube {cube_number}.'
-            if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_6 = f'''Next, morph each pair of opposite faces in cube {cube_number} into an edge.
-                We need to keep track of where the edges came from so
-                we'll label each one with its cube number and axis.
-                For example, the x-axis of cube 1 will be labelled 1x.
-                '''
-            with self.voiceover(text=voiceover_6) as tracker:
-                self.wait(tracker.duration)
-
-            if cube_number == PuzzleCubeNumber.ONE:
-                voiceover_7b: str = '''We'll be using Carteblanche's 1947 labelling scheme:
-                x for front-to-back, y for right-to-left, and z for top-to-bottom.
-                '''
-                with self.voiceover(text=voiceover_7b) as tracker:
-                    self.wait(tracker.duration)
+            self.animate_explode_puzzle_cube(puzzle3d, cube_number)
 
             for axis_label in AxisLabel:
-                face_label_pair: FaceLabelPair = AXIS_TO_FACE_LABEL_PAIR[axis_label]
-                face_label_0: FaceLabel = face_label_pair[0]
-                face_label_1: FaceLabel = face_label_pair[1]
-                face_colour_0: FaceColour = cube.face_label_to_colour[face_label_0]
-                face_colour_1: FaceColour = cube.face_label_to_colour[face_label_1]
-                voiceover_7a: str = f'Convert its {axis_label}-axis.'
-                if cube_number == PuzzleCubeNumber.ONE:
-                    voiceover_7a = f'''The {axis_label}-axis connects a {face_colour_0} face to a {face_colour_1} face.
-                    Create a labelled edge that connects the corresponding nodes.
-                    '''
-                with self.voiceover(text=voiceover_7a) as tracker:
-                    self.wait(tracker.duration)
                 cube_axis = (cube_number, axis_label)
                 start, end = self.detach_axis_from_puzzle(puzzle3d, cube_axis, graph)
                 self.animate_construct_opposite_face_edge(graph, cube_axis, start, end)
@@ -462,29 +411,7 @@ class GraphTheoryScene3(GridMixin, VoiceoverScene):
             puzzle3d.hide_cube(cube_number)
 
         voiceover_8: str = 'The opposite-face graph is now complete.'
-        with self.voiceover(text=voiceover_8) as tracker:
-            self.wait(tracker.duration)
-
-        for cube_number in PuzzleCubeNumber:
-            if cube_number >= PuzzleCubeNumber.ONE:
-                break
-            puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
-            cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
-            cube3d: PuzzleCube3D = self.mk_cube3d(cube_spec, projection)
-
-            self.play(Create(cube3d), run_time=1.0)
-            self.wait()
-
-            cube3d.checkpoint()
-            self.animate_explode_cube(cube3d)
-            cube3d.checkpoint()
-
-            for axis_label in AxisLabel:
-                cube_axis = (cube_number, axis_label)
-                start, end = self.detach_axis_from_cube(cube3d, axis_label, graph)
-                self.animate_construct_opposite_face_edge(graph, cube_axis, start, end)
-
-        self.wait(1.0)
+        self.say(voiceover_8)
 
 
 if __name__ == "__main__":

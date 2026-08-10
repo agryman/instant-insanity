@@ -1,6 +1,7 @@
 from typing import cast, Sequence
 
-from manim import tempconfig, PI, DOWN, RIGHT, OUT, Mobject, FadeIn, ORIGIN, FadeOut
+from manim import tempconfig, PI, DOWN, RIGHT, Mobject, FadeIn, ORIGIN, FadeOut, Table, UP, LEFT, Text, Indicate, \
+    BLACK
 from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
@@ -8,7 +9,10 @@ from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationA
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
-from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE
+from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE, \
+    Puzzle, AxisLabel
+from instant_insanity.mobjects.face_colour_table import FaceColourTable
+from instant_insanity.mobjects.image import INTRODUCTION
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
@@ -18,10 +22,8 @@ from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
 from instant_insanity.scenes.helpers import morph_and_checkpoint
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
-INTRODUCTION = "introduction"
 ROTATION_RUNTIME: float = 0.5
 ROTATION_WAIT_TIME: float = 0.1
-IMAGE_HEIGHT: float = 6.0
 
 
 class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
@@ -30,10 +32,12 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
     It leads into the graph theory scenes.
     """
 
+    puzzle: Puzzle
     puzzle3d: Puzzle3D
     initial_gap: float
     min_gap: float
     puzzle_face_labeller: PuzzleFaceLabeller
+    face_colour_table: FaceColourTable
 
     def subscene_1_describe_puzzle(self):
         if self.skip(self.subscene_1_describe_puzzle):
@@ -100,9 +104,9 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         morph_and_checkpoint(self, gap_animorph)
 
         voiceover = """
-        The rules of Instant Insanity are simple, aren't they?
-        Our starting arrangement is not a solution so
+        This arrangement is not a solution so
         we have to rotate individual cubes until we get four colours on each side.
+        
         How hard could that be?
         """
         self.say(voiceover)
@@ -150,36 +154,57 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         morph_and_checkpoint(self, gap_animorph)
 
         voiceover = """
-        One day a university professor visited Arthur's high school and 
+        One day a math professor visited Arthur's high school and 
         gave an introductory lecture on graph theory.
-        He ended the lecture by showing an ingenious graph-theoretic solution to Instant Insanity.
+        He ended the talk by showing an ingenious graph-theoretic method for solving Instant Insanity.
+        We'll describe that method in this video.
         """
         self.say(voiceover)
 
         voiceover = """
-        Labelling the faces of the cubes makes it easier to describe the graph that represents the puzzle.
+        We start by assigning labels to all the cube faces so we can refer to them more easily.
         """
         self.say(voiceover)
 
         # show the labels
         self.puzzle_face_labeller.update_puzzle_texts()
         voiceover = """
-        We'll refer to the cubes as one through four from left to right.
-        Label the front, right, and top cube faces in the starting arrangement as ex, wy, and zed.
-        Add primes to the labels of the corresponding opposite faces.
-        For example, the front face of cube 1 is labelled 1 ex which is opposite face 1 ex prime.
+        We've assigned the lowercase letters ex, wy, and zed to the front, right, and top faces.
+        These letters correspond to the axes of a 3-dimensional coordinate system centered on each cube.
+        The following table summarizes the labelling scheme.
         """
         self.say(voiceover)
 
+        # TODO: shift the puzzle up
         # hide the labels
         self.puzzle_face_labeller.remove_puzzle_texts()
-        self.remove(self.puzzle3d)
+        # self.remove(self.puzzle3d)
+        puzzle3d: Puzzle3D = self.puzzle3d
+        self.play(puzzle3d.animate.shift(UP * 2))
+
+        # show the table
+        table: Table = self.face_colour_table.table
+        table.scale(0.4)
+        table.shift(DOWN * 1.5)
+        self.play(FadeIn(table))
+
+        voiceover = """
+        We've assigned the numbers one through four to the cubes going from left to right.
+        We've also assigned primed letters to the faces opposite the visible faces.
+        For example, the back face of each cube is labelled ex prime since it is opposite the front face.
+        """
+        self.say(voiceover)
+
+        # hide the table
+        # self.play(FadeOut(self.face_colour_table.table))
+        self.play(table.animate.shift(LEFT * 3.0))
 
         # create the full Winning Moves opposite-face graph
         full_subgraph: EdgeToSubgraphMapping = OppositeFaceGraph.mk_subgraph_for_flag(True)
         wm_graph: OppositeFaceGraph = OppositeFaceGraph(WINNING_MOVES_PUZZLE, ORIGIN)
         wm_graph.set_subgraph(full_subgraph)
 
+        wm_graph.shift(RIGHT * 3.0 + DOWN * 1.5)
         self.play(FadeIn(wm_graph))
         voiceover = """
         Here's the graph that represents the puzzle.
@@ -188,20 +213,30 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         self.say(voiceover)
 
         voiceover = """
-        A graph is a set of dots connected by lines.
-        We call the dots nodes and lines edges.
-        The nodes of this graph represent the four face colours.
-        The edges connect pairs of opposite faces.
-        The edges are labelled with the cube number and the face label letter.
-        For example, the edge labelled 1 ex represents the ex and ex prime pair of faces in cube 1.
+        A graph is a set of nodes connected by edges.
+        Each node represents one of the four face colours.
+        Each edge represents a pair of opposite faces and connects their colours.
+        The edges are labelled with the cube number and the face axis letter which is an uppercase ex, wy, or zed.
+        For example, look at the edge labelled 1 ex.
+        """
+        self.say(voiceover)
+
+        # Indicate edge 1X
+        edge_label_1x: Text = wm_graph.get_edge_label(PuzzleCubeNumber.ONE, AxisLabel.X)
+        self.play(Indicate(edge_label_1x, scale_factor=1.5, color=BLACK))
+
+        voiceover = """
+        This edge represents the ex axis pair of faces in cube 1.
         One face of this pair is green and the other is white.
-        There are four cubes and each cube has three pairs of opposite faces so
-        altogether the graph has twelve edges.
         
+        There are four cubes and each cube has three pairs of opposite faces so
+        altogether there are twelve edges in the graph.
+
         If you enjoy solving puzzles, and are curious about graph theory, then this video is for you.
         """
         self.say(voiceover)
-        self.play(FadeOut(wm_graph))
+        self.play(FadeOut(wm_graph), FadeOut(table))
+        self.remove(puzzle3d)
 
         topic: Mobject = self.mk_topic("Instant Insanity - A Puzzling Introduction to Graph Theory")
         discussion = """        
@@ -218,13 +253,16 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         # create and display the 3D puzzle
         puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        puzzle: Puzzle = WINNING_MOVES_PUZZLE
         projection: Projection = mk_standard_orthographic_projection()
 
+        self.puzzle = puzzle
         self.puzzle3d = mk_standard_puzzle3d(puzzle_spec, projection, centre=True)
         self.initial_gap = self.puzzle3d.get_cube_gap()
         self.min_gap = DEFAULT_BUFF
         self.add(self.puzzle3d)
 
+        self.face_colour_table = FaceColourTable(puzzle)
         self.puzzle_face_labeller = PuzzleFaceLabeller(self, self.puzzle3d)
 
         self.subscene_1_describe_puzzle()
@@ -234,9 +272,9 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            self.subscene_1_describe_puzzle,
-            self.subscene_2_describe_goal,
-            self.subscene_3_instant_insanity_box_front,
+            # self.subscene_1_describe_puzzle,
+            # self.subscene_2_describe_goal,
+            # self.subscene_3_instant_insanity_box_front,
             self.subscene_4_lead_into_graph_theory,
         ]
 

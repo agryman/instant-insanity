@@ -8,6 +8,7 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, Puzzle
 from instant_insanity.mobjects.alice_bob_graphs import AliceBobGraph
+from instant_insanity.mobjects.image import GRAPH_THEORY_LATEX
 from instant_insanity.mobjects.labelled_subgraph import LabelledSubgraphPair
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 from instant_insanity.mobjects.toy_example_graph import mk_toy_example, NODE_TO_POINT
@@ -15,7 +16,6 @@ from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
-GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 
 class GraphTheoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
     wm_graph: OppositeFaceGraph
