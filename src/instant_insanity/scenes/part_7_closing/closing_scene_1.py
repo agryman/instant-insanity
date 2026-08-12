@@ -3,7 +3,7 @@ This scene shows the closing credits.
 """
 import numpy as np
 
-from manim import tempconfig, VGroup, Text, LEFT, DOWN, BLACK
+from manim import tempconfig, VGroup, Text, LEFT, DOWN, BLACK, FadeIn
 from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
 
@@ -25,7 +25,11 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         logo: VGroup = mk_logo(scale=1.0)
         logo.shift(LEFT * 4.0)
-        self.add(logo)
+        self.play(FadeIn(logo))
+        self.say("""
+        This has been a quargs dot ex wy zed production.
+        """
+        )
 
         # these are copies of the last three lines of the voiceover below
         credit_strs: list[str] = [
@@ -38,11 +42,9 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
                                         for credit_str in credit_strs])
         credit_lines.arrange(DOWN, aligned_edge=LEFT, buff=0.25)
         credit_lines.move_to(LEFT * 1.5, aligned_edge=LEFT)
-        self.add(credit_lines)
+        self.play(FadeIn(credit_lines))
 
         self.say("""
-        This has been a kwargs dot ex why zed production.
-        
         Written, animated, and narrated by Arthur Ryman.
         
         Animation software provided by Mannim Community.

@@ -155,7 +155,6 @@ class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverSce
 
 
 if __name__ == "__main__":
-    # touched
     with tempconfig(LINEN_CONFIG):
         scene = IntroductionScene1()
         scene.render()

@@ -206,7 +206,7 @@ class DiscussionMixin:
         image: Mobject = self.get_image(filename, subpackages, height=image_height)
         assert isinstance(image, ImageMobject)
 
-        attribution: Tex = self.mk_attribution(source)
+        attribution: Text = self.mk_attribution(source)
         self.add(attribution)
         self.play(FadeIn(image, run_time=0.5))
         self.say(image_voiceover)

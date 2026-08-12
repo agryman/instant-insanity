@@ -52,9 +52,7 @@ PART_DIR_part-7 := part_7_closing
 SCENES_part-1 := IntroductionScene1 \
                  IntroductionScene2
 
-SCENES_part-3 := GraphTheoryScene1 \
-                 GraphTheoryScene2 \
-                 GraphTheoryScene3 \
+SCENES_part-3 := GraphTheoryScene3 \
                  GraphTheoryScene4 \
                  GraphTheoryScene5
 
@@ -134,14 +132,6 @@ $(MEDIA_part-1)/IntroductionScene1.mp4: \
 
 $(MEDIA_part-1)/IntroductionScene2.mp4: \
   $(SCENES_ROOT)/$(PART_DIR_part-1)/introduction_scene_2.py
-	$(PYTHON) $<
-
-$(MEDIA_part-3)/GraphTheoryScene1.mp4: \
-  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_1.py
-	$(PYTHON) $<
-
-$(MEDIA_part-3)/GraphTheoryScene2.mp4: \
-  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_2.py
 	$(PYTHON) $<
 
 $(MEDIA_part-3)/GraphTheoryScene3.mp4: \

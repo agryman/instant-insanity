@@ -370,6 +370,7 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             self.subscene_6_conclusion,
         ]
 
+
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
         scene = GraphTheoryScene5()
