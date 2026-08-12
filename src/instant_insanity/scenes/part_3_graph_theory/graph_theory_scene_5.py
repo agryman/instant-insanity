@@ -57,7 +57,7 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             return
 
         voiceover: str = """
-        Here's the starting arrangement of the puzzle.
+        The cubes are currently in their starting orientations.
         """
         self.say(voiceover)
 
@@ -306,8 +306,6 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         labelled_subgraph_pair.add_solution_edges()
         labelled_subgraph_pair.add_edge_directions(self)
 
-        self.subscene_1_introduction()
-
         # create and display the 3D puzzle
         projection: Projection = mk_standard_orthographic_projection()
         puzzle3d: Puzzle3D = GraphTheoryScene3.mk_puzzle3d(puzzle, projection)
@@ -325,6 +323,7 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.puzzle_face_labeller = puzzle_face_labeller
         puzzle_face_labeller.update_puzzle_texts()
 
+        self.subscene_1_introduction()
         self.subscene_2_show_puzzle()
         self.subscene_3_describe_face_labels()
         self.subscene_4_discuss_matching()
