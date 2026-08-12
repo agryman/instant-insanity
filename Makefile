@@ -36,12 +36,12 @@ BUILD_DIR   := build-output
 OUTPUT_DIR  := output
 
 # Ordered list of parts. The order here IS the playback order.
-# PARTS := part-1 part-3
-PARTS := part-1
+PARTS := part-1 part-3 part-6
 
 # Source scene directory for each part.
 PART_DIR_part-1 := part_1_introduction
 PART_DIR_part-3 := part_3_graph_theory
+PART_DIR_part-6 := part_6_history
 
 # Ordered list of scene class names per part. The order here IS the playback
 # order. These are listed explicitly rather than globbed because a media
@@ -54,6 +54,8 @@ SCENES_part-3 := GraphTheoryScene1 \
                  GraphTheoryScene3 \
                  GraphTheoryScene4 \
                  GraphTheoryScene5
+
+SCENES_part-6 := HistoryScene1
 
 PART_MP4S   := $(addprefix $(BUILD_DIR)/,$(addsuffix .mp4,$(PARTS)))
 PARTS_LIST  := $(BUILD_DIR)/parts-concat.txt

@@ -66,8 +66,15 @@ class ImagesPath:
 
         return image
 
-
-INTRODUCTION = "introduction"
 IMAGE_HEIGHT: float = 6.0
+INTRODUCTION = "introduction"
 GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 GRAPH_THEORY: str = "graph_theory"
+
+EUREKA_SOURCE: str = "https://archim.soc.srcf.net/publications/"
+RUBIKS_CUBE_SOURCE: str = "image by Booyabazooka, CC BY-SA 3.0"
+SUDOKU_SOURCE: str = "© 2025 The New York Times Company"
+TRINITY_FOUR_SOURCE: str = "https://www.squaring.net/history_theory/brooks_smith_stone_tutte.html"
+US_PATENT_SOURCE: str = "https://patents.google.com/patent/US646463A/en"
+INSTANT_INSANITY_SOURCE: str = "https://winning-moves.com/product/InstantInsanity.asp"
+WORDLE_SOURCE: str = "© 2025 The New York Times Company"

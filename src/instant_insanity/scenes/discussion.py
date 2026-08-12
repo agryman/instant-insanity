@@ -3,7 +3,7 @@ This module defines the DiscussionMixin class which is intended for use
 with VoiceoverScene.
 """
 from manim import Mobject, Tex, BLACK, FadeIn, FadeOut, Scene, ManimColor, ImageMobject, Rectangle, VMobject, config, \
-    Difference, RED, Group
+    Difference, RED, Group, DOWN, LEFT
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 import numpy as np
@@ -34,6 +34,14 @@ class DiscussionMixin:
     Inherit this mixin class with VoiceoverScene to create topics and images
     and then discuss them.
     """
+    @staticmethod
+    def mk_attribution(source: str, start_opacity: float= 1.0) -> Tex:
+        attribution: Tex = Tex(source, font_size=14, color=BLACK)
+        attribution.to_corner(DOWN + LEFT, buff=0.25)
+        attribution.set_opacity(start_opacity)
+
+        return attribution
+
     @staticmethod
     def get_image(filename: str, subpackages: str = "", height: float = IMAGE_HEIGHT) -> Mobject:
         """
@@ -79,11 +87,14 @@ class DiscussionMixin:
         with self.voiceover(text=text) as tracker:
             voiceover_wait(self, tracker)
 
-    def discuss_mobject(self, mobject: Mobject, discussion: str) -> None:
+    def discuss_mobject(self, mobject: Mobject, discussion: str, source: str = "") -> None:
         """
         This method fades in a mobject, discusses it, and then fades it out.
         """
+        attribution = self.mk_attribution(source)
+
         assert isinstance(self, Scene)
+        self.add(attribution)
         self.play(FadeIn(mobject))
 
         assert isinstance(self, DiscussionMixin)
@@ -91,6 +102,7 @@ class DiscussionMixin:
 
         assert isinstance(self, Scene)
         self.play(FadeOut(mobject))
+        self.remove(attribution)
 
     @staticmethod
     def mk_region_rect(image: ImageMobject, region: Region, **kwargs) -> Rectangle:
@@ -181,23 +193,28 @@ class DiscussionMixin:
     def discuss_and_zoom_image(
             self,
             subpackages: str,
-            image_filename: str,
+            image_filename: tuple[str, str],
             image_height: float,
             image_voiceover: str,
             annotated_filenames: list[str],
             annotated_voiceovers: list[str]
     ) -> None:
         assert isinstance(self, VoiceoverScene)
-        image: Mobject = self.get_image(image_filename, subpackages, height=image_height)
+        filename: str
+        source: str
+        filename, source = image_filename
+        image: Mobject = self.get_image(filename, subpackages, height=image_height)
         assert isinstance(image, ImageMobject)
 
+        attribution: Tex = self.mk_attribution(source)
+        self.add(attribution)
         self.play(FadeIn(image, run_time=0.5))
         self.say(image_voiceover)
 
         annotated_filename: str
         annotated_voiceover: str
         for annotated_filename, annotated_voiceover in zip(annotated_filenames, annotated_voiceovers):
-        # read the region of interest off the annotated copy of the page
+            # read the region of interest off the annotated copy of the page
             region: Region = find_red_rectangle(
                 IMAGES_PATH.open_image(subpackages, annotated_filename))
 
@@ -227,3 +244,4 @@ class DiscussionMixin:
 
         # conceal the main image
         self.play(FadeOut(image, run_time=0.5))
+        self.remove(attribution)

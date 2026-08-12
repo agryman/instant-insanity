@@ -6,13 +6,17 @@ from manim_voiceover import VoiceoverScene, VoiceoverTracker
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.voiceover import voiceover_wait
-from instant_insanity.mobjects.image import ImagesPath
+from instant_insanity.mobjects.image import ImagesPath, WORDLE_SOURCE, SUDOKU_SOURCE, RUBIKS_CUBE_SOURCE, \
+    INSTANT_INSANITY_SOURCE
+from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.subscene import SubsceneMixin
 
 # Wait time between puzzles
-WAIT_BETWEEN_PUZZLES_DURATION: float = 2.0
+WAIT_BETWEEN_PUZZLES_DURATION: float = 0.5
 
 # Fade-in and Fade-out duration
-FADE_DURATION: float = 1.5
+FADE_DURATION: float = 0.5
 
 IMAGES_SUBPACKAGE = 'introduction'
 
@@ -28,17 +32,18 @@ class PuzzleInfo:
     image_height: float
 
 
-class IntroductionScene1(VoiceoverScene):
+class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverScene):
     def construct(self):
         # Set up the Google TTS service
         self.set_speech_service(GCPTextToSpeechService())
+        self.add_grid(False)
 
         wordle_info: PuzzleInfo = PuzzleInfo(
             name='Wordle',
             voiceover='Before Wordle,',
             year=2021,
             image_filename='wordle-cropped.png',
-            image_attribution='© 2025 The New York Times Company',
+            image_attribution=WORDLE_SOURCE,
             image_height=4.0,
         )
 
@@ -47,7 +52,7 @@ class IntroductionScene1(VoiceoverScene):
             voiceover='before Sudoku,',
             year=1986,
             image_filename='sudoku-cropped.png',
-            image_attribution='© 2025 The New York Times Company',
+            image_attribution=SUDOKU_SOURCE,
             image_height=4.0,
         )
 
@@ -56,7 +61,7 @@ class IntroductionScene1(VoiceoverScene):
             voiceover="before Rubik's Cube,",
             year=1974,
             image_filename="Rubik's_cube.svg",
-            image_attribution='image by Booyabazooka, CC BY-SA 3.0',
+            image_attribution=RUBIKS_CUBE_SOURCE,
             image_height=4.0,
         )
 
@@ -70,7 +75,7 @@ class IntroductionScene1(VoiceoverScene):
             """,
             year=1967,
             image_filename='winning-moves-instant-insanity-cubes_linen.png',
-            image_attribution='winning-moves.com',
+            image_attribution=INSTANT_INSANITY_SOURCE,
             image_height=2.0,
         )
 
@@ -101,23 +106,16 @@ class IntroductionScene1(VoiceoverScene):
             image: Mobject = images_path.get_image(IMAGES_SUBPACKAGE, info.image_filename)
             image.height = info.image_height
 
-            name: Tex = Tex(info.name,
-                              font_size=48,
-                              color=BLACK)
+            name: Tex = Tex(info.name, font_size=48, color=BLACK)
 
-            attribution: Tex = Tex(info.image_attribution,
-                                     font_size=14,
-                                     color=BLACK)
-
-            # leave the image centered in the frame and position the name and attribution
+            # leave the image centered in the frame and position the name
             name.to_edge(DOWN, buff=1.0)
-            attribution.to_corner(DOWN + LEFT, buff=0.25)
 
-            start_opacity: int = 1 if info == info_list[0] else 0
+            start_opacity: float = 1.0 if info == info_list[0] else 0.0
 
             name.set_opacity(start_opacity)
             image.set_opacity(start_opacity)
-            attribution.set_opacity(start_opacity)
+            attribution: Tex = self.mk_attribution(info.image_attribution, start_opacity=start_opacity)
 
             self.add(name)
             self.add(image)

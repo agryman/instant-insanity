@@ -12,7 +12,7 @@ from instant_insanity.core.projection import Projection, mk_standard_orthographi
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE, \
     Puzzle, AxisLabel
 from instant_insanity.mobjects.face_colour_table import FaceColourTable
-from instant_insanity.mobjects.image import INTRODUCTION
+from instant_insanity.mobjects.image import INTRODUCTION, INSTANT_INSANITY_SOURCE
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
@@ -105,7 +105,7 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         voiceover = """
         This arrangement is not a solution so
-        we have to rotate individual cubes until we get four colours on each side.
+        we'll have to rotate individual cubes until we get four colours on each side.
         
         How hard could that be?
         """
@@ -117,7 +117,7 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         subpackages: str = INTRODUCTION
         image_height: float = PAGE_HEIGHT
-        image_filename: str = "instant-insanity-box-front.png"
+        image_filename: tuple[str, str] = ("instant-insanity-box-front.png", INSTANT_INSANITY_SOURCE)
         image_voiceover: str = """
         Here's the Instant Insanity box.
         """
@@ -154,10 +154,10 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         morph_and_checkpoint(self, gap_animorph)
 
         voiceover = """
-        One day a math professor visited Arthur's high school and 
+        One day a professor from the University of Waterloo visited Arthur's high school and 
         gave an introductory lecture on graph theory.
         He ended the talk by showing an ingenious graph-theoretic method for solving Instant Insanity.
-        We'll describe that method in this video.
+        That method is the main subject of this video.
         """
         self.say(voiceover)
 
@@ -181,6 +181,7 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         # self.remove(self.puzzle3d)
         puzzle3d: Puzzle3D = self.puzzle3d
         self.play(puzzle3d.animate.shift(UP * 2))
+        self.puzzle_face_labeller.update_puzzle_texts()
 
         # show the table
         table: Table = self.face_colour_table.table
@@ -191,12 +192,12 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         voiceover = """
         We've assigned the numbers one through four to the cubes going from left to right.
         We've also assigned primed letters to the faces opposite the visible faces.
-        For example, the back face of each cube is labelled ex prime since it is opposite the front face.
+        For example, the back face of each cube is labelled ex prime since 
+        it is opposite the front face which is labelled ex.
         """
         self.say(voiceover)
 
-        # hide the table
-        # self.play(FadeOut(self.face_colour_table.table))
+        # move the table left
         self.play(table.animate.shift(LEFT * 3.0))
 
         # create the full Winning Moves opposite-face graph
@@ -235,17 +236,15 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         If you enjoy solving puzzles, and are curious about graph theory, then this video is for you.
         """
         self.say(voiceover)
-        self.play(FadeOut(wm_graph), FadeOut(table))
+        self.puzzle_face_labeller.remove_puzzle_texts()
         self.remove(puzzle3d)
+        self.play(FadeOut(wm_graph), FadeOut(table))
 
         topic: Mobject = self.mk_topic("Instant Insanity - A Puzzling Introduction to Graph Theory")
         discussion = """        
         Welcome to: Instant Insanity - A Puzzling Introduction to Graph Theory!
         """
         self.discuss_mobject(topic, discussion)
-
-        self.add(self.puzzle3d)
-        self.wait()
 
     def construct(self):
         self.set_speech_service(GCPTextToSpeechService())
@@ -267,14 +266,15 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         self.subscene_1_describe_puzzle()
         self.subscene_2_describe_goal()
+        self.wait(1.0)
         self.subscene_3_instant_insanity_box_front()
         self.subscene_4_lead_into_graph_theory()
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            # self.subscene_1_describe_puzzle,
-            # self.subscene_2_describe_goal,
-            # self.subscene_3_instant_insanity_box_front,
+            self.subscene_1_describe_puzzle,
+            self.subscene_2_describe_goal,
+            self.subscene_3_instant_insanity_box_front,
             self.subscene_4_lead_into_graph_theory,
         ]
 

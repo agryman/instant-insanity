@@ -5,7 +5,7 @@ from instant_insanity.core.puzzle import (WINNING_MOVES_PUZZLE, CARTEBLANCHE_PUZ
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 
 
-class OppositeFaceGraphs(Scene):
+class OppositeFaceGraphPairDemo(Scene):
     def construct(self):
         # add_coordinate_grid(self)
 
@@ -25,5 +25,5 @@ class OppositeFaceGraphs(Scene):
 
 if __name__ == "__main__":
     with tempconfig(LINEN_CONFIG):
-        scene = OppositeFaceGraphs()
+        scene = OppositeFaceGraphPairDemo()
         scene.render()

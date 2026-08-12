@@ -16,7 +16,7 @@ from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
-from instant_insanity.mobjects.image import ImagesPath
+from instant_insanity.mobjects.image import ImagesPath, EUREKA_SOURCE
 from instant_insanity.scenes.subscene import Subscene, SubsceneMixin
 
 GRAPH_THEORY: str = "graph_theory"
@@ -41,6 +41,7 @@ class ImageZoomDemo(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         subpackages: str = GRAPH_THEORY
         image_filename: str = EUREKA_PAGE_1_TOC
+        image_source: str = EUREKA_SOURCE
         image_height: float = PAGE_HEIGHT
         image_voiceover: str = """
         This is the table of contents of Eureka, number 9, dated April 1947.
@@ -51,7 +52,7 @@ class ImageZoomDemo(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         """
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             [annotated_filename],

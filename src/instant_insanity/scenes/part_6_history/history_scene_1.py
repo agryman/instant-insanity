@@ -5,7 +5,7 @@ from manim_voiceover import VoiceoverScene
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.mobjects.image import GRAPH_THEORY
+from instant_insanity.mobjects.image import GRAPH_THEORY, TRINITY_FOUR_SOURCE, US_PATENT_SOURCE, EUREKA_SOURCE
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
@@ -22,6 +22,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         subpackages:str = GRAPH_THEORY
 
         image_filename:str = "us-patent.png"
+        image_source: str = US_PATENT_SOURCE
         image_height: float = PAGE_HEIGHT
         image_voiceover:str = """
         Although it was released in 1967 by Parker Brothers, Instant Insanity had much earlier origins.
@@ -37,7 +38,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -48,8 +49,6 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         if self.skip(self.subscene_20_eureka_cover):
             return
 
-        # https://archim.soc.srcf.net/publications/
-
         # cite Eureka and show its cover
         image = self.get_image("eureka-cover.png", GRAPH_THEORY)
         discussion = """
@@ -57,7 +56,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         was published in April, 1947 in Eureka, the journal
         of the Cambridge University Mathematical Society.
         """
-        self.discuss_mobject(image, discussion)
+        self.discuss_mobject(image, discussion, EUREKA_SOURCE)
 
     def subscene_21_eureka_page_1_toc(self) -> None:
         if self.skip(self.subscene_21_eureka_page_1_toc):
@@ -65,6 +64,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         subpackages: str = GRAPH_THEORY
         image_filename: str = "eureka-page-1-toc.png"
+        image_source: str = EUREKA_SOURCE
         image_height: float = PAGE_HEIGHT
         image_voiceover: str = """
         Here's the table of contents of issue number 9.
@@ -81,7 +81,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -95,6 +95,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         subpackages: str = GRAPH_THEORY
         image_height: float = PAGE_HEIGHT
         image_filename: str = "eureka-page-9.png"
+        image_source: str = EUREKA_SOURCE
         image_voiceover: str = """
         Let's look at the article.
         """
@@ -119,7 +120,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -133,6 +134,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         subpackages: str = GRAPH_THEORY
         image_height: float = PAGE_HEIGHT
         image_filename: str = "eureka-page-10.png"
+        image_source: str = EUREKA_SOURCE
         image_voiceover: str = """
         The second page of the article explains how to convert the puzzle
         into an opposite-face graph and how to use the graph to solve the puzzle.
@@ -150,7 +152,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -164,6 +166,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         subpackages: str = GRAPH_THEORY
         image_height: float = PAGE_HEIGHT
         image_filename: str = "eureka-page-11.png"
+        image_source: str = EUREKA_SOURCE
         image_voiceover: str = """
         The final page of the article contains a noteworthy statement.
         """
@@ -181,7 +184,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -197,6 +200,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         subpackages: str = GRAPH_THEORY
         image_height: float = PAGE_HEIGHT
         image_filename: str = "trinity-four-med.jpg"
+        image_source: str = TRINITY_FOUR_SOURCE
         image_voiceover: str = """
         F. de Carteblanche was a collaborative pseudonym used by a group of Cambridge undergraduates
         known as the Trinity Four.
@@ -235,7 +239,7 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
@@ -258,13 +262,13 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
 
     def get_playlist(self) -> Sequence[Subscene]:
         return [
-            # self.subscene_10_us_patent,
-            # self.subscene_20_eureka_cover,
-            # self.subscene_21_eureka_page_1_toc,
-            # self.subscene_22_eureka_page_9,
-            # self.subscene_23_eureka_page_10,
-            # self.subscene_24_eureka_page_11,
-            # self.subscene_30_trinity_four,
+            self.subscene_10_us_patent,
+            self.subscene_20_eureka_cover,
+            self.subscene_21_eureka_page_1_toc,
+            self.subscene_22_eureka_page_9,
+            self.subscene_23_eureka_page_10,
+            self.subscene_24_eureka_page_11,
+            self.subscene_30_trinity_four,
         ]
 
 

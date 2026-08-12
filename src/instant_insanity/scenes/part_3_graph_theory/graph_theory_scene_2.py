@@ -11,7 +11,7 @@ from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.scenes.coordinate_grid import GridMixin
 # from instant_insanity.mobjects.zoom_image import GRAPH_THEORY, INTRODUCTION
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
-from instant_insanity.mobjects.image import INTRODUCTION
+from instant_insanity.mobjects.image import INTRODUCTION, INSTANT_INSANITY_SOURCE
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
 
@@ -76,6 +76,7 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         subpackages: str = INTRODUCTION
         image_height: float = PAGE_HEIGHT
         image_filename: str = "instant-insanity-box-front.png"
+        image_source: str = INSTANT_INSANITY_SOURCE
         image_voiceover: str = """
         Here's the Instant Insanity box again..
         """
@@ -91,7 +92,7 @@ class GraphTheoryScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
         self.discuss_and_zoom_image(
             subpackages,
-            image_filename,
+            (image_filename, image_source),
             image_height,
             image_voiceover,
             annotated_filenames,
