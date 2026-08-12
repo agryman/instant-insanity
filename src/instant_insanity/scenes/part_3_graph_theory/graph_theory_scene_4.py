@@ -258,7 +258,7 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         Our task now is to find front-back and top-bottom subgraphs that solve the puzzle.
         
         Let's apply our powers of visual reasoning.
-        At first glance, it looks like we could form two subgraphs from the edges that connect adjacent nodes.
+        At first glance, it looks like we could form two subgraphs from the edges that connect neighbouring nodes.
         Let's simplify the graph by temporarily hiding the diagonal edge 3 ex.
         """
         self.say(voiceover)
@@ -267,14 +267,12 @@ class GraphTheoryScene4(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.play(Indicate(label_3x, scale_factor=1.5, color=BLACK))
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.THREE, AxisLabel.X), False)
 
-        self.say("and the two loops, 1 zed")
+        self.say("Also hide the two loops, 1 zed and 2 wy.")
         label_1z: Text = self.total_graph.get_edge_label(PuzzleCubeNumber.ONE, AxisLabel.Z)
         self.play(Indicate(label_1z, scale_factor=1.5, color=BLACK))
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.ONE, AxisLabel.Z), False)
-
-        self.say("and 2 wy.")
-        label_2x: Text = self.total_graph.get_edge_label(PuzzleCubeNumber.TWO, AxisLabel.Y)
-        self.play(Indicate(label_2x, scale_factor=1.5, color=BLACK))
+        label_2y: Text = self.total_graph.get_edge_label(PuzzleCubeNumber.TWO, AxisLabel.Y)
+        self.play(Indicate(label_2y, scale_factor=1.5, color=BLACK))
         self.total_graph.set_subgraph_edge((PuzzleCubeNumber.TWO, AxisLabel.Y), False)
 
         voiceover = """

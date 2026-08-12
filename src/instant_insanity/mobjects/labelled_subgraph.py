@@ -33,7 +33,7 @@ class LabelledSubgraph:
         direction: Vector3D
         to_plane, direction = FROM_PLANE_DICT[from_plane]
 
-        centre: Point3D = 4 * direction + 1.5 * DOWN
+        centre: Point3D = 4.5 * direction + 1.0 * DOWN
         subgraph: OppositeFaceGraph = OppositeFaceGraph(puzzle, centre)
 
         label_str: str = from_plane.value + ARROW_LATEX + to_plane.value

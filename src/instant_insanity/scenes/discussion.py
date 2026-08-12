@@ -3,7 +3,7 @@ This module defines the DiscussionMixin class which is intended for use
 with VoiceoverScene.
 """
 from manim import Mobject, Tex, BLACK, FadeIn, FadeOut, Scene, ManimColor, ImageMobject, Rectangle, VMobject, config, \
-    Difference, RED, Group, DOWN, LEFT
+    Difference, RED, Group, DOWN, LEFT, Text
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 import numpy as np
@@ -35,8 +35,8 @@ class DiscussionMixin:
     and then discuss them.
     """
     @staticmethod
-    def mk_attribution(source: str, start_opacity: float= 1.0) -> Tex:
-        attribution: Tex = Tex(source, font_size=14, color=BLACK)
+    def mk_attribution(source: str, start_opacity: float= 1.0) -> Text:
+        attribution: Text = Text(source, font_size=10, font="Monospace", color=BLACK)
         attribution.to_corner(DOWN + LEFT, buff=0.25)
         attribution.set_opacity(start_opacity)
 
@@ -91,7 +91,7 @@ class DiscussionMixin:
         """
         This method fades in a mobject, discusses it, and then fades it out.
         """
-        attribution = self.mk_attribution(source)
+        attribution: Text = self.mk_attribution(source)
 
         assert isinstance(self, Scene)
         self.add(attribution)
@@ -206,7 +206,7 @@ class DiscussionMixin:
         image: Mobject = self.get_image(filename, subpackages, height=image_height)
         assert isinstance(image, ImageMobject)
 
-        attribution: Tex = self.mk_attribution(source)
+        attribution: Text = self.mk_attribution(source)
         self.add(attribution)
         self.play(FadeIn(image, run_time=0.5))
         self.say(image_voiceover)
