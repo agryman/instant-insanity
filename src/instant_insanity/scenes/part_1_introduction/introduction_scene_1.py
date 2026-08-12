@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig
+from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig, Text
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 from instant_insanity.core.config import LINEN_CONFIG
@@ -115,7 +115,7 @@ class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverSce
 
             name.set_opacity(start_opacity)
             image.set_opacity(start_opacity)
-            attribution: Tex = self.mk_attribution(info.image_attribution, start_opacity=start_opacity)
+            attribution: Text = self.mk_attribution(info.image_attribution, start_opacity=start_opacity)
 
             self.add(name)
             self.add(image)
@@ -155,6 +155,7 @@ class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverSce
 
 
 if __name__ == "__main__":
+    # touched
     with tempconfig(LINEN_CONFIG):
         scene = IntroductionScene1()
         scene.render()

@@ -27,6 +27,7 @@
 #   make clean           # remove generated intermediates and outputs
 
 FFMPEG  ?= ffmpeg
+PYTHON  ?= python
 QUALITY ?= 720p30
 
 SCENES_ROOT := src/instant_insanity/scenes
@@ -36,12 +37,14 @@ BUILD_DIR   := build-output
 OUTPUT_DIR  := output
 
 # Ordered list of parts. The order here IS the playback order.
-PARTS := part-1 part-3 part-6
+PARTS := part-1 part-3 part-6 part-7
 
 # Source scene directory for each part.
 PART_DIR_part-1 := part_1_introduction
 PART_DIR_part-3 := part_3_graph_theory
 PART_DIR_part-6 := part_6_history
+PART_DIR_part-7 := part_7_closing
+
 
 # Ordered list of scene class names per part. The order here IS the playback
 # order. These are listed explicitly rather than globbed because a media
@@ -56,6 +59,8 @@ SCENES_part-3 := GraphTheoryScene1 \
                  GraphTheoryScene5
 
 SCENES_part-6 := HistoryScene1
+
+SCENES_part-7 := ClosingScene1
 
 PART_MP4S   := $(addprefix $(BUILD_DIR)/,$(addsuffix .mp4,$(PARTS)))
 PARTS_LIST  := $(BUILD_DIR)/parts-concat.txt
@@ -103,6 +108,61 @@ $$(BUILD_DIR)/$(1).mp4: $$(LIST_$(1))
 endef
 
 $(foreach p,$(PARTS),$(eval $(call PART_rules,$(p))))
+
+# Render rules, one per scene, written out longhand rather than generated from
+# SCENES_* so that each target/source pairing is visible and individually
+# editable.
+#
+# Each scene's own `if __name__ == "__main__":` block applies LINEN_CONFIG via
+# tempconfig, so the file is run directly rather than through the `manim` CLI.
+#
+# Manim writes the .mp4 into media/videos/$(QUALITY)/ named for the scene CLASS,
+# so a target path and its source path are related only by the naming
+# convention: <part_dir>/introduction_scene_1.py defines IntroductionScene1.
+# Nothing enforces that convention; a rule whose two halves disagree will simply
+# re-render on every build, because its target never appears.
+#
+# Each recipe also (re)writes the matching .srt, which is a prerequisite of the
+# .sub.mp4 rule above. That second output is deliberately left undeclared: naming
+# both files as targets of one recipe makes `make -j` run the render twice.
+#
+# The prerequisite is the scene file alone. Edits to the modules it imports, or
+# to the image resources it loads, will NOT trigger a re-render.
+$(MEDIA_part-1)/IntroductionScene1.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-1)/introduction_scene_1.py
+	$(PYTHON) $<
+
+$(MEDIA_part-1)/IntroductionScene2.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-1)/introduction_scene_2.py
+	$(PYTHON) $<
+
+$(MEDIA_part-3)/GraphTheoryScene1.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_1.py
+	$(PYTHON) $<
+
+$(MEDIA_part-3)/GraphTheoryScene2.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_2.py
+	$(PYTHON) $<
+
+$(MEDIA_part-3)/GraphTheoryScene3.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_3.py
+	$(PYTHON) $<
+
+$(MEDIA_part-3)/GraphTheoryScene4.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_4.py
+	$(PYTHON) $<
+
+$(MEDIA_part-3)/GraphTheoryScene5.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-3)/graph_theory_scene_5.py
+	$(PYTHON) $<
+
+$(MEDIA_part-6)/HistoryScene1.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-6)/history_scene_1.py
+	$(PYTHON) $<
+
+$(MEDIA_part-7)/ClosingScene1.mp4: \
+  $(SCENES_ROOT)/$(PART_DIR_part-7)/closing_scene_1.py
+	$(PYTHON) $<
 
 # Concatenate the parts into the final video. Rebuilds whenever any part is
 # newer than it.
