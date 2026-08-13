@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+# >=77 is required for the PEP 639 SPDX `license` expression used below.
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,10 +12,46 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.12"
+# PEP 639 SPDX expression. This replaces the deprecated
+# "License :: OSI Approved :: MIT License" classifier, which must not be listed
+# alongside it — setuptools raises an error if both are present.
+license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
+]
+# Lower bounds are the versions this project is developed against; they are
+# floors rather than pins so routine upgrades stay possible. The one cap is
+# setuptools, explained below.
+dependencies = [
+    # Animation.
+    "manim>=0.19.0",
+    # The `recorder` extra pulls in pyaudio and pynput, which RecorderService
+    # imports eagerly. Only `recorder` is listed because it is the only extra
+    # the source actually uses; the Azure and gTTS services are never imported.
+    "manim-voiceover[recorder]>=0.3.7",
+    # Speech synthesis, wrapped by core/google_cloud_tts_service.py.
+    "google-cloud-texttospeech>=2.27.0",
+    # Geometry, graph, and symbolic maths.
+    "numpy>=2.3.1",
+    "networkx>=3.5",
+    "shapely>=2.1.1",
+    "scipy>=1.16.0",
+    "sympy>=1.14.0",
+    # Figure generation in core/projection_diagram.py and the matplotlib/
+    # subpackage.
+    "matplotlib>=3.10.5",
+    # Image loading in mobjects/image.py and the scripts/ entry points.
+    "pillow>=11.3.0",
+    # notebook_utils.py imports IPython.display at module scope.
+    "ipython>=9.4.0",
+    # manim-voiceover 0.3.7 does `import pkg_resources` at import time
+    # (manim_voiceover/__init__.py line 4). pkg_resources is supplied by
+    # setuptools, which dropped it in 81. Without this cap, a routine upgrade
+    # turns that DeprecationWarning into an ImportError and no voiceover scene
+    # will import at all. Remove once manim-voiceover stops using it.
+    "setuptools<81",
 ]
 
 [project.urls]
@@ -30,7 +67,12 @@ make-greyscale = "instant_insanity.scripts.make_greyscale:main"
 package-dir = {"" = "src"}    # Specifies that the packages are located in the 'src' directory
 
 [tool.setuptools.packages.find]
-where = ["src"]              # Search for packages in the 'src' directory
+where = ["src"]                     # Search for packages in the 'src' directory
+# src/ also holds claude/, health_checks/, kwargs_xyz/, manim_examples/,
+# matplotlib_diagrams/, matplotlib_examples/, media/, and slama_dev/. Without
+# this filter every one of them is packaged and would land on the path of
+# anyone installing this project.
+include = ["instant_insanity*"]
 
 [tool.setuptools.package-data]
 "instant_insanity" = ["resources/images/**/*.png", "resources/images/**/*.svg"]

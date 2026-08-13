@@ -6,7 +6,9 @@ import numpy as np
 from manim import tempconfig, VGroup, Text, LEFT, DOWN, BLACK, FadeIn
 from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
+from gemini.audio import enrich_headset_audio
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -20,14 +22,18 @@ def mk_point(x: float, y: float, z: float = 0.0) -> Point3D:
 
 class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        # RecorderService defaults transcription_model to "base", which pulls in
+        # Whisper to recover word timings. None restores the SpeechService
+        # default and skips transcription entirely.
+        self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         logo: VGroup = mk_logo(scale=1.0)
         logo.shift(LEFT * 4.0)
         self.play(FadeIn(logo))
         self.say("""
-        This has been a quargs dot ex wy zed production.
+        This has been a quargs dot xyz production.
         """
         )
 
@@ -51,6 +57,9 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         
         Impetus and technical advice provided by Will Aniellewicz.
         """)
+
+        # clean up hoarse voice
+        enrich_headset_audio()
 
 
 if __name__ == "__main__":
