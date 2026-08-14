@@ -12,6 +12,11 @@
 # intermediate lands in build-output/. output/ holds the two artifacts that get
 # uploaded: the video and its subtitle file.
 #
+# Rendering is NOT part of this build: each scene is rendered by hand, and its
+# .mp4 and .srt are picked up from media/videos/$(QUALITY)/ named for the scene
+# CLASS. A scene that has not been rendered yet stops the build with
+# "No rule to make target .../Scene.mp4" — render it, then run make again.
+#
 #   src/.../<part>/media/videos/720p30/Scene.mp4 + .srt   (Manim, read-only)
 #       -> build-output/<part>/Scene.sub.mp4    (subtitles embedded)
 #       -> build-output/<part>/concat.txt       (playback order)
@@ -55,7 +60,8 @@ SCENES_part-3 := GraphTheoryScene3 \
                  GraphTheoryScene4 \
                  GraphTheoryScene5
 
-SCENES_part-6 := HistoryScene1
+SCENES_part-6 := HistoryScene1 \
+				 HistoryScene2
 
 SCENES_part-7 := ClosingScene1
 

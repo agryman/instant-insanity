@@ -18,6 +18,7 @@ from manim import (tempconfig, Mobject, ValueTracker, Polygon, Dot, LEFT, RIGHT,
                    always_redraw, Create, DOWN, ORIGIN)
 from manim.typing import Point3D, Vector3D, Point3D_Array
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
@@ -324,7 +325,8 @@ class GraphTheoryScene3(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         graph.set_subgraph_edge(cube_axis, True)
 
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         projection: Projection = GraphTheoryScene3.mk_orthographic_projection()

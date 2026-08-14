@@ -7,6 +7,7 @@ from typing import Sequence
 
 from manim import tempconfig, DOWN, BLACK, Text, Indicate, AnimationGroup, OUT
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
@@ -18,7 +19,7 @@ from instant_insanity.mobjects.labelled_subgraph import LabelledSubgraphPair
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_BUFF
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.discussion import DiscussionMixin, INDICATE_SCALE_FACTOR, INDICATE_TEXT_COLOUR
 from instant_insanity.scenes.part_3_graph_theory.graph_theory_scene_3 import GraphTheoryScene3
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
@@ -36,11 +37,11 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
     def indicate_face_label(self, cube: PuzzleCubeNumber, plane: FacePlane) -> None:
         face_label: Text = self.puzzle_face_labeller.get_face_label(cube, plane)
-        self.play(Indicate(face_label, scale_factor=2.0, color=BLACK))
+        self.play(Indicate(face_label, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR))
 
     def indicate_edge_label(self, plane: FacePlane, cube: PuzzleCubeNumber, axis: AxisLabel) -> None:
         edge_label: Text = self.labelled_subgraph_pair.get_edge_label(plane, cube, axis)
-        self.play(Indicate(edge_label, scale_factor=2.0, color=BLACK))
+        self.play(Indicate(edge_label, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR))
 
     def subscene_1_introduction(self) -> None:
         if self.skip(self.subscene_1_introduction):
@@ -92,7 +93,7 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
             texts: list[Text] = plane_to_texts[plane]
             text: Text
             indicate_texts: AnimationGroup = AnimationGroup(
-                *[Indicate(text, scale_factor=2.0, color=BLACK) for text in texts],
+                *[Indicate(text, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR) for text in texts],
                 lag_ratio=0.15
             )
             self.say(voiceover)
@@ -292,7 +293,8 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         self.say(voiceover)
 
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         # recreate the final content of the previous scene

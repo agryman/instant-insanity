@@ -55,7 +55,8 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         
         Animation software provided by Mannim Community.
         
-        Impetus and technical advice provided by Will Aniellewicz.
+        Impetus and technical advice provided by Will ah-nyeh leh veetch .
+        .
         """)
 
         # clean up hoarse voice

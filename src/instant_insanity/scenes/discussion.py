@@ -3,7 +3,7 @@ This module defines the DiscussionMixin class which is intended for use
 with VoiceoverScene.
 """
 from manim import Mobject, Tex, BLACK, FadeIn, FadeOut, Scene, ManimColor, ImageMobject, Rectangle, VMobject, config, \
-    Difference, RED, Group, DOWN, LEFT, Text
+    Difference, RED, Group, DOWN, LEFT, Text, PURPLE
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
 import numpy as np
@@ -11,6 +11,9 @@ import numpy as np
 from instant_insanity.core.image_region import Region, find_red_rectangle
 from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.image import ImagesPath
+
+INDICATE_SCALE_FACTOR: float = 2.0
+INDICATE_TEXT_COLOUR: str = "RED"
 
 # the path to the images resource directory in the package
 IMAGES_PATH: ImagesPath = ImagesPath()
@@ -196,8 +199,8 @@ class DiscussionMixin:
             image_filename: tuple[str, str],
             image_height: float,
             image_voiceover: str,
-            annotated_filenames: list[str],
-            annotated_voiceovers: list[str]
+            annotated_filenames: list[str] = [],
+            annotated_voiceovers: list[str] = []
     ) -> None:
         assert isinstance(self, VoiceoverScene)
         filename: str

@@ -1,29 +1,65 @@
 from typing import cast, Sequence
 
 from manim import tempconfig, PI, DOWN, RIGHT, Mobject, FadeIn, ORIGIN, FadeOut, Table, UP, LEFT, Text, Indicate, \
-    BLACK
+    BLACK, OUT, IN, Scene, VMobject, VGroup
 from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph
+from instant_insanity.animators.animorph import Animorph
+from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph
+from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph, \
+    Puzzle3DAnimorph, Puzzle3DTranslationAnimorph
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE, \
-    Puzzle, AxisLabel
+    Puzzle, AxisLabel, FaceLabel
 from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.mobjects.image import INTRODUCTION, INSTANT_INSANITY_SOURCE
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF, Puzzle3DPolygonName
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 # from instant_insanity.scenes import discussion
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT
+from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT, INDICATE_SCALE_FACTOR, INDICATE_TEXT_COLOUR
 from instant_insanity.scenes.helpers import morph_and_checkpoint
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
 ROTATION_RUNTIME: float = 0.5
 ROTATION_WAIT_TIME: float = 0.1
+
+
+def indicate_cell(
+        scene: Scene,
+        table: Table,
+        row: int,
+        col: int,
+        scale_factor: float = 2.0,
+        run_time: float = 2.0
+) -> None:
+    """Briefly enlarge one cell of the table.
+
+    Args:
+        scene: The scene that contains the table.
+        table: The table.
+        row: The 1-based table row, where row 1 holds the column labels.
+        col: The 1-based table column, where column 1 holds the row labels.
+        scale_factor: The scale factor applied to the indicated cell.
+        run_time: The run time in seconds.
+    """
+    entry: VMobject = table.get_entries((row, col))
+
+    # add_highlighted_cell() attaches its BackgroundRectangle to the entry, so scale the
+    # two together to keep the letter inside its coloured square.
+    # highlight: VMobject | None = getattr(entry, 'background_rectangle', None)
+    # target: VMobject = entry if highlight is None else VGroup(highlight, entry)
+
+    # indicate in the entry's own colour so that only its size changes.
+    scene.play(
+        Indicate(entry, color=entry.get_color(), scale_factor=scale_factor),
+        run_time=run_time
+    )
 
 
 class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
@@ -154,7 +190,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         morph_and_checkpoint(self, gap_animorph)
 
         voiceover = """
-        One day a professor from the University of Waterloo visited Arthur's high school and 
+        One day Professor Ross Honsberger from the University of Waterloo visited Northview Heights, 
+        Arthur's high school, and 
         gave an introductory lecture on graph theory.
         He ended the talk by showing an ingenious graph-theoretic method for solving Instant Insanity.
         That method is the main subject of this video.
@@ -171,17 +208,47 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         voiceover = """
         We've assigned the lowercase letters ex, wy, and zed to the front, right, and top faces.
         These letters correspond to the axes of a 3-dimensional coordinate system centered on each cube.
-        The following table summarizes the labelling scheme.
         """
         self.say(voiceover)
 
-        # TODO: shift the puzzle up
+        voiceover = """
+        We've also assigned primed letters to the faces opposite the visible faces.
+        """
+        self.say(voiceover)
+
+        # rotate the puzzle to show the primed faces
+        # self.puzzle_face_labeller.rotate_puzzle_ccw_90(RIGHT)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(DOWN)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(DOWN)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(OUT)
+
+        voiceover = """
+        For example, the back face of each cube is labelled ex prime since 
+        it is opposite the front face which is labelled ex.
+        """
+        self.say(voiceover)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(IN)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(UP)
+        self.puzzle_face_labeller.rotate_puzzle_ccw_90(UP)
+        # self.puzzle_face_labeller.rotate_puzzle_ccw_90(RIGHT)
+
         # hide the labels
-        self.puzzle_face_labeller.remove_puzzle_texts()
         # self.remove(self.puzzle3d)
+        # TODO: use an animorph with checkpoint so the internal coordinates get updated
+        # self.play(puzzle3d.animate.shift(UP * 2))
         puzzle3d: Puzzle3D = self.puzzle3d
-        self.play(puzzle3d.animate.shift(UP * 2))
+        scene_per_model: float = puzzle3d.projection.conversion.scene_per_model
+        translation: Vector3D = (2.0 / scene_per_model) * UP
+        animorph: Puzzle3DTranslationAnimorph = Puzzle3DTranslationAnimorph(puzzle3d, translation)
+
+        self.puzzle_face_labeller.remove_puzzle_texts()
+        morph_and_checkpoint(self, animorph)
         self.puzzle_face_labeller.update_puzzle_texts()
+
+        voiceover = """
+        The following table summarizes the labelling scheme.
+        """
+        self.say(voiceover)
 
         # show the table
         table: Table = self.face_colour_table.table
@@ -191,9 +258,6 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         voiceover = """
         We've assigned the numbers one through four to the cubes going from left to right.
-        We've also assigned primed letters to the faces opposite the visible faces.
-        For example, the back face of each cube is labelled ex prime since 
-        it is opposite the front face which is labelled ex.
         """
         self.say(voiceover)
 
@@ -214,7 +278,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         self.say(voiceover)
 
         voiceover = """
-        A graph is a set of nodes connected by edges.
+        A graph is a set of dots connected by lines.
+        We call the dots nodes and the lines edges.
         Each node represents one of the four face colours.
         Each edge represents a pair of opposite faces and connects their colours.
         The edges are labelled with the cube number and the face axis letter which is an uppercase ex, wy, or zed.
@@ -224,12 +289,22 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         # Indicate edge 1X
         edge_label_1x: Text = wm_graph.get_edge_label(PuzzleCubeNumber.ONE, AxisLabel.X)
-        self.play(Indicate(edge_label_1x, scale_factor=1.5, color=BLACK))
+        self.play(Indicate(edge_label_1x, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR))
 
         voiceover = """
         This edge represents the ex axis pair of faces in cube 1.
-        One face of this pair is green and the other is white.
-        
+        One face of this pair is green
+        """
+        self.say(voiceover)
+
+        indicate_cell(self, table, 2, 2)
+        voiceover = """
+        and the other is white.
+        """
+        self.say(voiceover)
+        indicate_cell(self, table, 3, 2)
+
+        voiceover = """
         There are four cubes and each cube has three pairs of opposite faces so
         altogether there are twelve edges in the graph.
 
@@ -247,7 +322,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         self.discuss_mobject(topic, discussion)
 
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         # create and display the 3D puzzle
