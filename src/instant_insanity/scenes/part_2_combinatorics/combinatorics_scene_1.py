@@ -13,7 +13,7 @@ from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, 
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.scenes.discussion import DiscussionMixin
+from instant_insanity.scenes.discussion import DiscussionMixin, INDICATE_SCALE_FACTOR, INDICATE_TEXT_COLOUR
 from instant_insanity.scenes.helpers import morph_and_checkpoint
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 
@@ -72,7 +72,7 @@ class CombinatoricsScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSc
 
     def indicate_face_label(self, cube: PuzzleCubeNumber, plane: FacePlane) -> None:
         face_label: Text = self.puzzle_face_labeller.get_face_label(cube, plane)
-        self.play(Indicate(face_label, scale_factor=2.0, color=BLACK))
+        self.play(Indicate(face_label, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR))
 
     def subscene_0_set_up_solution(self) -> None:
         if self.skip(self.subscene_0_set_up_solution):

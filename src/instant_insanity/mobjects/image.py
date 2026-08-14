@@ -70,6 +70,7 @@ IMAGE_HEIGHT: float = 6.0
 INTRODUCTION = "introduction"
 GRAPH_THEORY_LATEX: str = "graph_theory.latex"
 GRAPH_THEORY: str = "graph_theory"
+HISTORY: str = "history"
 
 EUREKA_SOURCE: str = r"https://archim.soc.srcf.net/publications/"
 RUBIKS_CUBE_SOURCE: str = r"image by Booyabazooka, CC BY-SA 3.0"
@@ -78,3 +79,6 @@ TRINITY_FOUR_SOURCE: str = r"https://www.squaring.net/history_theory/brooks_smit
 US_PATENT_SOURCE: str = r"https://patents.google.com/patent/US646463A/en"
 INSTANT_INSANITY_SOURCE: str = r"https://winning-moves.com/product/InstantInsanity.asp"
 WORDLE_SOURCE: str = r"© 2025 The New York Times Company"
+
+UW_TUTTE_SOURCE: str = r"https://uwaterloo.ca/combinatorics-and-optimization/professor-william-t-tutte"
+UW_HONSBERGER_SOURCE: str = r"https://uwaterloo.ca/combinatorics-and-optimization/professor-ross-honsberger"

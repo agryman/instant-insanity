@@ -2,6 +2,7 @@ from typing import Sequence
 
 from manim import tempconfig
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
@@ -179,6 +180,10 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
             The article claims that the chance that a random arrangement
             of the cubes solves the puzzle is one in forty-one thousand four hundred
             and seventy two, making it only half as difficult as the Instant Insanity box claims.
+            
+            Which number is correct? 41 thousand four hundred and seventy two or 82 thousand
+            944? It turns out that, not surprisingly, Carteblanche is correct. The game
+            sellers got it wrong. See if you can compute the correct answer.
             """
         ]
 
@@ -225,15 +230,6 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
             and Bill Tutt.
             
             Bill, Leonard, Arthur, and Cedric were the B, L, A, and C in Blanche.
-            
-            Tutt became a legendary codebreaker at Bletchley Park during World War 2
-            where he cracked the Lorenz cipher.
-            After the war he moved to Canada and, after spending many years at the 
-            University of Toronto, he helped establish 
-            the Department of Combinatorics and Optimization in 
-            the Faculty of Mathematics 
-            at the University of Waterloo
-            He was a highly influential graph theorist.
             """
         ]
 
@@ -247,7 +243,8 @@ class HistoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         )
 
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         self.subscene_10_us_patent()

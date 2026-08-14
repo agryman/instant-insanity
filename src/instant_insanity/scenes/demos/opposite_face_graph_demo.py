@@ -8,6 +8,7 @@ from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.labelled_edge import LabelledEdge
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, EdgeToSubgraphMapping
 from instant_insanity.scenes.coordinate_grid import GridMixin
+from instant_insanity.scenes.discussion import INDICATE_SCALE_FACTOR, INDICATE_TEXT_COLOUR
 
 
 class OppositeFaceGraphDemo(GridMixin, VoiceoverScene):
@@ -39,7 +40,7 @@ class OppositeFaceGraphDemo(GridMixin, VoiceoverScene):
         label_1x: Text = edge_1x.label
         # self.play(Blink(label_1x, blinks=3))
         for _ in range(3):
-            self.play(Indicate(label_1x, scale_factor=2.0, color=BLACK))
+            self.play(Indicate(label_1x, scale_factor=INDICATE_SCALE_FACTOR, color=INDICATE_TEXT_COLOUR))
 
         self.wait(3.0)
         self.play(FadeOut(wm_graph))

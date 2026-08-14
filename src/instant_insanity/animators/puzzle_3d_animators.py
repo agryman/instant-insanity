@@ -1,5 +1,5 @@
 from types import MappingProxyType
-from typing import Mapping
+from typing import Mapping, cast
 
 from manim import Mobject, RIGHT
 from manim.typing import Vector3D, Point3D
@@ -213,6 +213,39 @@ class Puzzle3DSetCubeGapAnimorph(Puzzle3DAnimorph):
                 polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
                 model_path_0: Point3D_Array = key_to_model_path[polygon_name]
                 model_path_alpha: Point3D_Array = model_path_0 + delta_t_n_alpha
+                key_to_model_path[polygon_name] = model_path_alpha
+
+        # set the new vertex paths
+        # this triggers an update to the polygon depth-sort order
+        puzzle3d.set_key_to_model_path(key_to_model_path)
+
+class Puzzle3DTranslationAnimorph(Puzzle3DAnimorph):
+    """
+    This class animates the translation of a puzzle by a vector.
+    """
+    translation: Vector3D
+
+    def __init__(self, puzzle3d: Puzzle3D, translation: Vector3D) -> None:
+        super().__init__(puzzle3d)
+        self.translation = translation
+
+    def morph_to(self, alpha: float) -> None:
+        super().morph_to(alpha)
+        puzzle3d: Puzzle3D = self.get_puzzle3d()
+
+        # create a new vertex path dict by copying the initial vertex paths
+        key_to_model_path: PolygonKeyToVertexPathMapping[Puzzle3DPolygonName] = puzzle3d.key_to_model_path_0.copy()
+
+        # translate each cube by alpha * translation
+        alpha_translation: Vector3D = alpha * self.translation
+        cube_number: PuzzleCubeNumber
+        for cube_number in PuzzleCubeNumber:
+            # translate each face of the cube
+            face_label: FaceLabel
+            for face_label in FaceLabel:
+                polygon_name: Puzzle3DPolygonName = (cube_number, face_label)
+                model_path_0: Point3D_Array = key_to_model_path[polygon_name]
+                model_path_alpha: Point3D_Array = model_path_0 + alpha_translation
                 key_to_model_path[polygon_name] = model_path_alpha
 
         # set the new vertex paths

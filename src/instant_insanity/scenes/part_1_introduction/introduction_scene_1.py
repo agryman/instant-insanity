@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig, Text
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
+from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
@@ -35,7 +36,9 @@ class PuzzleInfo:
 class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverScene):
     def construct(self):
         # Set up the Google TTS service
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
+
         self.add_grid(False)
 
         wordle_info: PuzzleInfo = PuzzleInfo(
@@ -71,7 +74,8 @@ class IntroductionScene1(DiscussionMixin, GridMixin, SubsceneMixin, VoiceoverSce
             there was Instant Insanity!
             ...
             Released in 1967 by Parker Brothers, Instant Insanity became a craze.
-            Millions of copies were sold, including one to a certain high school student named Arthur.
+            Millions of copies were sold, 
+            including one to a certain Northview Heights high school student named Arthur.
             """,
             year=1967,
             image_filename='winning-moves-instant-insanity-cubes_linen.png',

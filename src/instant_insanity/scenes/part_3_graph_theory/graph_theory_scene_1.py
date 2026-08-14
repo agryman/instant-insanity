@@ -3,6 +3,7 @@ from typing import Sequence, cast
 from manim import tempconfig, Mobject, ORIGIN, FadeIn, FadeOut
 from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
@@ -320,7 +321,9 @@ class GraphTheoryScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
 
 
     def construct(self):
-        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(GCPTextToSpeechService())
+        self.set_speech_service(RecorderService(transcription_model=None))
+
         self.add_grid(False)
 
         topic: Mobject
