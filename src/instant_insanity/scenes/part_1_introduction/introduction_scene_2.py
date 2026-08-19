@@ -322,8 +322,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         self.discuss_mobject(topic, discussion)
 
     def construct(self):
-        # self.set_speech_service(GCPTextToSpeechService())
-        self.set_speech_service(RecorderService(transcription_model=None))
+        self.set_speech_service(GCPTextToSpeechService())
+        # self.set_speech_service(RecorderService(transcription_model=None))
         self.add_grid(False)
 
         # create and display the 3D puzzle

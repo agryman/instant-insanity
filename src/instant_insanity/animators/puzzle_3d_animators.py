@@ -224,10 +224,12 @@ class Puzzle3DTranslationAnimorph(Puzzle3DAnimorph):
     This class animates the translation of a puzzle by a vector.
     """
     translation: Vector3D
+    puzzle_centre_0: Point3D
 
     def __init__(self, puzzle3d: Puzzle3D, translation: Vector3D) -> None:
         super().__init__(puzzle3d)
         self.translation = translation
+        self.puzzle_centre_0 = puzzle3d.puzzle_centre.copy()
 
     def morph_to(self, alpha: float) -> None:
         super().morph_to(alpha)
@@ -236,8 +238,12 @@ class Puzzle3DTranslationAnimorph(Puzzle3DAnimorph):
         # create a new vertex path dict by copying the initial vertex paths
         key_to_model_path: PolygonKeyToVertexPathMapping[Puzzle3DPolygonName] = puzzle3d.key_to_model_path_0.copy()
 
-        # translate each cube by alpha * translation
         alpha_translation: Vector3D = alpha * self.translation
+
+        # translate the puzzle centre by alpha * translation
+        puzzle3d.puzzle_centre = self.puzzle_centre_0 + alpha_translation
+
+        # translate each cube by alpha * translation
         cube_number: PuzzleCubeNumber
         for cube_number in PuzzleCubeNumber:
             # translate each face of the cube

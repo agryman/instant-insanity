@@ -84,7 +84,7 @@ class Animorph(ABC):
 class MoveToAnimorph(Animorph):
     """
     This class is a simple Animorph that moves the mobject to the given end position.
-    This mainly for testing the Animorph framework.
+    This is mainly for testing the Animorph framework.
     """
     start_point: Point3D
     end_point: Point3D
