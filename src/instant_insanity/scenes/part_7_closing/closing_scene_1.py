@@ -8,7 +8,6 @@ from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from gemini.audio import enrich_headset_audio
 from instant_insanity.core.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.scenes.coordinate_grid import GridMixin
@@ -58,9 +57,6 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         Impetus and technical advice provided by Will ah-nyeh leh veetch .
         .
         """)
-
-        # clean up hoarse voice
-        enrich_headset_audio()
 
 
 if __name__ == "__main__":
