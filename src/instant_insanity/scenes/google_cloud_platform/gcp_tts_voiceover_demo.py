@@ -1,7 +1,8 @@
 from manim import Text, Write, UP, MathTex, tempconfig
 from manim_voiceover import VoiceoverScene
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
-from instant_insanity.core.config import PREVIEW_CONFIG
+from kwargs_xyz.config import PREVIEW_CONFIG
+
 
 class GCPTTSVoiceoverDemo(VoiceoverScene):
     def construct(self):

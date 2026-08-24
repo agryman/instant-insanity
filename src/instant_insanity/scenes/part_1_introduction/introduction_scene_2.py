@@ -10,7 +10,7 @@ from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph, \
     Puzzle3DAnimorph, Puzzle3DTranslationAnimorph
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE, \
@@ -102,8 +102,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
         self.say(voiceover)
 
         # set the cube gap
-        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
-        morph_and_checkpoint(self, gap_animorph, run_time=ROTATION_RUNTIME, wait_time=ROTATION_WAIT_TIME)
+        min_gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.min_gap)
+        morph_and_checkpoint(self, min_gap_animorph, run_time=ROTATION_RUNTIME, wait_time=ROTATION_WAIT_TIME)
 
         voiceover = """
         The front side looks good.
@@ -136,8 +136,8 @@ class IntroductionScene2(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverSce
 
         morph_and_checkpoint(self, right_rotation_animorph, run_time=ROTATION_RUNTIME, wait_time=ROTATION_WAIT_TIME)
 
-        gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
-        morph_and_checkpoint(self, gap_animorph)
+        initial_gap_animorph: Puzzle3DSetCubeGapAnimorph = Puzzle3DSetCubeGapAnimorph(self.puzzle3d, self.initial_gap)
+        morph_and_checkpoint(self, initial_gap_animorph)
 
         voiceover = """
         This arrangement is not a solution so

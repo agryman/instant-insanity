@@ -33,15 +33,11 @@ dependencies = [
     "manim-voiceover[recorder]>=0.3.7",
     # Speech synthesis, wrapped by core/google_cloud_tts_service.py.
     "google-cloud-texttospeech>=2.27.0",
-    # Geometry, graph, and symbolic maths.
+    # Geometry and graph maths.
     "numpy>=2.3.1",
     "networkx>=3.5",
     "shapely>=2.1.1",
     "scipy>=1.16.0",
-    "sympy>=1.14.0",
-    # Figure generation in core/projection_diagram.py and the matplotlib/
-    # subpackage.
-    "matplotlib>=3.10.5",
     # Image loading in mobjects/image.py and the scripts/ entry points.
     "pillow>=11.3.0",
     # notebook_utils.py imports IPython.display at module scope.
@@ -68,10 +64,6 @@ package-dir = {"" = "src"}    # Specifies that the packages are located in the '
 
 [tool.setuptools.packages.find]
 where = ["src"]                     # Search for packages in the 'src' directory
-# src/ also holds claude/, health_checks/, kwargs_xyz/, manim_examples/,
-# matplotlib_diagrams/, matplotlib_examples/, media/, and slama_dev/. Without
-# this filter every one of them is packaged and would land on the path of
-# anyone installing this project.
 include = ["instant_insanity*"]
 
 [tool.setuptools.package-data]

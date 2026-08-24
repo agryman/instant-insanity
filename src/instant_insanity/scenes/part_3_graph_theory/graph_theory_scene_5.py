@@ -9,7 +9,7 @@ from manim import tempconfig, DOWN, BLACK, Text, Indicate, AnimationGroup, OUT
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.cube_rotations import VisibleCubeTexts
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
@@ -156,13 +156,14 @@ class GraphTheoryScene5(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScen
         if self.skip(self.subscene_4_discuss_front_cube_2):
             return
 
-        voiceover: str = """
+        voiceover: str
+        voiceover = """
         Now look at edge 3 wy which connects white to blue.
         """
         self.say(voiceover)
         self.indicate_edge_label(FacePlane.FRONT, PuzzleCubeNumber.THREE, AxisLabel.Y)
 
-        voiceover: str = """
+        voiceover = """
         We need face wy, which is white, on the front but it's 
         currently on the right so we need to rotate it.
         """

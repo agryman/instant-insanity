@@ -3,7 +3,7 @@ import numpy as np
 from manim.typing import Point3D, Vector3D
 from manim import Scene, tempconfig, RIGHT, IN, UP
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, DEFAULT_CUBE_SIDE_LENGTH, mk_standard_puzzle3d

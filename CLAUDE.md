@@ -57,6 +57,29 @@ Key scene directories:
 
 Each scene directory may have its own `manim.cfg` configuration file.
 
+## Changing Files
+
+Do not modify any file in this repository without Arthur's explicit confirmation for
+that specific change. This applies to source, tests, and configuration alike. Running
+`mypy` or `pytest` and finding a problem is not confirmation to fix it, and neither is
+Arthur stating an expectation such as "everything should typecheck". Report what is
+wrong, propose a fix, and wait.
+
+To propose a change, write the modified copy to the scratchpad directory (never over the
+original) and open it in a PyCharm diff window against the real file:
+
+```bash
+PYCHARM="$HOME/Library/Application Support/JetBrains/Toolbox/scripts/pycharm2"
+"$PYCHARM" diff /abs/path/to/original.py /abs/path/to/scratchpad/original.proposed.py
+```
+
+Both paths must be absolute. Keep the `.py` suffix on the proposed copy so PyCharm
+applies syntax highlighting. Arthur reviews the diff and can accept it directly in that
+window; only apply the change to the real file once he says so.
+
+Exceptions, which still need the change itself to be asked for: files Arthur explicitly
+names as the target of the request, and throwaway files inside the scratchpad directory.
+
 ## Git
 
 Arthur performs all git operations himself using GitHub Desktop. Do not run any git

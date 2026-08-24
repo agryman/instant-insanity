@@ -49,16 +49,3 @@ def mk_logo(scale: float = 2.0) -> VGroup:
     logo.add(name)
 
     return logo
-
-
-class LogoScene(Scene):
-    def construct(self):
-        logo = mk_logo(scale=1.25)
-        self.add(logo)
-        self.wait()
-
-
-if __name__ == "__main__":
-    with tempconfig(PREVIEW_CONFIG):
-        scene = LogoScene()
-        scene.render()

@@ -5,7 +5,7 @@ from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
 
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, WINNING_MOVES_PUZZLE, PuzzleCubeNumber

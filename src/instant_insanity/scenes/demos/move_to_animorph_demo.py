@@ -6,7 +6,7 @@ from manim.typing import Point3D
 
 from instant_insanity.animators.animorph import MoveToAnimorph
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 
 
 class MoveToAnimorphDemo(GridMixin, Scene):

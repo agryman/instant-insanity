@@ -1,6 +1,6 @@
 from manim import tempconfig, Scene, ORIGIN, LEFT, RIGHT, FadeIn
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.puzzle import (WINNING_MOVES_PUZZLE, CARTEBLANCHE_PUZZLE)
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
 

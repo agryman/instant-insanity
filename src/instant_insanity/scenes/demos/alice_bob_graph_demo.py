@@ -1,6 +1,6 @@
 from manim import Scene, tempconfig, UP, DOWN
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.mobjects.alice_bob_graphs import AliceBobGraph
 
 

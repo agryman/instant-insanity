@@ -4,7 +4,7 @@ from manim import tempconfig, Scene, UP, RIGHT, PI, LEFT
 from manim.typing import Vector3D
 
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DTranslationAnimorph, Puzzle3DCubeRotationAnimorph
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d
@@ -53,8 +53,8 @@ class Puzzle3DAnimorphDemo(GridMixin, SubsceneMixin, DiscussionMixin, Scene):
         self.wait()
 
         translate_right: Vector3D = (2.0 / scene_per_model) * RIGHT
-        move_up: Puzzle3DTranslationAnimorph = Puzzle3DTranslationAnimorph(puzzle3d, translate_right)
-        morph_and_checkpoint(self, move_up)
+        move_right: Puzzle3DTranslationAnimorph = Puzzle3DTranslationAnimorph(puzzle3d, translate_right)
+        morph_and_checkpoint(self, move_right)
         self.wait()
 
 
@@ -64,8 +64,8 @@ class Puzzle3DAnimorphDemo(GridMixin, SubsceneMixin, DiscussionMixin, Scene):
         self.wait()
 
         translate_left: Vector3D = (2.0 / scene_per_model) * LEFT
-        move_up: Puzzle3DTranslationAnimorph = Puzzle3DTranslationAnimorph(puzzle3d, translate_left)
-        morph_and_checkpoint(self, move_up)
+        move_left: Puzzle3DTranslationAnimorph = Puzzle3DTranslationAnimorph(puzzle3d, translate_left)
+        morph_and_checkpoint(self, move_left)
         self.wait()
 
         rotation_right_360: Vector3D = 4.0 * rotation_right_90

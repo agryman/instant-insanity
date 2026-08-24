@@ -12,7 +12,7 @@ from typing import Sequence
 from manim import tempconfig
 from manim_voiceover import VoiceoverScene
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin, PAGE_HEIGHT

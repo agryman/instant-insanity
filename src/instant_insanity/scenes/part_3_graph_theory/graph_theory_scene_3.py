@@ -24,7 +24,7 @@ from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeExplosionAnimorph
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService

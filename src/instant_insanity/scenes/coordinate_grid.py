@@ -1,6 +1,6 @@
 from manim import Scene, tempconfig, Dot, MathTex, NumberPlane, BLACK, GREY_B, ORIGIN, UP, LEFT, DEFAULT_DOT_RADIUS
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 
 
 def add_coordinate_grid(scene: Scene) -> None:

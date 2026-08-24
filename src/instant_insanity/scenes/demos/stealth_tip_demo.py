@@ -7,7 +7,7 @@ from manim.typing import Point3D
 
 from instant_insanity.mobjects.stealth_tip import mk_stealth_tip_from_cubic_bezier
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 
 
 class StealthTipDemo(GridMixin, Scene):

@@ -4,7 +4,7 @@ from manim import tempconfig
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.mobjects.image import GRAPH_THEORY, TRINITY_FOUR_SOURCE, US_PATENT_SOURCE, EUREKA_SOURCE
 from instant_insanity.scenes.coordinate_grid import GridMixin

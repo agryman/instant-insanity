@@ -3,7 +3,7 @@ from typing import Sequence
 from manim import Mobject, tempconfig, Table, FadeIn, FadeOut
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, FaceLabel
 from instant_insanity.core.voiceover import voiceover_wait

@@ -4,7 +4,7 @@ from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobje
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.image import ImagesPath, WORDLE_SOURCE, SUDOKU_SOURCE, RUBIKS_CUBE_SOURCE, \

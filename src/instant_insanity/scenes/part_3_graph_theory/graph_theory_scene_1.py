@@ -5,7 +5,7 @@ from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, Puzzle
 from instant_insanity.mobjects.alice_bob_graphs import AliceBobGraph

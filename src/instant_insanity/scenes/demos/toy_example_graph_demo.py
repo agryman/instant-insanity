@@ -11,7 +11,7 @@ from typing import cast
 from manim import Scene, tempconfig
 from manim.typing import Point3D
 
-from instant_insanity.core.config import LINEN_CONFIG
+from kwargs_xyz.config import LINEN_CONFIG
 from instant_insanity.mobjects.toy_example_graph import ToyExampleGraph, mk_toy_example, tikz_point, NODE_TO_POINT
 
 
