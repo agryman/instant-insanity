@@ -1,7 +1,6 @@
-from typing import Optional
 import numpy as np
 from manim import logger, tempconfig, Scene, Dot, BLUE, BLACK, LEFT, ValueTracker, Mobject
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 
 logger.setLevel('DEBUG')
 

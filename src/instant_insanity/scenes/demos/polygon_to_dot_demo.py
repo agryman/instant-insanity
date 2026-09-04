@@ -5,7 +5,7 @@ import numpy as np
 from manim import Scene, tempconfig, Square, Dot, LEFT, RIGHT, UP, DOWN, RED, BLUE, BLACK, ORIGIN, OUT
 
 from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.scenes.coordinate_grid import GridMixin
 
 

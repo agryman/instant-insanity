@@ -1,12 +1,12 @@
 """
 This scene demonstrates MoveToAnimorph to validate the Animorph framework.
 """
-from manim import Scene, tempconfig, Circle, Square, RIGHT, LEFT, UP, DOWN, BLUE, RED, Mobject, ValueTracker
+from manim import Scene, tempconfig, Circle, Square, RIGHT, LEFT, UP, DOWN, BLUE, RED, ValueTracker
 from manim.typing import Point3D
 
 from instant_insanity.animators.animorph import MoveToAnimorph
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 
 
 class MoveToAnimorphDemo(GridMixin, Scene):

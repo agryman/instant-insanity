@@ -4,7 +4,7 @@ from manim import tempconfig, Scene, UP, RIGHT, PI, LEFT
 from manim.typing import Vector3D
 
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DTranslationAnimorph, Puzzle3DCubeRotationAnimorph
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, WINNING_MOVES_PUZZLE
 from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d

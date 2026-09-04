@@ -7,7 +7,7 @@ from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempcon
 from instant_insanity.animators.animorph import Updater
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
 from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import Projection, PerspectiveProjection
 from instant_insanity.core.puzzle import PuzzleCubeSpec, FaceLabel, INITIAL_FACE_PLANE_TO_LABEL

@@ -4,7 +4,7 @@ from manim import (Scene, tempconfig, ORIGIN, RIGHT, LEFT, UP, OUT,
                    RED, GREEN, BLUE, YELLOW, BLACK, PI, ManimColor, PURPLE)
 from manim.typing import Vector3D
 
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.geometry_types import (Point3D, Point3D_Array, PolygonKeyToVertexPathMapping,
                                                   as_vertex, as_vertex_path)
 from instant_insanity.core.projection import Projection, PerspectiveProjection

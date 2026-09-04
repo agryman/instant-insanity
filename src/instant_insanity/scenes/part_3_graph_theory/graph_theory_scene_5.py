@@ -5,14 +5,13 @@ in the top half. The state of the scene is determined by the puzzle and the solu
 """
 from typing import Sequence
 
-from manim import tempconfig, DOWN, BLACK, Text, Indicate, AnimationGroup, OUT
+from manim import tempconfig, DOWN, Text, Indicate, AnimationGroup, OUT
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.cube_rotations import VisibleCubeTexts
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, WINNING_MOVES_PUZZLE, PuzzleCubeNumber, AxisLabel
 from instant_insanity.mobjects.labelled_subgraph import LabelledSubgraphPair

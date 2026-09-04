@@ -1,10 +1,7 @@
-from typing import cast
-
-from manim.typing import Vector3D
-from manim import Scene, tempconfig, PI, DOWN, RIGHT
+from manim import Scene, tempconfig
 
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DSetCubeGapAnimorph
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE_SPEC
 from instant_insanity.mobjects.puzzle_3d import PuzzleSpec, Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF

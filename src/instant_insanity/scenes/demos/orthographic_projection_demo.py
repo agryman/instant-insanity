@@ -3,7 +3,7 @@ import numpy as np
 from manim.typing import Vector3D, Point3D
 from manim import Scene, Polygon, Text, tempconfig, DOWN, BLACK
 
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.projection import OrthographicProjection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle, PuzzleCube, PuzzleCubeNumber, \

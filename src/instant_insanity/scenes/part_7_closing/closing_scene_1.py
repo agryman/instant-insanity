@@ -8,12 +8,11 @@ from manim.typing import Point3D
 from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
-from kwargs_xyz.config import LINEN_CONFIG
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.scenes.coordinate_grid import GridMixin
 from instant_insanity.scenes.discussion import DiscussionMixin
 from instant_insanity.scenes.subscene import SubsceneMixin
-from kwargs_xyz.logo import mk_logo
+from kwargs_xyz_studio.logo import mk_logo
 
 def mk_point(x: float, y: float, z: float = 0.0) -> Point3D:
     return np.array([x, y, z], dtype=np.float64)
@@ -32,7 +31,7 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         logo.shift(LEFT * 4.0)
         self.play(FadeIn(logo))
         self.say("""
-        This has been a quargs dot xyz production.
+        This has been a kwargs.xyz production.
         """
         )
 
@@ -54,7 +53,7 @@ class ClosingScene1(GridMixin, SubsceneMixin, DiscussionMixin, VoiceoverScene):
         
         Animation software provided by Mannim Community.
         
-        Impetus and technical advice provided by Will ah-nyeh leh veetch .
+        Impetus and technical advice provided by Will Anielewicz .
         .
         """)
 

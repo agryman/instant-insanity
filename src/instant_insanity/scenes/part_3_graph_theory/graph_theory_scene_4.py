@@ -11,7 +11,6 @@ from manim_voiceover import VoiceoverScene
 from manim_voiceover.services.recorder import RecorderService
 
 from instant_insanity.core.cube import FacePlane
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import Puzzle, PuzzleCubeNumber, AxisLabel, CubeAxis, WINNING_MOVES_PUZZLE, \
     PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, FaceColour
@@ -23,7 +22,7 @@ from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity.mobjects.quadrant import Quadrant
 from instant_insanity.mobjects.stealth_tip import CubeEdgeTip
 from instant_insanity.scenes.coordinate_grid import GridMixin
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.scenes.discussion import DiscussionMixin, INDICATE_SCALE_FACTOR, INDICATE_TEXT_COLOUR
 from instant_insanity.scenes.subscene import SubsceneMixin, Subscene
 from instant_insanity.solvers.graph_solver import GraphSolver, Grid

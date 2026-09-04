@@ -1,7 +1,7 @@
-from manim import tempconfig, RIGHT, DOWN, ORIGIN, FadeIn, FadeOut, Mobject, Blink, Text, Indicate, BLACK
+from manim import tempconfig, ORIGIN, FadeIn, FadeOut, Text, Indicate
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.puzzle import WINNING_MOVES_PUZZLE, AxisLabel, PuzzleCubeNumber
 from instant_insanity.core.voiceover import voiceover_wait

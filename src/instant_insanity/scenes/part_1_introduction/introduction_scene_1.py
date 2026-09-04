@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 
-from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, LEFT, Mobject, tempconfig, Text
+from manim import ValueTracker, always_redraw, Tex, BLACK, UP, DOWN, Mobject, tempconfig, Text
 from manim_voiceover import VoiceoverScene, VoiceoverTracker
 from manim_voiceover.services.recorder import RecorderService
 
-from kwargs_xyz.config import LINEN_CONFIG
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.voiceover import voiceover_wait
 from instant_insanity.mobjects.image import ImagesPath, WORDLE_SOURCE, SUDOKU_SOURCE, RUBIKS_CUBE_SOURCE, \
     INSTANT_INSANITY_SOURCE

@@ -1,9 +1,8 @@
 import logging
-import numpy as np
 from manim import logger, Scene, console, Dot, RED, BLACK, LEFT, Mobject, RIGHT, tempconfig
 from manim.typing import Point3D
 
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 
 logger.setLevel(logging.DEBUG)
 

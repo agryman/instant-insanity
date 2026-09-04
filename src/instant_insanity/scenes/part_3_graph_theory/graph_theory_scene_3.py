@@ -24,10 +24,9 @@ from instant_insanity.animators.animorph import Animorph
 from instant_insanity.animators.polygon_to_dot_animator import PolygonToDotAnimorph
 from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DAnimorph, Puzzle3DCubeExplosionAnimorph
-from kwargs_xyz.config import LINEN_CONFIG
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.cube import FacePlane
 from instant_insanity.core.geometry_types import SortedPolygonKeyToPolygonMapping
-from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import (
     Projection,
     PerspectiveProjection,
@@ -38,7 +37,6 @@ from instant_insanity.core.puzzle import (PuzzleSpec, Puzzle, PuzzleCubeSpec, WI
                                           PuzzleCubeNumber, PuzzleCube, CubeAxis, AxisLabel,
                                           AXIS_TO_FACE_LABEL_PAIR, FaceLabelPair, FaceLabel,
                                           INITIAL_FACE_PLANE_TO_LABEL)
-from instant_insanity.animators.cube_animators import CubeAnimorph, CubeExplosionAnimorph
 from instant_insanity.mobjects.labelled_edge import LabelledEdge, PointPair
 from instant_insanity.mobjects.opposite_face_graph import OppositeFaceGraph, FaceData, mk_face_data_from_cube, \
     mk_face_data_from_puzzle

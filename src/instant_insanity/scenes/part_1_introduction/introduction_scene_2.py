@@ -1,24 +1,21 @@
 from typing import cast, Sequence
 
 from manim import tempconfig, PI, DOWN, RIGHT, Mobject, FadeIn, ORIGIN, FadeOut, Table, UP, LEFT, Text, Indicate, \
-    BLACK, OUT, IN, Scene, VMobject, VGroup
+    OUT, IN, Scene, VMobject
 from manim.typing import Vector3D
 from manim_voiceover import VoiceoverScene
-from manim_voiceover.services.recorder import RecorderService
 
-from instant_insanity.animators.animorph import Animorph
-from instant_insanity.animators.polygons_3d_animator import RigidMotionPolygons3DAnimorph
 from instant_insanity.animators.puzzle_3d_animators import Puzzle3DCubeRotationAnimorph, Puzzle3DSetCubeGapAnimorph, \
-    Puzzle3DAnimorph, Puzzle3DTranslationAnimorph
-from kwargs_xyz.config import LINEN_CONFIG
+    Puzzle3DTranslationAnimorph
+from kwargs_xyz_studio.config import LINEN_CONFIG
 from instant_insanity.core.google_cloud_tts_service import GCPTextToSpeechService
 from instant_insanity.core.projection import Projection, mk_standard_orthographic_projection
 from instant_insanity.core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, PuzzleCubeNumber, WINNING_MOVES_PUZZLE, \
-    Puzzle, AxisLabel, FaceLabel
+    Puzzle, AxisLabel
 from instant_insanity.mobjects.face_colour_table import FaceColourTable
 from instant_insanity.mobjects.image import INTRODUCTION, INSTANT_INSANITY_SOURCE
 from instant_insanity.mobjects.opposite_face_graph import EdgeToSubgraphMapping, OppositeFaceGraph
-from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF, Puzzle3DPolygonName
+from instant_insanity.mobjects.puzzle_3d import Puzzle3D, mk_standard_puzzle3d, DEFAULT_BUFF
 from instant_insanity.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 # from instant_insanity.scenes import discussion
 from instant_insanity.scenes.coordinate_grid import GridMixin
