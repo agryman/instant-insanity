@@ -64,7 +64,22 @@ package-dir = {"" = "src"}    # Specifies that the packages are located in the '
 
 [tool.setuptools.packages.find]
 where = ["src"]                     # Search for packages in the 'src' directory
-include = ["instant_insanity*"]
+# Refactoring towards the public kwargs-xyz split happens inside this repo, so
+# that PyCharm can rename and move across packages — it cannot refactor across
+# repo boundaries. Each package below is destined for its own public repo and is
+# listed explicitly, so that a package is only installed once it is deliberately
+# added here. tests/test_package_boundaries.py enforces the dependency
+# direction between them while they still share a source tree.
+include = [
+    "instant_insanity*",        # stays private: scenes, resources, image zoom
+    "kwargs_xyz_core*",         # -> kwargs-xyz/core
+    "kwargs_xyz_studio*",       # -> kwargs-xyz/studio
+    "instant_insanity_core*",   # -> kwargs-xyz/instant-insanity-core
+    "manim_cairo3d*",           # -> kwargs-xyz/manim-cairo3d
+]
 
 [tool.setuptools.package-data]
+# Scoped to instant_insanity_scenes deliberately. The resources/images scans are not
+# MIT-redistributable, so this glob must never be widened to a package that is
+# destined to become public.
 "instant_insanity" = ["resources/images/**/*.png", "resources/images/**/*.svg"]

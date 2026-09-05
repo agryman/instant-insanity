@@ -33,7 +33,7 @@ make-background-linen input.png  # Convert white backgrounds to LINEN color
 make-greyscale input.png         # Make a greyscale copy of an image for annotation
 ```
 
-Scripts are located in `src/instant_insanity/scripts/` and configured as entry points in `pyproject.toml`.
+Scripts are located in `src/instant_insanity_core/scripts/` and configured as entry points in `pyproject.toml`.
 
 An editable install keeps source changes live, but it does **not** pick up new
 `[project.scripts]` entries. The wrapper executables in `venv/bin/` are generated only
@@ -51,8 +51,8 @@ manim src/path/to/scene.py SceneName
 ```
 
 Key scene directories:
-- `src/instant_insanity/scenes/graph_theory/` - Main puzzle visualization scenes
-- `src/instant_insanity/scenes/demos/` - Demo scenes for components
+- `src/instant_insanity_scenes/scenes/graph_theory/` - Main puzzle visualization scenes
+- `src/instant_insanity_core/demos/` - Demo scenes for components
 - `src/manim_examples/` - General Manim learning examples
 
 Each scene directory may have its own `manim.cfg` configuration file.
@@ -80,6 +80,26 @@ window; only apply the change to the real file once he says so.
 Exceptions, which still need the change itself to be asked for: files Arthur explicitly
 names as the target of the request, and throwaway files inside the scratchpad directory.
 
+## Refactoring
+
+Arthur performs all Python refactorings himself in PyCharm. This covers renaming and
+moving packages, modules, classes, functions and variables, extracting code, and
+changing signatures. Do not carry these out with `sed`, file moves, or a search and
+replace sweep, and do not offer to.
+
+PyCharm updates every reference in one safe operation. A hand-rolled sweep silently
+misses references in strings, docstrings and configuration, and a name that is a prefix
+of another name, such as `instant_insanity_scenes` and `instant_insanity_core`, will be
+corrupted by a careless pattern.
+
+Instead, describe the refactoring precisely enough for Arthur to run it: which PyCharm
+action to invoke, on what, and what the result should be. Then do the work PyCharm does
+not do. It only updates Python references, so the follow-up usually includes
+`pyproject.toml` entry points and `package-data` keys, `manim.cfg` files, the mirrored
+directories under `tests/`, and the prose in `CLAUDE.md` and the Makefile. Reinstall with
+`pip install -e . --no-deps` when an entry point moved, then verify with `mypy src` and
+`pytest`.
+
 ## Git
 
 Arthur performs all git operations himself using GitHub Desktop. Do not run any git
@@ -97,22 +117,22 @@ helps answer a question or verify work.
 ## Architecture
 
 ### Core Structure
-- **`src/instant_insanity/core/`** - Fundamental geometry and puzzle logic
+- **`src/instant_insanity_scenes/core/`** - Fundamental geometry and puzzle logic
   - `cube.py` - Cube face/vertex definitions using standard 3D coordinate system
   - `puzzle.py` - Instant Insanity puzzle representation with Carteblanche 1947 notation
   - `geometry.py` - 3D geometric operations and transformations
   - `projection.py` - Orthographic projection for simulating 3D in 2D scenes
   
-- **`src/instant_insanity/solvers/`** - Puzzle solving algorithms
+- **`src/instant_insanity_core/solvers/`** - Puzzle solving algorithms
   - `graph_solver.py` - Backtracking solver using opposite-face graph theory
 
-- **`src/instant_insanity/mobjects/`** - Custom Manim objects
+- **`src/instant_insanity_core/mobjects/`** - Custom Manim objects
   - `puzzle_3d.py` - 3D puzzle visualization mobjects
   - `opposite_face_graph.py` - Graph theory visualization objects
 
-- **`src/instant_insanity/animators/`** - Custom animation systems
+- **`src/instant_insanity_core/animorphs/`** - Custom animation systems
   - `animorph.py` - Morphing animations between geometric shapes
-  - `cube_animators.py` - Cube-specific animation behaviors
+  - `cube_animorphs.py` - Cube-specific animation behaviors
 
 ### Coordinate System
 Uses standard 3D coordinate system where:
@@ -145,7 +165,7 @@ The puzzle is solved using an "opposite-face graph" where each cube contributes 
 ### Claude-Generated Code
 - **General/one-off code**: Place in `src/claude/` directory
 - **Tests for Claude code**: Place in `tests/claude/` directory, mirror the `src/claude/` structure
-- **Project contributions**: Place under appropriate `src/instant_insanity/` subdirectory based on function
+- **Project contributions**: Place under appropriate `src/instant_insanity_scenes/` subdirectory based on function
 - Use `test_*.py` naming convention for all test files
 
 ### Project Structure

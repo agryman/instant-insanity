@@ -1,0 +1,98 @@
+import numpy as np
+
+from manim.typing import Vector3D, Point3D, Point3D_Array
+from manim import Polygon, ManimColor, GREEN, BLUE, Scene, ORIGIN, LEFT, tempconfig, RIGHT, PI, LineJointType, FadeIn, \
+    FadeOut, ValueTracker, UP
+
+from instant_insanity_core.animorphs.animorph import Updater
+from instant_insanity_core.animorphs.polygons_3d_animorphs import RigidMotionPolygons3DAnimorph, Polygons3DAnimorph
+from manim_cairo3d.geometry_types import SortedPolygonKeyToPolygonMapping
+from kwargs_xyz_core.config import LINEN_CONFIG
+from instant_insanity_core.cube import FacePlane
+from manim_cairo3d.projection import Projection, PerspectiveProjection
+from instant_insanity_core.puzzle import PuzzleCubeSpec, FaceLabel, INITIAL_FACE_PLANE_TO_LABEL
+from instant_insanity_core.mobjects.puzzle_cube_3d import PuzzleCube3D
+from instant_insanity_core.mobjects.coloured_cube import TEST_PUZZLE_CUBE_SPEC
+from instant_insanity_core.animorphs.cube_animorphs import CubeRigidMotionAnimorph
+from instant_insanity_core.coordinate_grid import GridMixin
+
+
+class CubeRigidMotionAnimorphDemo(GridMixin, Scene):
+    def construct(self):
+        self.add_grid(False)
+
+        camera_z: float = 8.0
+        viewpoint: Point3D = np.array([5, 5, 20], dtype=np.float64)
+        projection: Projection = PerspectiveProjection(viewpoint, camera_z=camera_z)
+
+        cube_spec: PuzzleCubeSpec = TEST_PUZZLE_CUBE_SPEC
+        cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
+
+        # set up the rigid motion animation
+        rotation: Vector3D = ORIGIN
+        translation: Vector3D = 7 * LEFT  # + DOWN
+        animorph: CubeRigidMotionAnimorph = CubeRigidMotionAnimorph(cube, rotation, translation)
+
+        # draw the outlines of the front and right faces at some points in the animation
+        face_planes: list[FacePlane] = [FacePlane.FRONT, FacePlane.RIGHT]
+        face_labels: list[FaceLabel] = [INITIAL_FACE_PLANE_TO_LABEL[face_plane] for face_plane in face_planes]
+        colours: list[ManimColor] = [BLUE, GREEN]
+        alpha: float
+        for alpha in [0.0, 0.5, 1.0]:
+            animorph.morph_to(alpha)
+            key_to_scene_polygon: SortedPolygonKeyToPolygonMapping[FaceLabel] = cube.key_to_scene_polygon
+            face_label: FaceLabel
+            colour: ManimColor
+            for face_label, colour in zip(face_labels, colours):
+                polygon: Polygon = key_to_scene_polygon[face_label]
+                vertices: Point3D_Array = polygon.get_vertices()
+                alpha_polygon_outline: Polygon = Polygon(*vertices,
+                                                         stroke_color=colour,
+                                                         joint_type=LineJointType.ROUND)
+                self.add(alpha_polygon_outline)
+        self.wait()
+
+        # move the cube to the animation start
+        animorph.morph_to(0.0)
+        self.play(FadeIn(cube))
+        self.wait()
+
+        alpha_tracker: ValueTracker = ValueTracker(0.0)
+        updater: Updater = lambda m: animorph.morph_to(alpha_tracker.get_value())
+        cube.add_updater(updater)
+        for end_alpha in [0.75, 0.25, 0.0]:
+            cube.conceal_polygons()
+            self.play(alpha_tracker.animate.set_value(end_alpha))
+            self.wait()
+        cube.remove_updater(updater)
+
+        # reset and clear
+        animorph.morph_to(0.0)
+        self.wait()
+
+        # rotate the cube.
+        rotation = RIGHT * 2 * PI
+        translation = ORIGIN
+        animorph = CubeRigidMotionAnimorph(cube, rotation, translation)
+        cube.conceal_polygons()
+        animorph.play(self, run_time=2.0)
+
+        # rotate again using a different animorph
+        rotation = UP * 2 * PI
+        translation = ORIGIN
+        moveable_polygon_keys: set[FaceLabel] = set(cube.key_to_scene_polygon.keys())
+        p3danimorph: Polygons3DAnimorph[FaceLabel]
+        p3danimorph = RigidMotionPolygons3DAnimorph[FaceLabel](cube,
+                                                 rotation,
+                                                 translation,
+                                                 moveable_polygon_keys)
+        cube.conceal_polygons()
+        p3danimorph.play(self, run_time=2.0)
+
+        self.play(FadeOut(cube))
+        self.wait()
+
+if __name__ == "__main__":
+    with tempconfig(LINEN_CONFIG):
+        scene = CubeRigidMotionAnimorphDemo()
+        scene.render()

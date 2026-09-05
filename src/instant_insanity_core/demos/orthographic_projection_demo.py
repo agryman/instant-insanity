@@ -1,0 +1,61 @@
+import numpy as np
+
+from manim.typing import Vector3D, Point3D
+from manim import Scene, Polygon, Text, tempconfig, DOWN, BLACK
+
+from kwargs_xyz_core.config import LINEN_CONFIG
+from instant_insanity_core.cube import FacePlane
+from manim_cairo3d.projection import OrthographicProjection
+from instant_insanity_core.puzzle import PuzzleSpec, WINNING_MOVES_PUZZLE_SPEC, Puzzle, PuzzleCube, PuzzleCubeNumber, \
+    PuzzleCubeSpec, FaceLabel, INITIAL_FACE_PLANE_TO_LABEL
+from instant_insanity_core.mobjects.puzzle_cube_3d import PuzzleCube3D
+from instant_insanity_core.coordinate_grid import GridMixin
+
+
+class OrthographicProjectionDemo(GridMixin, Scene):
+    def construct(self):
+        self.add_grid(True)
+
+        # create an orthographic projection that foreshortens the edges
+        direction: Vector3D = np.array([1.5, 1, 5], dtype=np.float64)
+        u: Vector3D = direction / np.linalg.norm(direction)
+        camera_z: float = 1.0
+        scene_x: float = 3.0
+        scene_y: float = -2.0
+        scene_per_model: float = 0.5
+        projection: OrthographicProjection = OrthographicProjection(
+            u,
+            camera_z=camera_z,
+            scene_x=scene_x,
+            scene_y=scene_y,
+            scene_z=0.0,
+            scene_per_model=scene_per_model
+        )
+
+        # create the cube object
+        puzzle_spec: PuzzleSpec = WINNING_MOVES_PUZZLE_SPEC
+        puzzle: Puzzle = Puzzle(puzzle_spec)
+        cube_number: PuzzleCubeNumber = PuzzleCubeNumber.ONE
+        puzzle_cube: PuzzleCube = puzzle.number_to_cube[cube_number]
+        cube_spec: PuzzleCubeSpec = puzzle_cube.cube_spec
+        cube: PuzzleCube3D = PuzzleCube3D(projection, cube_spec)
+        self.add(cube)
+
+        # find the scene coordinates of the centre of the front face
+        front_label: FaceLabel = INITIAL_FACE_PLANE_TO_LABEL[FacePlane.FRONT]
+        front_face: Polygon = cube.key_to_scene_polygon[front_label]
+        centre: Point3D = front_face.get_center()
+        centre_str: str = f'front face centre = ({centre[0]:.2f}, {centre[1]:.2f}, {centre[2]:.2f})'
+        centre_text: Text = Text(centre_str, color=BLACK, font_size=24)
+        centre_text.move_to(1.5 * DOWN)
+        self.add(centre_text)
+
+        direction_str: str = f'projection direction = ({direction[0]:.2f}, {direction[1]:.2f}, {direction[2]:.2f})'
+        direction_text: Text = Text(direction_str, color=BLACK, font_size=24)
+        direction_text.move_to(2.0 * DOWN)
+        self.add(direction_text)
+
+if __name__ == "__main__":
+    with tempconfig(LINEN_CONFIG):
+        scene = OrthographicProjectionDemo()
+        scene.render()
