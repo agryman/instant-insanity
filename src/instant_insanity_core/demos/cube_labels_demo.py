@@ -14,7 +14,7 @@ from instant_insanity_core.mobjects.puzzle_3d import Puzzle3D
 from instant_insanity_core.mobjects.puzzle_face_labeller import PuzzleFaceLabeller
 from instant_insanity_core.coordinate_grid import GridMixin
 from instant_insanity_core.discussion import DiscussionMixin
-from instant_insanity_scenes.part_3_graph_theory.graph_theory_scene_3 import GraphTheoryScene3
+from instant_insanity_scenes.some5.part_3_graph_theory import GraphTheoryScene3
 from instant_insanity_core.subscene import SubsceneMixin
 
 

@@ -34,7 +34,7 @@
 FFMPEG  ?= ffmpeg
 QUALITY ?= 720p30
 
-SCENES_ROOT := src/instant_insanity/scenes
+SCENES_ROOT := src/instant_insanity_scenes/some5
 # Named build-output/ rather than build/ to stay clear of the directory Python
 # packaging tools use.
 BUILD_DIR   := build-output
